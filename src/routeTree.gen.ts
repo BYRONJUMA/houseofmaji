@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
 import { Route as AuthenticatedEngineerRouteImport } from './routes/_authenticated/engineer'
 import { Route as AuthenticatedChiefRouteImport } from './routes/_authenticated/chief'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -45,10 +46,16 @@ const AuthenticatedChiefRoute = AuthenticatedChiefRouteImport.update({
   path: '/chief',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/chief': typeof AuthenticatedChiefRoute
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
@@ -56,6 +63,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/chief': typeof AuthenticatedChiefRoute
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
@@ -65,20 +73,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/chief': typeof AuthenticatedChiefRoute
   '/_authenticated/engineer': typeof AuthenticatedEngineerRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/chief' | '/engineer' | '/sales'
+  fullPaths: '/' | '/auth' | '/admin' | '/chief' | '/engineer' | '/sales'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/chief' | '/engineer' | '/sales'
+  to: '/' | '/auth' | '/admin' | '/chief' | '/engineer' | '/sales'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/admin'
     | '/_authenticated/chief'
     | '/_authenticated/engineer'
     | '/_authenticated/sales'
@@ -134,16 +144,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChiefRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedChiefRoute: typeof AuthenticatedChiefRoute
   AuthenticatedEngineerRoute: typeof AuthenticatedEngineerRoute
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedChiefRoute: AuthenticatedChiefRoute,
   AuthenticatedEngineerRoute: AuthenticatedEngineerRoute,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
