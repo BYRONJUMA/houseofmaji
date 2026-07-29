@@ -14,16 +14,219 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      commissions: {
+        Row: {
+          amount: number
+          computed_at: string
+          fulfillment_id: string
+          id: string
+          paid: boolean
+          paid_at: string | null
+          role: Database["public"]["Enums"]["commission_role"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          computed_at?: string
+          fulfillment_id: string
+          id?: string
+          paid?: boolean
+          paid_at?: string | null
+          role: Database["public"]["Enums"]["commission_role"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          computed_at?: string
+          fulfillment_id?: string
+          id?: string
+          paid?: boolean
+          paid_at?: string | null
+          role?: Database["public"]["Enums"]["commission_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commissions_fulfillment_id_fkey"
+            columns: ["fulfillment_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fulfillments: {
+        Row: {
+          agreed_delivery_date: string
+          agreed_price: number
+          assembly_engineer_id: string | null
+          chief_engineer_id: string | null
+          client_name: string
+          created_at: string
+          current_stage: string
+          frame_ordered_at: string | null
+          id: string
+          installation_engineer_id: string | null
+          location: string
+          machine_type: string
+          sales_rep_id: string
+          updated_at: string
+          water_analysis_notes: string | null
+        }
+        Insert: {
+          agreed_delivery_date: string
+          agreed_price: number
+          assembly_engineer_id?: string | null
+          chief_engineer_id?: string | null
+          client_name: string
+          created_at?: string
+          current_stage?: string
+          frame_ordered_at?: string | null
+          id?: string
+          installation_engineer_id?: string | null
+          location: string
+          machine_type: string
+          sales_rep_id: string
+          updated_at?: string
+          water_analysis_notes?: string | null
+        }
+        Update: {
+          agreed_delivery_date?: string
+          agreed_price?: number
+          assembly_engineer_id?: string | null
+          chief_engineer_id?: string | null
+          client_name?: string
+          created_at?: string
+          current_stage?: string
+          frame_ordered_at?: string | null
+          id?: string
+          installation_engineer_id?: string | null
+          location?: string
+          machine_type?: string
+          sales_rep_id?: string
+          updated_at?: string
+          water_analysis_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fulfillments_assembly_engineer_id_fkey"
+            columns: ["assembly_engineer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillments_chief_engineer_id_fkey"
+            columns: ["chief_engineer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillments_installation_engineer_id_fkey"
+            columns: ["installation_engineer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillments_sales_rep_id_fkey"
+            columns: ["sales_rep_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string
+          id: string
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: []
+      }
+      stage_events: {
+        Row: {
+          actor_id: string | null
+          entered_at: string
+          exited_at: string | null
+          fulfillment_id: string
+          id: string
+          notes: string | null
+          stage: string
+        }
+        Insert: {
+          actor_id?: string | null
+          entered_at?: string
+          exited_at?: string | null
+          fulfillment_id: string
+          id?: string
+          notes?: string | null
+          stage: string
+        }
+        Update: {
+          actor_id?: string | null
+          entered_at?: string
+          exited_at?: string | null
+          fulfillment_id?: string
+          id?: string
+          notes?: string | null
+          stage?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stage_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stage_events_fulfillment_id_fkey"
+            columns: ["fulfillment_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "sales_rep" | "chief_engineer" | "engineer" | "admin"
+      commission_role: "sales" | "assembly" | "installation"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +353,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["sales_rep", "chief_engineer", "engineer", "admin"],
+      commission_role: ["sales", "assembly", "installation"],
+    },
   },
 } as const
