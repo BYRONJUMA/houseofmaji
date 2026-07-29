@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { StageProgress } from "@/components/stage-progress";
 import { formatKES, formatDate } from "@/lib/format";
-import type { Stage } from "@/lib/stages";
 
 export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
   head: () => ({
