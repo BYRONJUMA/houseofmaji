@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
 import { Route as AuthenticatedEngineerRouteImport } from './routes/_authenticated/engineer'
+import { Route as AuthenticatedCommissionsRouteImport } from './routes/_authenticated/commissions'
 import { Route as AuthenticatedChiefRouteImport } from './routes/_authenticated/chief'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
@@ -41,6 +42,12 @@ const AuthenticatedEngineerRoute = AuthenticatedEngineerRouteImport.update({
   path: '/engineer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCommissionsRoute =
+  AuthenticatedCommissionsRouteImport.update({
+    id: '/commissions',
+    path: '/commissions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedChiefRoute = AuthenticatedChiefRouteImport.update({
   id: '/chief',
   path: '/chief',
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/chief': typeof AuthenticatedChiefRoute
+  '/commissions': typeof AuthenticatedCommissionsRoute
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
 }
@@ -65,6 +73,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/chief': typeof AuthenticatedChiefRoute
+  '/commissions': typeof AuthenticatedCommissionsRoute
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
 }
@@ -75,14 +84,29 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/chief': typeof AuthenticatedChiefRoute
+  '/_authenticated/commissions': typeof AuthenticatedCommissionsRoute
   '/_authenticated/engineer': typeof AuthenticatedEngineerRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/admin' | '/chief' | '/engineer' | '/sales'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/admin'
+    | '/chief'
+    | '/commissions'
+    | '/engineer'
+    | '/sales'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/admin' | '/chief' | '/engineer' | '/sales'
+  to:
+    | '/'
+    | '/auth'
+    | '/admin'
+    | '/chief'
+    | '/commissions'
+    | '/engineer'
+    | '/sales'
   id:
     | '__root__'
     | '/'
@@ -90,6 +114,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/admin'
     | '/_authenticated/chief'
+    | '/_authenticated/commissions'
     | '/_authenticated/engineer'
     | '/_authenticated/sales'
   fileRoutesById: FileRoutesById
@@ -137,6 +162,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEngineerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/commissions': {
+      id: '/_authenticated/commissions'
+      path: '/commissions'
+      fullPath: '/commissions'
+      preLoaderRoute: typeof AuthenticatedCommissionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/chief': {
       id: '/_authenticated/chief'
       path: '/chief'
@@ -157,6 +189,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedChiefRoute: typeof AuthenticatedChiefRoute
+  AuthenticatedCommissionsRoute: typeof AuthenticatedCommissionsRoute
   AuthenticatedEngineerRoute: typeof AuthenticatedEngineerRoute
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
 }
@@ -164,6 +197,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedChiefRoute: AuthenticatedChiefRoute,
+  AuthenticatedCommissionsRoute: AuthenticatedCommissionsRoute,
   AuthenticatedEngineerRoute: AuthenticatedEngineerRoute,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
 }

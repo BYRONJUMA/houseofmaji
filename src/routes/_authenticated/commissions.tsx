@@ -35,7 +35,7 @@ function CommissionsPage() {
       let q = supabase
         .from("commissions")
         .select("*, fulfillments(client_name, machine_type)")
-        .order("created_at", { ascending: false });
+        .order("computed_at", { ascending: false });
       if (!isAdmin) q = q.eq("user_id", profile!.id);
       const { data, error } = await q;
       if (error) throw error;
@@ -85,9 +85,9 @@ function CommissionsPage() {
                     {r.fulfillments?.machine_type ?? "—"}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    {TYPE_LABEL[r.commission_type] ?? r.commission_type}
+                    {TYPE_LABEL[r.role] ?? r.role}
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">{formatDate(r.created_at)}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{formatDate(r.computed_at)}</td>
                   <td className="px-4 py-3 text-right font-semibold">
                     {formatKES(Number(r.amount))}
                   </td>
