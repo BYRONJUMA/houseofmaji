@@ -67,7 +67,7 @@ function ChiefPage() {
   const [assign, setAssign] = useState<Record<string, { asm?: string; inst?: string }>>({});
 
   const mutate = useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: Record<string, unknown> }) => {
+    mutationFn: async ({ id, patch }: { id: string; patch: TablesUpdate<"fulfillments"> }) => {
       const { error } = await supabase.from("fulfillments").update(patch).eq("id", id);
       if (error) throw error;
     },
