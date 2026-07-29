@@ -19,6 +19,15 @@
  */
 
 @theme inline {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --color-stage-received: var(--stage-received);
+  --color-stage-frame: var(--stage-frame);
+  --color-stage-assembling: var(--stage-assembling);
+  --color-stage-delivery: var(--stage-delivery);
+  --color-stage-installed: var(--stage-installed);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -26,6 +35,7 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
