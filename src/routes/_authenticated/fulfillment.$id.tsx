@@ -61,10 +61,11 @@ function DetailPage() {
         <div className="surface-card p-5 sm:p-6">
           <h2 className="mb-4 text-lg font-semibold">Pipeline</h2>
           <StageProgress
-            currentStage={f.current_stage as Stage}
+            currentStage={f.current_stage}
             events={data!.events}
-            createdAt={f.created_at}
+            names={{}}
           />
+
         </div>
         <div className="surface-card space-y-3 p-5 text-sm">
           <h2 className="text-lg font-semibold">Details</h2>
