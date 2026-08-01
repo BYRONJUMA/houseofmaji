@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { StageProgress } from "@/components/stage-progress";
+import { PaymentsPanel } from "@/components/payments-panel";
 import { formatKES, formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
@@ -23,17 +25,32 @@ function DetailPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["fulfillment", id],
     queryFn: async () => {
-      const [f, events] = await Promise.all([
+      const [f, events, profiles] = await Promise.all([
         supabase.from("fulfillments").select("*").eq("id", id).maybeSingle(),
         supabase
           .from("stage_events")
           .select("*")
           .eq("fulfillment_id", id)
           .order("entered_at", { ascending: true }),
+        supabase.from("profiles").select("id, full_name"),
       ]);
       if (f.error) throw f.error;
       if (events.error) throw events.error;
-      return { fulfillment: f.data, events: events.data };
+      if (profiles.error) throw profiles.error;
+      return { fulfillment: f.data, events: events.data, profiles: profiles.data };
+    },
+  });
+
+  const filePath = data?.fulfillment?.water_analysis_file_url ?? null;
+  const { data: signedUrl } = useQuery({
+    queryKey: ["water-analysis-url", filePath],
+    enabled: !!filePath,
+    queryFn: async () => {
+      const { data: signed, error } = await supabase.storage
+        .from("water-analysis")
+        .createSignedUrl(filePath!, 3600);
+      if (error) throw error;
+      return signed.signedUrl;
     },
   });
 
@@ -54,27 +71,43 @@ function DetailPage() {
     );
   }
 
+  const names = Object.fromEntries((data!.profiles ?? []).map((p) => [p.id, p.full_name]));
+
   return (
     <AppShell title={f.client_name} subtitle={`${f.machine_type} · ${f.location}`}>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <div className="surface-card p-5 sm:p-6">
-          <h2 className="mb-4 text-lg font-semibold">Pipeline</h2>
-          <StageProgress
-            currentStage={f.current_stage}
-            events={data!.events}
-            names={{}}
-          />
-
+        <div className="space-y-6">
+          <StageProgress currentStage={f.current_stage} events={data!.events} names={names} />
+          <PaymentsPanel fulfillmentId={f.id} agreedPrice={f.agreed_price} names={names} />
         </div>
         <div className="surface-card space-y-3 p-5 text-sm">
           <h2 className="text-lg font-semibold">Details</h2>
           <Row label="Agreed price" value={formatKES(f.agreed_price)} />
           <Row label="Delivery date" value={formatDate(f.agreed_delivery_date)} />
           <Row label="Created" value={formatDate(f.created_at)} />
-          {f.water_analysis_notes && (
+          <div>
+            <p className="text-muted-foreground">Water analysis</p>
+            {filePath ? (
+              signedUrl ? (
+                <a
+                  href={signedUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-1 inline-flex items-center gap-1.5 font-medium text-primary underline"
+                >
+                  <FileText className="h-4 w-4" /> View attached file
+                </a>
+              ) : (
+                <p className="mt-1 text-muted-foreground">Preparing link…</p>
+              )
+            ) : (
+              <p className="mt-1">No file attached</p>
+            )}
+          </div>
+          {f.additional_notes && (
             <div>
-              <p className="text-muted-foreground">Water analysis</p>
-              <p className="mt-1">{f.water_analysis_notes}</p>
+              <p className="text-muted-foreground">Additional notes</p>
+              <p className="mt-1 whitespace-pre-wrap">{f.additional_notes}</p>
             </div>
           )}
         </div>

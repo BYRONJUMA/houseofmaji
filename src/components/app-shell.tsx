@@ -10,9 +10,7 @@ function navFor(role?: string) {
   const items: { to: string; label: string }[] = [];
   if (!role) return items;
   items.push({ to: ROLE_HOME[role], label: "Dashboard" });
-  if (role === "chief_engineer" || role === "admin") {
-    items.push({ to: "/commissions", label: "Commissions" });
-  }
+  items.push({ to: "/commissions", label: "Commissions" });
   return items;
 }
 
