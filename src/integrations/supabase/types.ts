@@ -64,6 +64,7 @@ export type Database = {
       }
       fulfillments: {
         Row: {
+          additional_notes: string | null
           agreed_delivery_date: string
           agreed_price: number
           assembly_engineer_id: string | null
@@ -78,9 +79,11 @@ export type Database = {
           machine_type: string
           sales_rep_id: string
           updated_at: string
+          water_analysis_file_url: string | null
           water_analysis_notes: string | null
         }
         Insert: {
+          additional_notes?: string | null
           agreed_delivery_date: string
           agreed_price: number
           assembly_engineer_id?: string | null
@@ -95,9 +98,11 @@ export type Database = {
           machine_type: string
           sales_rep_id: string
           updated_at?: string
+          water_analysis_file_url?: string | null
           water_analysis_notes?: string | null
         }
         Update: {
+          additional_notes?: string | null
           agreed_delivery_date?: string
           agreed_price?: number
           assembly_engineer_id?: string | null
@@ -112,6 +117,7 @@ export type Database = {
           machine_type?: string
           sales_rep_id?: string
           updated_at?: string
+          water_analysis_file_url?: string | null
           water_analysis_notes?: string | null
         }
         Relationships: [
@@ -139,6 +145,51 @@ export type Database = {
           {
             foreignKeyName: "fulfillments_sales_rep_id_fkey"
             columns: ["sales_rep_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          fulfillment_id: string
+          id: string
+          notes: string | null
+          paid_at: string
+          recorded_by: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          fulfillment_id: string
+          id?: string
+          notes?: string | null
+          paid_at?: string
+          recorded_by: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          fulfillment_id?: string
+          id?: string
+          notes?: string | null
+          paid_at?: string
+          recorded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_fulfillment_id_fkey"
+            columns: ["fulfillment_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_recorded_by_fkey"
+            columns: ["recorded_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
