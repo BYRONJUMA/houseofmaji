@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { PackagePlus, ClipboardList } from "lucide-react";
+import { PackagePlus, ClipboardList, Paperclip } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppShell, EmptyState } from "@/components/app-shell";
@@ -25,18 +25,23 @@ export const Route = createFileRoute("/_authenticated/sales")({
   component: SalesPage,
 });
 
+const ALLOWED_TYPES = ["application/pdf", "image/png", "image/jpeg"];
+const EMPTY = {
+  client_name: "",
+  location: "",
+  additional_notes: "",
+  machine_type: "",
+  agreed_price: "",
+  agreed_delivery_date: "",
+};
+
 function SalesPage() {
   const { profile } = useAuth();
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    client_name: "",
-    location: "",
-    water_analysis_notes: "",
-    machine_type: "",
-    agreed_price: "",
-    agreed_delivery_date: "",
-  });
+  const [form, setForm] = useState(EMPTY);
+  const [file, setFile] = useState<File | null>(null);
+  const [fileKey, setFileKey] = useState(0);
 
   const { data: list = [], isLoading } = useQuery({
     queryKey: ["my-fulfillments", profile?.id],
@@ -54,12 +59,26 @@ function SalesPage() {
 
   const create = useMutation({
     mutationFn: async () => {
+      let filePath: string | null = null;
+      if (file) {
+        if (!ALLOWED_TYPES.includes(file.type)) {
+          throw new Error("Water analysis must be a PDF, PNG or JPG file");
+        }
+        const ext = file.name.split(".").pop()?.toLowerCase() ?? "dat";
+        filePath = `${profile!.id}/${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("water-analysis")
+          .upload(filePath, file, { contentType: file.type });
+        if (upErr) throw upErr;
+      }
+
       const { data, error } = await supabase
         .from("fulfillments")
         .insert({
           client_name: form.client_name.trim(),
           location: form.location.trim(),
-          water_analysis_notes: form.water_analysis_notes.trim() || null,
+          water_analysis_file_url: filePath,
+          additional_notes: form.additional_notes.trim() || null,
           machine_type: form.machine_type.trim(),
           agreed_price: Number(form.agreed_price),
           agreed_delivery_date: form.agreed_delivery_date,
@@ -72,14 +91,9 @@ function SalesPage() {
     },
     onSuccess: () => {
       toast.success("Handover submitted");
-      setForm({
-        client_name: "",
-        location: "",
-        water_analysis_notes: "",
-        machine_type: "",
-        agreed_price: "",
-        agreed_delivery_date: "",
-      });
+      setForm(EMPTY);
+      setFile(null);
+      setFileKey((k) => k + 1);
       qc.invalidateQueries({ queryKey: ["my-fulfillments"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -115,12 +129,37 @@ function SalesPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="notes">Water analysis notes</Label>
+            <Label htmlFor="water-file">Water analysis (PDF, PNG or JPG)</Label>
+            <Input
+              key={fileKey}
+              id="water-file"
+              type="file"
+              accept="application/pdf,image/png,image/jpeg,.pdf,.png,.jpg,.jpeg"
+              onChange={(e) => {
+                const f = e.target.files?.[0] ?? null;
+                if (f && !ALLOWED_TYPES.includes(f.type)) {
+                  toast.error("Only PDF, PNG or JPG files are allowed");
+                  setFile(null);
+                  setFileKey((k) => k + 1);
+                  return;
+                }
+                setFile(f);
+              }}
+            />
+            {file && (
+              <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Paperclip className="h-3.5 w-3.5" /> {file.name}
+              </p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="notes">Additional notes</Label>
             <Textarea
               id="notes"
               rows={3}
-              value={form.water_analysis_notes}
-              onChange={(e) => setForm({ ...form, water_analysis_notes: e.target.value })}
+              placeholder="Delivery instructions, special terms agreed with the client…"
+              value={form.additional_notes}
+              onChange={(e) => setForm({ ...form, additional_notes: e.target.value })}
             />
           </div>
           <div className="space-y-2">
@@ -202,7 +241,7 @@ function SalesPage() {
             ))
           )}
           <p className="text-xs text-muted-foreground">
-            Tip: open any handover for the full stage timeline.{" "}
+            Tip: open any handover to record payments and see the full stage timeline.{" "}
             <Link to="/" className="underline">
               Home
             </Link>
