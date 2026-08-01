@@ -27,16 +27,18 @@ const TYPE_LABEL: Record<string, string> = {
 function CommissionsPage() {
   const { profile } = useAuth();
   const isAdmin = profile?.role === "admin";
+  const isChief = profile?.role === "chief_engineer";
+  const seesAll = isAdmin || isChief;
 
   const { data: rows = [], isLoading } = useQuery({
-    queryKey: ["commissions", profile?.id, isAdmin],
+    queryKey: ["commissions", profile?.id, seesAll],
     enabled: !!profile?.id,
     queryFn: async () => {
       let q = supabase
         .from("commissions")
-        .select("*, fulfillments(client_name, machine_type)")
+        .select("*, fulfillments(client_name, machine_type), profiles(full_name, role)")
         .order("computed_at", { ascending: false });
-      if (!isAdmin) q = q.eq("user_id", profile!.id);
+      if (!seesAll) q = q.eq("user_id", profile!.id);
       const { data, error } = await q;
       if (error) throw error;
       return data;
@@ -48,10 +50,18 @@ function CommissionsPage() {
   return (
     <AppShell
       title="Commissions"
-      subtitle={isAdmin ? "All payouts across the team" : "Your earnings"}
+      subtitle={
+        isAdmin
+          ? "All payouts across the team"
+          : isChief
+            ? "All team payouts (read-only)"
+            : "Your earnings"
+      }
     >
       <div className="surface-card mb-6 p-5">
-        <p className="text-sm text-muted-foreground">Total earned</p>
+        <p className="text-sm text-muted-foreground">
+          {seesAll ? "Total commissions" : "Total earned"}
+        </p>
         <p className="text-3xl font-bold tracking-tight">{formatKES(total)}</p>
       </div>
 
@@ -68,6 +78,7 @@ function CommissionsPage() {
           <table className="w-full text-sm">
             <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
+                {seesAll && <th className="px-4 py-3">Team member</th>}
                 <th className="px-4 py-3">Client</th>
                 <th className="px-4 py-3">Machine</th>
                 <th className="px-4 py-3">Type</th>
@@ -78,9 +89,10 @@ function CommissionsPage() {
             <tbody>
               {rows.map((r) => (
                 <tr key={r.id} className="border-b border-border last:border-0">
-                  <td className="px-4 py-3 font-medium">
-                    {r.fulfillments?.client_name ?? "—"}
-                  </td>
+                  {seesAll && (
+                    <td className="px-4 py-3 font-medium">{r.profiles?.full_name ?? "—"}</td>
+                  )}
+                  <td className="px-4 py-3 font-medium">{r.fulfillments?.client_name ?? "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {r.fulfillments?.machine_type ?? "—"}
                   </td>
