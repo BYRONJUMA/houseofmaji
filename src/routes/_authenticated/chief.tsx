@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Hammer, Inbox } from "lucide-react";
+import { Hammer, Inbox, Boxes } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { TablesUpdate } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/use-auth";
@@ -16,7 +16,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatKES, formatDate } from "@/lib/format";
-import { STAGES, STAGE_LABEL, STAGE_DOT, type Stage } from "@/lib/stages";
+import {
+  STAGES,
+  STAGE_LABEL,
+  STAGE_DOT,
+  PAYMENT_GATE,
+  PAYMENT_GATE_MESSAGE,
+  type Stage,
+} from "@/lib/stages";
+import { useAllPayments, paidPercent } from "@/hooks/use-payments";
 
 export const Route = createFileRoute("/_authenticated/chief")({
   head: () => ({
@@ -64,6 +72,7 @@ function ChiefPage() {
   const navigate = useNavigate();
   const { data: fulfillments = [], isLoading } = useFulfillments();
   const { data: profiles = [] } = useProfiles();
+  const { data: payments = [] } = useAllPayments();
   const engineers = profiles.filter((p) => p.role === "engineer");
   const [assign, setAssign] = useState<Record<string, { asm?: string; inst?: string }>>({});
 
@@ -80,6 +89,10 @@ function ChiefPage() {
   });
 
   const names = Object.fromEntries(profiles.map((p) => [p.id, p.full_name]));
+  const paidByFulfillment = payments.reduce<Record<string, number>>((acc, p) => {
+    acc[p.fulfillment_id] = (acc[p.fulfillment_id] ?? 0) + Number(p.amount);
+    return acc;
+  }, {});
 
   return (
     <AppShell title="Chief Engineer" subtitle="All fulfillments across the pipeline">
@@ -92,7 +105,7 @@ function ChiefPage() {
           message="Once a sales rep submits a handover it will land in the Received column."
         />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {STAGES.map((stage) => {
             const items = fulfillments.filter((f) => f.current_stage === stage);
             return (
@@ -114,6 +127,16 @@ function ChiefPage() {
                 ) : (
                   items.map((f) => {
                     const a = assign[f.id] ?? {};
+                    const pct = paidPercent(paidByFulfillment[f.id] ?? 0, f.agreed_price);
+                    const nextStage: Stage | null =
+                      stage === "received"
+                        ? "waiting_for_frame"
+                        : stage === "waiting_for_frame"
+                          ? "material_procurement"
+                          : null;
+                    const gate = nextStage ? (PAYMENT_GATE[nextStage] ?? 0) : 0;
+                    const blocked = nextStage !== null && pct < gate;
+
                     return (
                       <article key={f.id} className="surface-card space-y-3 p-4">
                         <button
@@ -138,11 +161,32 @@ function ChiefPage() {
                           )}
                         </div>
 
+                        <div>
+                          <div className="flex items-center justify-between text-xs font-semibold">
+                            <span>{pct.toFixed(0)}% paid</span>
+                            <span className="text-muted-foreground">
+                              {formatKES(paidByFulfillment[f.id] ?? 0)}
+                            </span>
+                          </div>
+                          <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-secondary">
+                            <div
+                              className={`h-full rounded-full transition-all ${blocked ? "bg-destructive" : "bg-primary"}`}
+                              style={{ width: `${Math.min(100, Math.max(0, pct))}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        {blocked && nextStage && (
+                          <p className="rounded-lg bg-destructive/10 px-2.5 py-2 text-xs font-medium text-destructive">
+                            {PAYMENT_GATE_MESSAGE[nextStage]}
+                          </p>
+                        )}
+
                         {stage === "received" && (
                           <Button
                             size="sm"
                             className="w-full"
-                            disabled={mutate.isPending}
+                            disabled={mutate.isPending || blocked}
                             onClick={() =>
                               mutate.mutate({
                                 id: f.id,
@@ -159,6 +203,25 @@ function ChiefPage() {
                         )}
 
                         {stage === "waiting_for_frame" && (
+                          <Button
+                            size="sm"
+                            className="w-full"
+                            disabled={mutate.isPending || blocked}
+                            onClick={() =>
+                              mutate.mutate({
+                                id: f.id,
+                                patch: {
+                                  current_stage: "material_procurement",
+                                  chief_engineer_id: f.chief_engineer_id ?? profile!.id,
+                                },
+                              })
+                            }
+                          >
+                            <Boxes className="h-4 w-4" /> Start Material Procurement
+                          </Button>
+                        )}
+
+                        {stage === "material_procurement" && (
                           <div className="space-y-2">
                             <Select
                               value={a.asm ?? ""}
