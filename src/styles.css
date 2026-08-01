@@ -23,6 +23,7 @@
   --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
   --color-stage-received: var(--stage-received);
   --color-stage-frame: var(--stage-frame);
+  --color-stage-procurement: var(--stage-procurement);
   --color-stage-assembling: var(--stage-assembling);
   --color-stage-delivery: var(--stage-delivery);
   --color-stage-installed: var(--stage-installed);
@@ -96,6 +97,7 @@
   --warning: oklch(0.75 0.15 75);
   --stage-received: oklch(0.62 0.14 245);
   --stage-frame: oklch(0.72 0.16 65);
+  --stage-procurement: oklch(0.68 0.17 30);
   --stage-assembling: oklch(0.6 0.19 300);
   --stage-delivery: oklch(0.66 0.15 195);
   --stage-installed: oklch(0.6 0.16 152);
