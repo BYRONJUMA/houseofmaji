@@ -1,12 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Users, Boxes, Coins, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { formatKES, formatDate, formatDuration } from "@/lib/format";
-import { STAGES, STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
+import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
+import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  validateSearch: stageSearchSchema,
   head: () => ({
     meta: [
       { title: "Admin Panel — House of Maji Machines" },
@@ -26,6 +28,8 @@ const ROLE_LABEL: Record<string, string> = {
 };
 
 function AdminPage() {
+  const { stage } = Route.useSearch();
+  const navigate = useNavigate();
   const { data: fulfillments = [] } = useQuery({
     queryKey: ["fulfillments"],
     queryFn: async () => {
@@ -95,21 +99,9 @@ function AdminPage() {
         ))}
       </div>
 
-      <section className="mt-8 space-y-3">
-        <h2 className="text-lg font-semibold">Pipeline by stage</h2>
-        <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-5">
-          {STAGES.map((stage) => (
-            <div key={stage} className={`rounded-xl border p-4 ${STAGE_SOFT[stage]}`}>
-              <p className="text-2xl font-bold">
-                {fulfillments.filter((f) => f.current_stage === stage).length}
-              </p>
-              <p className="text-xs font-semibold uppercase tracking-wide">
-                {STAGE_LABEL[stage]}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <div className="mt-8">
+        <StageTiles items={fulfillments} homePath="/admin" activeStage={stage} />
+      </div>
 
       <section className="mt-8 space-y-3">
         <h2 className="text-lg font-semibold">Team</h2>
@@ -146,7 +138,9 @@ function AdminPage() {
       </section>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-lg font-semibold">All fulfillments</h2>
+        <h2 className="text-lg font-semibold">
+          {stage ? `Fulfillments — ${STAGE_LABEL[stage]}` : "All fulfillments"}
+        </h2>
         <div className="surface-card overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -159,25 +153,31 @@ function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {fulfillments.map((f) => (
-                <tr key={f.id} className="border-b border-border last:border-0">
-                  <td className="px-4 py-3 font-medium">{f.client_name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{f.machine_type}</td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {names[f.sales_rep_id] ?? "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${STAGE_SOFT[f.current_stage as Stage]}`}
-                    >
-                      {STAGE_LABEL[f.current_stage as Stage]}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right font-semibold">
-                    {formatKES(f.agreed_price)}
-                  </td>
-                </tr>
-              ))}
+              {(stage ? fulfillments.filter((f) => f.current_stage === stage) : fulfillments).map(
+                (f) => (
+                  <tr
+                    key={f.id}
+                    onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
+                    className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
+                  >
+                    <td className="px-4 py-3 font-medium">{f.client_name}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{f.machine_type}</td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {names[f.sales_rep_id] ?? "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${STAGE_SOFT[f.current_stage as Stage]}`}
+                      >
+                        {STAGE_LABEL[f.current_stage as Stage]}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right font-semibold">
+                      {formatKES(f.agreed_price)}
+                    </td>
+                  </tr>
+                ),
+              )}
             </tbody>
           </table>
         </div>

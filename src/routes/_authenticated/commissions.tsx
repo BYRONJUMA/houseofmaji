@@ -150,9 +150,7 @@ function CommissionsPage() {
                   <td className="px-4 py-3 text-muted-foreground">
                     {COMMISSION_TYPE_LABEL[r.role] ?? r.role}
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {r.paid ? "Paid" : "Unpaid"}
-                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">{r.paid ? "Paid" : "Unpaid"}</td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {formatDate(r.paid_at ?? r.computed_at)}
                   </td>

@@ -37,7 +37,9 @@ export function StageTiles({
             to={homePath as "/chief"}
             search={{ stage: activeStage === stage ? undefined : stage }}
             className={`rounded-xl border p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-lg ${STAGE_SOFT[stage]} ${
-              activeStage === stage ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
+              activeStage === stage
+                ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                : ""
             }`}
           >
             <p className="text-2xl font-bold">
@@ -54,6 +56,7 @@ export function StageTiles({
 export function stageSearchSchema(search: Record<string, unknown>): { stage?: Stage } {
   const stage = search.stage;
   return {
-    stage: typeof stage === "string" && STAGES.includes(stage as Stage) ? (stage as Stage) : undefined,
+    stage:
+      typeof stage === "string" && STAGES.includes(stage as Stage) ? (stage as Stage) : undefined,
   };
 }

@@ -16,11 +16,7 @@ const HEADERS = [
   "Date",
 ];
 
-export function exportCommissions(
-  rows: CommissionRow[],
-  fallbackName: string,
-  scope?: string,
-) {
+export function exportCommissions(rows: CommissionRow[], fallbackName: string, scope?: string) {
   const csv = toCsv(
     HEADERS,
     rows.map((r) => [
@@ -107,9 +103,7 @@ export function MyCommissionsCard({
                   <td className="py-2 pr-4 text-muted-foreground">
                     {COMMISSION_TYPE_LABEL[r.role] ?? r.role}
                   </td>
-                  <td className="py-2 pr-4 text-muted-foreground">
-                    {r.paid ? "Paid" : "Unpaid"}
-                  </td>
+                  <td className="py-2 pr-4 text-muted-foreground">{r.paid ? "Paid" : "Unpaid"}</td>
                   <td className="py-2 pr-4 text-muted-foreground">
                     {formatDate(r.paid_at ?? r.computed_at)}
                   </td>

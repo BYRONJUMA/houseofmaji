@@ -155,11 +155,7 @@ function EngineerPage() {
         </div>
       )}
 
-      <MyCommissionsCard
-        rows={commissions}
-        fallbackName={profile?.full_name ?? ""}
-        scope="mine"
-      />
+      <MyCommissionsCard rows={commissions} fallbackName={profile?.full_name ?? ""} scope="mine" />
     </AppShell>
   );
 }
