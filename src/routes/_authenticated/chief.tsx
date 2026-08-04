@@ -25,8 +25,10 @@ import {
   type Stage,
 } from "@/lib/stages";
 import { useAllPayments, paidPercent } from "@/hooks/use-payments";
+import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 
 export const Route = createFileRoute("/_authenticated/chief")({
+  validateSearch: stageSearchSchema,
   head: () => ({
     meta: [
       { title: "Chief Engineer — House of Maji Machines" },
@@ -68,6 +70,7 @@ export function useProfiles() {
 
 function ChiefPage() {
   const { profile } = useAuth();
+  const { stage: stageFilter } = Route.useSearch();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const { data: fulfillments = [], isLoading } = useFulfillments();
@@ -96,6 +99,10 @@ function ChiefPage() {
 
   return (
     <AppShell title="Chief Engineer" subtitle="All fulfillments across the pipeline">
+      <div className="mb-8">
+        <StageTiles items={fulfillments} homePath="/chief" activeStage={stageFilter} />
+      </div>
+
       {isLoading ? (
         <div className="surface-card p-6 text-sm text-muted-foreground">Loading pipeline…</div>
       ) : fulfillments.length === 0 ? (
@@ -106,7 +113,7 @@ function ChiefPage() {
         />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {STAGES.map((stage) => {
+          {STAGES.filter((s) => !stageFilter || s === stageFilter).map((stage) => {
             const items = fulfillments.filter((f) => f.current_stage === stage);
             return (
               <section key={stage} className="flex flex-col gap-3">
@@ -138,16 +145,25 @@ function ChiefPage() {
                     const blocked = nextStage !== null && pct < gate;
 
                     return (
-                      <article key={f.id} className="surface-card space-y-3 p-4">
-                        <button
-                          className="text-left"
-                          onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
-                        >
+                      <article
+                        key={f.id}
+                        role="link"
+                        tabIndex={0}
+                        onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            navigate({ to: "/fulfillment/$id", params: { id: f.id } });
+                          }
+                        }}
+                        className="surface-card cursor-pointer space-y-3 p-4 transition-all hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      >
+                        <div>
                           <p className="font-semibold leading-tight">{f.client_name}</p>
                           <p className="text-xs text-muted-foreground">
                             {f.machine_type} · {f.location}
                           </p>
-                        </button>
+                        </div>
                         <div className="text-xs text-muted-foreground">
                           <p className="font-semibold text-foreground">
                             {formatKES(f.agreed_price)}
@@ -187,7 +203,8 @@ function ChiefPage() {
                             size="sm"
                             className="w-full"
                             disabled={mutate.isPending || blocked}
-                            onClick={() =>
+                            onClick={(e) => {
+                              e.stopPropagation();
                               mutate.mutate({
                                 id: f.id,
                                 patch: {
@@ -195,8 +212,8 @@ function ChiefPage() {
                                   chief_engineer_id: profile!.id,
                                   frame_ordered_at: new Date().toISOString(),
                                 },
-                              })
-                            }
+                              });
+                            }}
                           >
                             Order Frame
                           </Button>
@@ -207,22 +224,27 @@ function ChiefPage() {
                             size="sm"
                             className="w-full"
                             disabled={mutate.isPending || blocked}
-                            onClick={() =>
+                            onClick={(e) => {
+                              e.stopPropagation();
                               mutate.mutate({
                                 id: f.id,
                                 patch: {
                                   current_stage: "material_procurement",
                                   chief_engineer_id: f.chief_engineer_id ?? profile!.id,
                                 },
-                              })
-                            }
+                              });
+                            }}
                           >
                             <Boxes className="h-4 w-4" /> Start Material Procurement
                           </Button>
                         )}
 
                         {stage === "material_procurement" && (
-                          <div className="space-y-2">
+                          <div
+                            className="space-y-2"
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          >
                             <Select
                               value={a.asm ?? ""}
                               onValueChange={(v) =>
@@ -265,7 +287,8 @@ function ChiefPage() {
                               size="sm"
                               className="w-full"
                               disabled={!a.asm || mutate.isPending}
-                              onClick={() =>
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 mutate.mutate({
                                   id: f.id,
                                   patch: {
@@ -274,8 +297,8 @@ function ChiefPage() {
                                     installation_engineer_id: a.inst || null,
                                     chief_engineer_id: f.chief_engineer_id ?? profile!.id,
                                   },
-                                })
-                              }
+                                });
+                              }}
                             >
                               <Hammer className="h-4 w-4" /> Start assembly
                             </Button>

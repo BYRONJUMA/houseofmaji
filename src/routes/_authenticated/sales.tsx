@@ -12,8 +12,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formatKES, formatDate } from "@/lib/format";
 import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
+import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
+import { useCommissions } from "@/hooks/use-commissions";
+import { MyCommissionsCard } from "@/components/commission-report";
 
 export const Route = createFileRoute("/_authenticated/sales")({
+  validateSearch: stageSearchSchema,
   head: () => ({
     meta: [
       { title: "Sales Handover — House of Maji Machines" },
@@ -37,6 +41,7 @@ const EMPTY = {
 
 function SalesPage() {
   const { profile } = useAuth();
+  const { stage } = Route.useSearch();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [form, setForm] = useState(EMPTY);
@@ -56,6 +61,9 @@ function SalesPage() {
       return data;
     },
   });
+
+  const { data: commissions = [] } = useCommissions({ userId: profile?.id });
+  const visible = stage ? list.filter((f) => f.current_stage === stage) : list;
 
   const create = useMutation({
     mutationFn: async () => {
@@ -101,6 +109,9 @@ function SalesPage() {
 
   return (
     <AppShell title="Sales Handover" subtitle="Submit a new machine sale to the workshop">
+      <div className="mb-8">
+        <StageTiles items={list} homePath="/sales" activeStage={stage} />
+      </div>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <form
           className="surface-card space-y-4 p-5 sm:p-6"
@@ -205,18 +216,22 @@ function SalesPage() {
           <h2 className="text-lg font-semibold">My handovers</h2>
           {isLoading ? (
             <div className="surface-card p-6 text-sm text-muted-foreground">Loading…</div>
-          ) : list.length === 0 ? (
+          ) : visible.length === 0 ? (
             <EmptyState
               icon={ClipboardList}
-              title="No handovers yet"
-              message="Submit your first sale using the form and it will appear here with live progress."
+              title={stage ? `No handovers in ${STAGE_LABEL[stage]}` : "No handovers yet"}
+              message={
+                stage
+                  ? "Pick another stage tile or clear the filter to see all of your handovers."
+                  : "Submit your first sale using the form and it will appear here with live progress."
+              }
             />
           ) : (
-            list.map((f) => (
+            visible.map((f) => (
               <button
                 key={f.id}
                 onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
-                className="surface-card w-full p-5 text-left transition-shadow hover:shadow-lg"
+                className="surface-card w-full cursor-pointer p-5 text-left transition-all hover:border-primary/40 hover:shadow-lg"
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
@@ -248,6 +263,8 @@ function SalesPage() {
           </p>
         </section>
       </div>
+
+      <MyCommissionsCard rows={commissions} fallbackName={profile?.full_name ?? ""} scope="mine" />
     </AppShell>
   );
 }
