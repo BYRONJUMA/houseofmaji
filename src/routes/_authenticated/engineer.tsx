@@ -9,8 +9,12 @@ import { AppShell, EmptyState } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { formatKES, formatDate } from "@/lib/format";
 import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
+import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
+import { useCommissions } from "@/hooks/use-commissions";
+import { MyCommissionsCard } from "@/components/commission-report";
 
 export const Route = createFileRoute("/_authenticated/engineer")({
+  validateSearch: stageSearchSchema,
   head: () => ({
     meta: [
       { title: "My Jobs — House of Maji Machines" },
@@ -24,6 +28,7 @@ export const Route = createFileRoute("/_authenticated/engineer")({
 
 function EngineerPage() {
   const { profile } = useAuth();
+  const { stage } = Route.useSearch();
   const qc = useQueryClient();
   const navigate = useNavigate();
 
@@ -41,6 +46,10 @@ function EngineerPage() {
     },
   });
 
+  const { data: commissions = [] } = useCommissions({ userId: profile?.id });
+
+  const visible = stage ? jobs.filter((f) => f.current_stage === stage) : jobs;
+
   const mutate = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: TablesUpdate<"fulfillments"> }) => {
       const { error } = await supabase.from("fulfillments").update(patch).eq("id", id);
@@ -55,33 +64,50 @@ function EngineerPage() {
 
   return (
     <AppShell title="My Jobs" subtitle="Machines assigned to you">
+      <div className="mb-8">
+        <StageTiles items={jobs} homePath="/engineer" activeStage={stage} />
+      </div>
+
       {isLoading ? (
         <div className="surface-card p-6 text-sm text-muted-foreground">Loading jobs…</div>
-      ) : jobs.length === 0 ? (
+      ) : visible.length === 0 ? (
         <EmptyState
           icon={Wrench}
-          title="No jobs assigned"
-          message="When the chief engineer assigns you a machine for assembly or installation, it shows up here."
+          title={stage ? `No jobs in ${STAGE_LABEL[stage]}` : "No jobs assigned"}
+          message={
+            stage
+              ? "Pick another stage tile or clear the filter to see all of your jobs."
+              : "When the chief engineer assigns you a machine for assembly or installation, it shows up here."
+          }
         />
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {jobs.map((f) => {
+          {visible.map((f) => {
             const installer = f.installation_engineer_id ?? f.assembly_engineer_id;
             const canAssemble =
               f.current_stage === "assembling" && f.assembly_engineer_id === profile?.id;
             const canInstall = f.current_stage === "delivery" && installer === profile?.id;
             return (
-              <article key={f.id} className="surface-card space-y-4 p-5">
+              <article
+                key={f.id}
+                role="link"
+                tabIndex={0}
+                onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate({ to: "/fulfillment/$id", params: { id: f.id } });
+                  }
+                }}
+                className="surface-card cursor-pointer space-y-4 p-5 transition-all hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
                 <div className="flex flex-wrap items-start justify-between gap-2">
-                  <button
-                    className="text-left"
-                    onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
-                  >
+                  <div>
                     <p className="text-base font-semibold">{f.client_name}</p>
                     <p className="text-sm text-muted-foreground">
                       {f.machine_type} · {f.location}
                     </p>
-                  </button>
+                  </div>
                   <span
                     className={`rounded-full border px-3 py-1 text-xs font-semibold ${STAGE_SOFT[f.current_stage as Stage]}`}
                   >
@@ -94,18 +120,19 @@ function EngineerPage() {
                     Due {formatDate(f.agreed_delivery_date)}
                   </span>
                 </div>
-                {f.water_analysis_notes && (
+                {f.additional_notes && (
                   <p className="rounded-lg bg-secondary p-3 text-sm text-muted-foreground">
-                    {f.water_analysis_notes}
+                    {f.additional_notes}
                   </p>
                 )}
                 {canAssemble && (
                   <Button
                     className="w-full"
                     disabled={mutate.isPending}
-                    onClick={() =>
-                      mutate.mutate({ id: f.id, patch: { current_stage: "delivery" } })
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      mutate.mutate({ id: f.id, patch: { current_stage: "delivery" } });
+                    }}
                   >
                     <Truck className="h-4 w-4" /> Mark Assembly Complete
                   </Button>
@@ -114,9 +141,10 @@ function EngineerPage() {
                   <Button
                     className="w-full"
                     disabled={mutate.isPending}
-                    onClick={() =>
-                      mutate.mutate({ id: f.id, patch: { current_stage: "installed" } })
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      mutate.mutate({ id: f.id, patch: { current_stage: "installed" } });
+                    }}
                   >
                     <CheckCircle2 className="h-4 w-4" /> Mark Installed
                   </Button>
@@ -126,6 +154,12 @@ function EngineerPage() {
           })}
         </div>
       )}
+
+      <MyCommissionsCard
+        rows={commissions}
+        fallbackName={profile?.full_name ?? ""}
+        scope="mine"
+      />
     </AppShell>
   );
 }
