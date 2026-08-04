@@ -51,7 +51,7 @@ export function StageTiles({
   );
 }
 
-export function stageSearchSchema(search: Record<string, unknown>) {
+export function stageSearchSchema(search: Record<string, unknown>): { stage?: Stage } {
   const stage = search.stage;
   return {
     stage: typeof stage === "string" && STAGES.includes(stage as Stage) ? (stage as Stage) : undefined,
