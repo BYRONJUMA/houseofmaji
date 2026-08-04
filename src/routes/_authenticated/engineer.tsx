@@ -28,7 +28,7 @@ export const Route = createFileRoute("/_authenticated/engineer")({
 
 function EngineerPage() {
   const { profile } = useAuth();
-  const { stage } = Route.useSearch();
+  const { stage } = Route.useSearch() as { stage?: Stage };
   const qc = useQueryClient();
   const navigate = useNavigate();
 

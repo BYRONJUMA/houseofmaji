@@ -70,7 +70,7 @@ export function useProfiles() {
 
 function ChiefPage() {
   const { profile } = useAuth();
-  const { stage: stageFilter } = Route.useSearch();
+  const { stage: stageFilter } = Route.useSearch() as { stage?: Stage };
   const qc = useQueryClient();
   const navigate = useNavigate();
   const { data: fulfillments = [], isLoading } = useFulfillments();

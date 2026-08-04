@@ -41,7 +41,7 @@ const EMPTY = {
 
 function SalesPage() {
   const { profile } = useAuth();
-  const { stage } = Route.useSearch();
+  const { stage } = Route.useSearch() as { stage?: Stage };
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [form, setForm] = useState(EMPTY);
