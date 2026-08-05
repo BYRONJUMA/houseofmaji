@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Hammer, Inbox, Boxes } from "lucide-react";
+import { Hammer, Inbox, Boxes, UserCog } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { TablesUpdate } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/use-auth";
@@ -292,7 +292,7 @@ function ChiefPage() {
                                 mutate.mutate({
                                   id: f.id,
                                   patch: {
-                                    current_stage: "assembling",
+                                    current_stage: "assigned",
                                     assembly_engineer_id: a.asm,
                                     installation_engineer_id: a.inst || null,
                                     chief_engineer_id: f.chief_engineer_id ?? profile!.id,
@@ -300,7 +300,83 @@ function ChiefPage() {
                                 });
                               }}
                             >
-                              <Hammer className="h-4 w-4" /> Start assembly
+                              <Hammer className="h-4 w-4" /> Assign Engineer
+                            </Button>
+                          </div>
+                        )}
+
+                        {(stage === "assigned" ||
+                          stage === "assembling" ||
+                          stage === "delivery") && (
+                          <div
+                            className="space-y-2 border-t border-border pt-3"
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          >
+                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                              Reassign engineer
+                            </p>
+                            <Select
+                              value={a.asm ?? ""}
+                              onValueChange={(v) =>
+                                setAssign({ ...assign, [f.id]: { ...a, asm: v } })
+                              }
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="New assembly engineer" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {engineers.map((e) => (
+                                  <SelectItem key={e.id} value={e.id}>
+                                    {e.full_name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Select
+                              value={a.inst ?? ""}
+                              onValueChange={(v) =>
+                                setAssign({
+                                  ...assign,
+                                  [f.id]: { ...a, inst: v === "same" ? "" : v },
+                                })
+                              }
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="New installation engineer (optional)" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="same">Same engineer installs</SelectItem>
+                                {engineers.map((e) => (
+                                  <SelectItem key={e.id} value={e.id}>
+                                    {e.full_name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="w-full"
+                              disabled={
+                                mutate.isPending ||
+                                ((!a.asm || a.asm === f.assembly_engineer_id) &&
+                                  (a.inst ?? "") === (f.installation_engineer_id ?? ""))
+                              }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                mutate.mutate({
+                                  id: f.id,
+                                  patch: {
+                                    assembly_engineer_id: a.asm || f.assembly_engineer_id,
+                                    installation_engineer_id:
+                                      a.inst || f.installation_engineer_id || null,
+                                  },
+                                });
+                                setAssign({ ...assign, [f.id]: {} });
+                              }}
+                            >
+                              <UserCog className="h-4 w-4" /> Reassign Engineer
                             </Button>
                           </div>
                         )}
