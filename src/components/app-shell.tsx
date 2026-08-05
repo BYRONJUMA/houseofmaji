@@ -5,6 +5,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { ROLE_LABEL, ROLE_HOME } from "@/lib/stages";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
+import { NotificationBell } from "@/components/notification-bell";
+
 
 function navFor(role?: string) {
   const items: { to: string; label: string }[] = [];
@@ -65,6 +67,7 @@ export function AppShell({
           </nav>
 
           <div className="ml-auto hidden items-center gap-3 md:flex">
+            <NotificationBell />
             <div className="text-right leading-tight">
               <p className="text-sm font-semibold">{profile?.full_name || "—"}</p>
               <p className="text-xs text-muted-foreground">
@@ -76,15 +79,18 @@ export function AppShell({
             </Button>
           </div>
 
-          <Button
-            variant="outline"
-            size="icon"
-            className="ml-auto md:hidden"
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Menu"
-          >
-            <Menu className="h-4 w-4" />
-          </Button>
+          <div className="ml-auto flex items-center gap-2 md:hidden">
+            <NotificationBell />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setOpen((v) => !v)}
+              aria-label="Menu"
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
+          </div>
+
         </div>
 
         {open && (

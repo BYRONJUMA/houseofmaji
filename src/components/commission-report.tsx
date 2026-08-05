@@ -1,6 +1,13 @@
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { commissionsFilename, downloadCsv, toCsv } from "@/lib/csv";
+import { downloadPdf, downloadXlsx } from "@/lib/export-report";
 import { COMMISSION_TYPE_LABEL, type CommissionRow } from "@/hooks/use-commissions";
 import { ROLE_LABEL } from "@/lib/stages";
 import { formatDate, formatKES } from "@/lib/format";
@@ -16,23 +23,24 @@ const HEADERS = [
   "Date",
 ];
 
-export function exportCommissions(rows: CommissionRow[], fallbackName: string, scope?: string) {
-  const csv = toCsv(
-    HEADERS,
-    rows.map((r) => [
-      r.profiles?.full_name ?? fallbackName,
-      ROLE_LABEL[r.profiles?.role ?? ""] ?? r.profiles?.role ?? "",
-      COMMISSION_TYPE_LABEL[r.role] ?? r.role,
-      Number(r.amount),
-      r.fulfillments?.client_name ?? "",
-      r.fulfillments?.machine_type ?? "",
-      r.paid ? "Paid" : "Unpaid",
-      (r.paid_at ?? r.computed_at)?.slice(0, 10) ?? "",
-    ]),
-  );
-  downloadCsv(commissionsFilename(scope), csv);
+function toMatrix(rows: CommissionRow[], fallbackName: string): (string | number)[][] {
+  return rows.map((r) => [
+    r.profiles?.full_name ?? fallbackName,
+    ROLE_LABEL[r.profiles?.role ?? ""] ?? r.profiles?.role ?? "",
+    COMMISSION_TYPE_LABEL[r.role] ?? r.role,
+    Number(r.amount),
+    r.fulfillments?.client_name ?? "",
+    r.fulfillments?.machine_type ?? "",
+    r.paid ? "Paid" : "Unpaid",
+    (r.paid_at ?? r.computed_at)?.slice(0, 10) ?? "",
+  ]);
 }
 
+export function exportCommissions(rows: CommissionRow[], fallbackName: string, scope?: string) {
+  downloadCsv(commissionsFilename(scope), toCsv(HEADERS, toMatrix(rows, fallbackName)));
+}
+
+/** CSV / PDF / Excel export menu for the currently visible commission rows. */
 export function DownloadReportButton({
   rows,
   fallbackName,
@@ -44,16 +52,26 @@ export function DownloadReportButton({
   scope?: string;
   size?: "sm" | "default";
 }) {
+  const matrix = () => toMatrix(rows, fallbackName);
   return (
-    <Button
-      type="button"
-      variant="outline"
-      size={size}
-      disabled={rows.length === 0}
-      onClick={() => exportCommissions(rows, fallbackName, scope)}
-    >
-      <Download className="h-4 w-4" /> Download Report
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button type="button" variant="outline" size={size} disabled={rows.length === 0}>
+          <Download className="h-4 w-4" /> Download Report
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => exportCommissions(rows, fallbackName, scope)}>
+          Download CSV
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => void downloadPdf(HEADERS, matrix(), scope)}>
+          Download PDF
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => void downloadXlsx(HEADERS, matrix(), scope)}>
+          Download Excel
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
