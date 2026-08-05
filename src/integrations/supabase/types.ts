@@ -69,6 +69,7 @@ export type Database = {
           agreed_price: number
           assembly_engineer_id: string | null
           chief_engineer_id: string | null
+          client_contact: string | null
           client_name: string
           created_at: string
           current_stage: string
@@ -88,6 +89,7 @@ export type Database = {
           agreed_price: number
           assembly_engineer_id?: string | null
           chief_engineer_id?: string | null
+          client_contact?: string | null
           client_name: string
           created_at?: string
           current_stage?: string
@@ -107,6 +109,7 @@ export type Database = {
           agreed_price?: number
           assembly_engineer_id?: string | null
           chief_engineer_id?: string | null
+          client_contact?: string | null
           client_name?: string
           created_at?: string
           current_stage?: string
@@ -145,6 +148,48 @@ export type Database = {
           {
             foreignKeyName: "fulfillments_sales_rep_id_fkey"
             columns: ["sales_rep_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          fulfillment_id: string | null
+          id: string
+          message: string
+          read: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fulfillment_id?: string | null
+          id?: string
+          message: string
+          read?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fulfillment_id?: string | null
+          id?: string
+          message?: string
+          read?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_fulfillment_id_fkey"
+            columns: ["fulfillment_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]

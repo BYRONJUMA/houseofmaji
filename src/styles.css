@@ -24,6 +24,7 @@
   --color-stage-received: var(--stage-received);
   --color-stage-frame: var(--stage-frame);
   --color-stage-procurement: var(--stage-procurement);
+  --color-stage-assigned: var(--stage-assigned);
   --color-stage-assembling: var(--stage-assembling);
   --color-stage-delivery: var(--stage-delivery);
   --color-stage-installed: var(--stage-installed);
@@ -98,6 +99,7 @@
   --stage-received: oklch(0.62 0.14 245);
   --stage-frame: oklch(0.72 0.16 65);
   --stage-procurement: oklch(0.68 0.17 30);
+  --stage-assigned: oklch(0.64 0.15 340);
   --stage-assembling: oklch(0.6 0.19 300);
   --stage-delivery: oklch(0.66 0.15 195);
   --stage-installed: oklch(0.6 0.16 152);
