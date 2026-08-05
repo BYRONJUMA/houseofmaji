@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { PackagePlus, ClipboardList, Paperclip } from "lucide-react";
+import { PackagePlus, ClipboardList, Paperclip, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppShell, EmptyState } from "@/components/app-shell";
@@ -32,6 +32,7 @@ export const Route = createFileRoute("/_authenticated/sales")({
 const ALLOWED_TYPES = ["application/pdf", "image/png", "image/jpeg"];
 const EMPTY = {
   client_name: "",
+  client_contact: "",
   location: "",
   additional_notes: "",
   machine_type: "",
@@ -84,6 +85,7 @@ function SalesPage() {
         .from("fulfillments")
         .insert({
           client_name: form.client_name.trim(),
+          client_contact: form.client_contact.trim(),
           location: form.location.trim(),
           water_analysis_file_url: filePath,
           additional_notes: form.additional_notes.trim() || null,
@@ -127,6 +129,16 @@ function SalesPage() {
               id="client"
               value={form.client_name}
               onChange={(e) => setForm({ ...form, client_name: e.target.value })}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="contact">Client contact (phone or email)</Label>
+            <Input
+              id="contact"
+              value={form.client_contact}
+              onChange={(e) => setForm({ ...form, client_contact: e.target.value })}
+              placeholder="+254 7… or client@example.com"
               required
             />
           </div>
@@ -228,10 +240,18 @@ function SalesPage() {
             />
           ) : (
             visible.map((f) => (
-              <button
+              <article
                 key={f.id}
+                role="link"
+                tabIndex={0}
                 onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
-                className="surface-card w-full cursor-pointer p-5 text-left transition-all hover:border-primary/40 hover:shadow-lg"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate({ to: "/fulfillment/$id", params: { id: f.id } });
+                  }
+                }}
+                className="surface-card w-full cursor-pointer p-5 text-left transition-all hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
@@ -252,7 +272,19 @@ function SalesPage() {
                     Due {formatDate(f.agreed_delivery_date)}
                   </span>
                 </div>
-              </button>
+                {f.current_stage === "delivery" && (
+                  <Button
+                    className="mt-4 w-full"
+                    disabled={markDelivered.isPending}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      markDelivered.mutate(f.id);
+                    }}
+                  >
+                    <CheckCircle2 className="h-4 w-4" /> Mark Delivered
+                  </Button>
+                )}
+              </article>
             ))
           )}
           <p className="text-xs text-muted-foreground">
