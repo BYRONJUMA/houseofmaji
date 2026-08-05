@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Wrench, CheckCircle2, Truck } from "lucide-react";
+import { Wrench, PackageCheck, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { TablesUpdate } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/use-auth";
@@ -83,10 +83,10 @@ function EngineerPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {visible.map((f) => {
-            const installer = f.installation_engineer_id ?? f.assembly_engineer_id;
+            const canReceive =
+              f.current_stage === "assigned" && f.assembly_engineer_id === profile?.id;
             const canAssemble =
               f.current_stage === "assembling" && f.assembly_engineer_id === profile?.id;
-            const canInstall = f.current_stage === "delivery" && installer === profile?.id;
             return (
               <article
                 key={f.id}
@@ -125,6 +125,18 @@ function EngineerPage() {
                     {f.additional_notes}
                   </p>
                 )}
+                {canReceive && (
+                  <Button
+                    className="w-full"
+                    disabled={mutate.isPending}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      mutate.mutate({ id: f.id, patch: { current_stage: "assembling" } });
+                    }}
+                  >
+                    <PackageCheck className="h-4 w-4" /> Mark Machine Received
+                  </Button>
+                )}
                 {canAssemble && (
                   <Button
                     className="w-full"
@@ -137,17 +149,10 @@ function EngineerPage() {
                     <Truck className="h-4 w-4" /> Mark Assembly Complete
                   </Button>
                 )}
-                {canInstall && (
-                  <Button
-                    className="w-full"
-                    disabled={mutate.isPending}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      mutate.mutate({ id: f.id, patch: { current_stage: "installed" } });
-                    }}
-                  >
-                    <CheckCircle2 className="h-4 w-4" /> Mark Installed
-                  </Button>
+                {f.current_stage === "delivery" && (
+                  <p className="rounded-lg bg-secondary px-3 py-2 text-xs text-muted-foreground">
+                    Waiting for the sales rep to mark this delivered.
+                  </p>
                 )}
               </article>
             );
