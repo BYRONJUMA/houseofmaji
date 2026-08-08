@@ -5,7 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { StageProgress } from "@/components/stage-progress";
 import { PaymentsPanel } from "@/components/payments-panel";
+import { DeliveryChecklistPanel } from "@/components/delivery-checklist-panel";
+import { MachineHistory } from "@/components/machine-history";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePayments } from "@/hooks/use-payments";
+import { useDeliveryChecklist } from "@/hooks/use-delivery-checklist";
 import { formatKES, formatDate } from "@/lib/format";
+
 
 export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
   head: () => ({
