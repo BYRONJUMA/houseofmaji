@@ -5,7 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { StageProgress } from "@/components/stage-progress";
 import { PaymentsPanel } from "@/components/payments-panel";
+import { DeliveryChecklistPanel } from "@/components/delivery-checklist-panel";
+import { MachineHistory } from "@/components/machine-history";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePayments } from "@/hooks/use-payments";
+import { useDeliveryChecklist } from "@/hooks/use-delivery-checklist";
 import { formatKES, formatDate } from "@/lib/format";
+
 
 export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
   head: () => ({
@@ -54,6 +60,9 @@ function DetailPage() {
     },
   });
 
+  const { data: payments } = usePayments(id);
+  const { data: checklist } = useDeliveryChecklist(id);
+
   if (isLoading) {
     return (
       <AppShell title="Fulfillment">
@@ -72,51 +81,78 @@ function DetailPage() {
   }
 
   const names = Object.fromEntries((data!.profiles ?? []).map((p) => [p.id, p.full_name]));
+  const checklistReady = ["delivery", "installed"].includes(f.current_stage);
 
   return (
     <AppShell title={f.client_name} subtitle={`${f.machine_type} · ${f.location}`}>
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <div className="space-y-6">
-          <StageProgress currentStage={f.current_stage} events={data!.events} names={names} />
-          <PaymentsPanel fulfillmentId={f.id} agreedPrice={f.agreed_price} names={names} />
-        </div>
-        <div className="surface-card space-y-3 p-5 text-sm">
-          <h2 className="text-lg font-semibold">Details</h2>
-          <Row label="Client" value={f.client_name} />
-          <Row label="Client contact" value={f.client_contact ?? "—"} />
-          <Row label="Location" value={f.location} />
-          <Row label="Agreed price" value={formatKES(f.agreed_price)} />
-          <Row label="Delivery date" value={formatDate(f.agreed_delivery_date)} />
-          <Row label="Created" value={formatDate(f.created_at)} />
-          <div>
-            <p className="text-muted-foreground">Water analysis</p>
-            {filePath ? (
-              signedUrl ? (
-                <a
-                  href={signedUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-1 inline-flex items-center gap-1.5 font-medium text-primary underline"
-                >
-                  <FileText className="h-4 w-4" /> View attached file
-                </a>
-              ) : (
-                <p className="mt-1 text-muted-foreground">Preparing link…</p>
-              )
-            ) : (
-              <p className="mt-1">No file attached</p>
-            )}
-          </div>
-          {f.additional_notes && (
-            <div>
-              <p className="text-muted-foreground">Additional notes</p>
-              <p className="mt-1 whitespace-pre-wrap">{f.additional_notes}</p>
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="checklist">
+            Delivery Checklist{!checklistReady && " (locked)"}
+          </TabsTrigger>
+          <TabsTrigger value="history">Machine History</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+            <div className="space-y-6">
+              <StageProgress currentStage={f.current_stage} events={data!.events} names={names} />
+              <PaymentsPanel fulfillmentId={f.id} agreedPrice={f.agreed_price} names={names} />
             </div>
-          )}
-        </div>
-      </div>
+            <div className="surface-card space-y-3 p-5 text-sm">
+              <h2 className="text-lg font-semibold">Details</h2>
+              <Row label="Client" value={f.client_name} />
+              <Row label="Client contact" value={f.client_contact ?? "—"} />
+              <Row label="Location" value={f.location} />
+              <Row label="Agreed price" value={formatKES(f.agreed_price)} />
+              <Row label="Delivery date" value={formatDate(f.agreed_delivery_date)} />
+              <Row label="Created" value={formatDate(f.created_at)} />
+              <div>
+                <p className="text-muted-foreground">Water analysis</p>
+                {filePath ? (
+                  signedUrl ? (
+                    <a
+                      href={signedUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-1 inline-flex items-center gap-1.5 font-medium text-primary underline"
+                    >
+                      <FileText className="h-4 w-4" /> View attached file
+                    </a>
+                  ) : (
+                    <p className="mt-1 text-muted-foreground">Preparing link…</p>
+                  )
+                ) : (
+                  <p className="mt-1">No file attached</p>
+                )}
+              </div>
+              {f.additional_notes && (
+                <div>
+                  <p className="text-muted-foreground">Additional notes</p>
+                  <p className="mt-1 whitespace-pre-wrap">{f.additional_notes}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="checklist">
+          <DeliveryChecklistPanel fulfillment={f} names={names} />
+        </TabsContent>
+
+        <TabsContent value="history">
+          <MachineHistory
+            events={data!.events}
+            payments={payments ?? []}
+            checklist={checklist ?? null}
+            names={names}
+          />
+        </TabsContent>
+      </Tabs>
     </AppShell>
   );
+
 }
 
 function Row({ label, value }: { label: string; value: string }) {

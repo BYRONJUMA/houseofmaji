@@ -62,6 +62,87 @@ export type Database = {
           },
         ]
       }
+      delivery_checklists: {
+        Row: {
+          capacity_lph: number | null
+          chief_signoff_at: string | null
+          chief_signoff_name: string | null
+          client_signature_data: string | null
+          client_signoff_at: string | null
+          completed_at: string | null
+          created_at: string
+          date_delivered: string | null
+          delivery_no: string
+          engineer_signoff_at: string | null
+          engineer_signoff_name: string | null
+          fulfillment_id: string
+          id: string
+          machine_serial_no: string | null
+          remarks: string | null
+          sections: Json
+          started_at: string
+          started_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          capacity_lph?: number | null
+          chief_signoff_at?: string | null
+          chief_signoff_name?: string | null
+          client_signature_data?: string | null
+          client_signoff_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          date_delivered?: string | null
+          delivery_no?: string
+          engineer_signoff_at?: string | null
+          engineer_signoff_name?: string | null
+          fulfillment_id: string
+          id?: string
+          machine_serial_no?: string | null
+          remarks?: string | null
+          sections?: Json
+          started_at?: string
+          started_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          capacity_lph?: number | null
+          chief_signoff_at?: string | null
+          chief_signoff_name?: string | null
+          client_signature_data?: string | null
+          client_signoff_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          date_delivered?: string | null
+          delivery_no?: string
+          engineer_signoff_at?: string | null
+          engineer_signoff_name?: string | null
+          fulfillment_id?: string
+          id?: string
+          machine_serial_no?: string | null
+          remarks?: string | null
+          sections?: Json
+          started_at?: string
+          started_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_checklists_fulfillment_id_fkey"
+            columns: ["fulfillment_id"]
+            isOneToOne: true
+            referencedRelation: "fulfillments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_checklists_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fulfillments: {
         Row: {
           additional_notes: string | null
