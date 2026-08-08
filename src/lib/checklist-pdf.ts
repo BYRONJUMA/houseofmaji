@@ -97,28 +97,29 @@ export async function downloadChecklistPdf(
     });
 
     const prevY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
+    let titleY = prevY + 30;
+    // Keep the section title with at least its header row + a couple of rows.
+    if (titleY + 80 > doc.internal.pageSize.getHeight() - 40) {
+      doc.addPage();
+      titleY = 60;
+    }
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text(`${section.number}. ${section.title}`, marginX, titleY);
+    doc.setFont("helvetica", "normal");
+
     autoTable(doc, {
-      startY: prevY + 18,
-      margin: { left: marginX, right: marginX },
+      startY: titleY + 8,
+      margin: { left: marginX, right: marginX, top: 48 },
       theme: "grid",
       head: [head],
       body,
       styles: { fontSize: 8.5, cellPadding: 4, minCellHeight: 16 },
       headStyles: { fillColor: [30, 90, 140], fontSize: 8.5 },
       columnStyles: { 0: { cellWidth: 150 } },
-      didDrawPage: () => {},
-      willDrawPage: () => {},
-      showHead: "firstPage",
-      didParseCell: () => {},
-      // Section heading drawn manually below
     });
-
-    // Draw the section title above the table just rendered.
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.text(`${section.number}. ${section.title}`, marginX, prevY + 12);
-    doc.setFont("helvetica", "normal");
   }
+
 
   let y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 24;
   if (y > doc.internal.pageSize.getHeight() - 200) {
