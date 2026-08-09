@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Download, Loader2, Check } from "lucide-react";
+import { Download, Loader2, Check, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,8 @@ import { Progress } from "@/components/ui/progress";
 import { SignaturePad } from "@/components/signature-pad";
 import { useAuth } from "@/hooks/use-auth";
 import {
-  useDeliveryChecklist,
+  useDeliveryChecklists,
+  useAddChecklist,
   useSaveChecklist,
   type ChecklistPatch,
 } from "@/hooks/use-delivery-checklist";
@@ -43,8 +44,12 @@ export function DeliveryChecklistPanel({
   names: Record<string, string>;
 }) {
   const { profile } = useAuth();
-  const { data: checklist, isLoading } = useDeliveryChecklist(fulfillment.id);
+  const { data: checklists = [], isLoading } = useDeliveryChecklists(fulfillment.id);
+  const addMachine = useAddChecklist(fulfillment.id);
   const save = useSaveChecklist(fulfillment.id);
+
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const checklist = checklists.find((c) => c.id === activeId) ?? checklists[0] ?? null;
 
   const canEdit = profile?.role === "engineer" || profile?.role === "chief_engineer" || profile?.role === "admin";
   const available = ["delivery", "installed"].includes(fulfillment.current_stage);
@@ -66,10 +71,21 @@ export function DeliveryChecklistPanel({
   };
 
   const patch = (p: ChecklistPatch) => {
-    save.mutate(p, {
-      onError: (e: unknown) => toast.error((e as Error).message ?? "Could not save"),
-    });
+    if (!checklist) return;
+    save.mutate(
+      { checklistId: checklist.id, patch: p },
+      { onError: (e: unknown) => toast.error((e as Error).message ?? "Could not save") },
+    );
   };
+
+  const addNewMachine = () =>
+    addMachine.mutate(undefined, {
+      onSuccess: (row) => {
+        setActiveId(row.id);
+        toast.success(`Machine ${row.machine_serial_no} added (${row.delivery_no})`);
+      },
+      onError: (e: unknown) => toast.error((e as Error).message ?? "Could not add the machine"),
+    });
 
   const setCell = (sectionKey: string, rowKey: string, cell: Partial<ChecklistCell>) => {
     const next: ChecklistSections = {
@@ -115,6 +131,28 @@ export function DeliveryChecklistPanel({
     );
   }
 
+  if (!isLoading && checklists.length === 0) {
+    return (
+      <div className="surface-card space-y-4 p-6">
+        <h2 className="text-lg font-semibold">Delivery Checklist & Handover Form</h2>
+        <p className="text-sm text-muted-foreground">
+          No machines recorded yet for this sale. Add a machine to start its checklist — the
+          delivery number and serial number are generated automatically.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {canEdit && (
+            <Button size="sm" onClick={addNewMachine} disabled={addMachine.isPending}>
+              <Plus className="mr-2 h-4 w-4" /> Add Machine
+            </Button>
+          )}
+          <Button variant="outline" size="sm" onClick={downloadBlank}>
+            <Download className="mr-2 h-4 w-4" /> Blank (PDF)
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="surface-card space-y-4 p-5 sm:p-6">
@@ -128,6 +166,11 @@ export function DeliveryChecklistPanel({
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            {canEdit && (
+              <Button size="sm" onClick={addNewMachine} disabled={addMachine.isPending}>
+                <Plus className="mr-2 h-4 w-4" /> Add Machine
+              </Button>
+            )}
             <Button variant="outline" size="sm" onClick={downloadBlank}>
               <Download className="mr-2 h-4 w-4" /> Blank (PDF)
             </Button>
@@ -136,6 +179,26 @@ export function DeliveryChecklistPanel({
             </Button>
           </div>
         </div>
+
+        {checklists.length > 1 && (
+          <div className="flex flex-wrap gap-2">
+            {checklists.map((c, i) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setActiveId(c.id)}
+                className={cn(
+                  "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                  c.id === checklist?.id
+                    ? "border-primary bg-primary/12 text-primary"
+                    : "border-border text-muted-foreground hover:border-primary/50",
+                )}
+              >
+                Machine {i + 1} · {c.machine_serial_no ?? "—"}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -161,13 +224,8 @@ export function DeliveryChecklistPanel({
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Field
-              label="Delivery No."
-              value={checklist?.delivery_no ?? ""}
-              disabled={!canEdit}
-              placeholder="HOM/UF/1000"
-              onCommit={(v) => patch({ delivery_no: v })}
-            />
+            <ReadOnly label="Delivery No. (auto)" value={checklist?.delivery_no ?? "—"} />
+            <ReadOnly label="Machine serial no. (auto)" value={checklist?.machine_serial_no ?? "—"} />
             <Field
               label="Date delivered"
               type="date"
@@ -182,18 +240,13 @@ export function DeliveryChecklistPanel({
               disabled={!canEdit}
               onCommit={(v) => patch({ capacity_lph: v ? Number(v) : null })}
             />
-            <Field
-              label="Machine serial no."
-              value={checklist?.machine_serial_no ?? ""}
-              disabled={!canEdit}
-              onCommit={(v) => patch({ machine_serial_no: v || null })}
-            />
             <ReadOnly label="Client" value={fulfillment.client_name} />
             <ReadOnly label="Project site" value={fulfillment.location} />
             <ReadOnly label="Client contact" value={fulfillment.client_contact ?? "—"} />
             <ReadOnly label="Delivered by" value={meta.deliveredBy || "—"} />
           </div>
         )}
+
       </div>
 
       {CHECKLIST_SECTIONS.map((section) => (

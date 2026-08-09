@@ -11,7 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { COMMISSION_TYPE_LABEL, useCommissions } from "@/hooks/use-commissions";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { COMMISSION_TYPE_LABEL, useCommissions, useTogglePaid } from "@/hooks/use-commissions";
 import { DownloadReportButton } from "@/components/commission-report";
 import { ROLE_LABEL } from "@/lib/stages";
 
@@ -32,6 +34,9 @@ function CommissionsPage() {
   const isAdmin = profile?.role === "admin";
   const isChief = profile?.role === "chief_engineer";
   const seesAll = isAdmin || isChief;
+
+  const canTogglePaid = isAdmin || isChief;
+  const togglePaid = useTogglePaid();
 
   const [person, setPerson] = useState("all");
   const [paidFilter, setPaidFilter] = useState("all");
@@ -150,7 +155,30 @@ function CommissionsPage() {
                   <td className="px-4 py-3 text-muted-foreground">
                     {COMMISSION_TYPE_LABEL[r.role] ?? r.role}
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">{r.paid ? "Paid" : "Unpaid"}</td>
+                  <td className="px-4 py-3">
+                    {canTogglePaid ? (
+                      <Button
+                        size="sm"
+                        variant={r.paid ? "default" : "outline"}
+                        disabled={togglePaid.isPending}
+                        onClick={() =>
+                          togglePaid.mutate(
+                            { id: r.id, paid: !r.paid },
+                            {
+                              onError: (e: unknown) =>
+                                toast.error((e as Error).message ?? "Could not update"),
+                              onSuccess: () =>
+                                toast.success(r.paid ? "Marked unpaid" : "Marked paid"),
+                            },
+                          )
+                        }
+                      >
+                        {r.paid ? "Paid" : "Mark paid"}
+                      </Button>
+                    ) : (
+                      <span className="text-muted-foreground">{r.paid ? "Paid" : "Unpaid"}</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {formatDate(r.paid_at ?? r.computed_at)}
                   </td>

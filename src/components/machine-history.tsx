@@ -44,12 +44,12 @@ function stamp(value: string) {
 export function MachineHistory({
   events,
   payments,
-  checklist,
+  checklists,
   names,
 }: {
   events: StageEventRow[];
   payments: Payment[];
-  checklist: DeliveryChecklist | null;
+  checklists: DeliveryChecklist[];
   names: Record<string, string>;
 }) {
   const who = (id: string | null | undefined) => (id && names[id]) || "System";
@@ -97,7 +97,7 @@ export function MachineHistory({
     });
   }
 
-  if (checklist) {
+  for (const checklist of checklists) {
     entries.push({
       at: checklist.started_at,
       icon: <ClipboardList className="h-4 w-4" />,
@@ -108,7 +108,7 @@ export function MachineHistory({
       entries.push({
         at: checklist.completed_at,
         icon: <ClipboardCheck className="h-4 w-4" />,
-        title: "Delivery checklist completed",
+        title: `Delivery checklist completed (${checklist.machine_serial_no ?? checklist.delivery_no})`,
         who: "Delivery team",
       });
     }
