@@ -11,7 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { COMMISSION_TYPE_LABEL, useCommissions } from "@/hooks/use-commissions";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { COMMISSION_TYPE_LABEL, useCommissions, useTogglePaid } from "@/hooks/use-commissions";
 import { DownloadReportButton } from "@/components/commission-report";
 import { ROLE_LABEL } from "@/lib/stages";
 
@@ -32,6 +34,9 @@ function CommissionsPage() {
   const isAdmin = profile?.role === "admin";
   const isChief = profile?.role === "chief_engineer";
   const seesAll = isAdmin || isChief;
+
+  const canTogglePaid = isAdmin || isChief;
+  const togglePaid = useTogglePaid();
 
   const [person, setPerson] = useState("all");
   const [paidFilter, setPaidFilter] = useState("all");
