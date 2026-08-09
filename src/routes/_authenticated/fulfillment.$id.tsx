@@ -9,7 +9,7 @@ import { DeliveryChecklistPanel } from "@/components/delivery-checklist-panel";
 import { MachineHistory } from "@/components/machine-history";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePayments } from "@/hooks/use-payments";
-import { useDeliveryChecklist } from "@/hooks/use-delivery-checklist";
+import { useDeliveryChecklists } from "@/hooks/use-delivery-checklist";
 import { formatKES, formatDate } from "@/lib/format";
 
 
@@ -61,7 +61,7 @@ function DetailPage() {
   });
 
   const { data: payments } = usePayments(id);
-  const { data: checklist } = useDeliveryChecklist(id);
+  const { data: checklists } = useDeliveryChecklists(id);
 
   if (isLoading) {
     return (
@@ -145,7 +145,7 @@ function DetailPage() {
           <MachineHistory
             events={data!.events}
             payments={payments ?? []}
-            checklist={checklist ?? null}
+            checklists={checklists ?? []}
             names={names}
           />
         </TabsContent>
