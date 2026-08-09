@@ -77,7 +77,7 @@ export type Database = {
           engineer_signoff_name: string | null
           fulfillment_id: string
           id: string
-          machine_serial_no: string | null
+          machine_serial_no: string
           remarks: string | null
           sections: Json
           started_at: string
@@ -98,7 +98,7 @@ export type Database = {
           engineer_signoff_name?: string | null
           fulfillment_id: string
           id?: string
-          machine_serial_no?: string | null
+          machine_serial_no?: string
           remarks?: string | null
           sections?: Json
           started_at?: string
@@ -119,7 +119,7 @@ export type Database = {
           engineer_signoff_name?: string | null
           fulfillment_id?: string
           id?: string
-          machine_serial_no?: string | null
+          machine_serial_no?: string
           remarks?: string | null
           sections?: Json
           started_at?: string
@@ -130,7 +130,7 @@ export type Database = {
           {
             foreignKeyName: "delivery_checklists_fulfillment_id_fkey"
             columns: ["fulfillment_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "fulfillments"
             referencedColumns: ["id"]
           },
