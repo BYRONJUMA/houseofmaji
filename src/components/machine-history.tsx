@@ -108,7 +108,7 @@ export function MachineHistory({
       entries.push({
         at: checklist.completed_at,
         icon: <ClipboardCheck className="h-4 w-4" />,
-        title: "Delivery checklist completed",
+        title: `Delivery checklist completed (${checklist.machine_serial_no ?? checklist.delivery_no})`,
         who: "Delivery team",
       });
     }

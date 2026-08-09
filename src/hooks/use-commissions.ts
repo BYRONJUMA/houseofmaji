@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export type CommissionRow = {
@@ -35,5 +35,23 @@ export function useCommissions({ userId, all }: { userId?: string; all?: boolean
       if (error) throw error;
       return data as unknown as CommissionRow[];
     },
+  });
+}
+
+/** Chief engineers and admins can flip a commission between paid and unpaid. */
+export function useTogglePaid() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, paid }: { id: string; paid: boolean }) => {
+      const { data, error } = await supabase
+        .from("commissions")
+        .update({ paid })
+        .eq("id", id)
+        .select("id, paid, paid_at")
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["commissions"] }),
   });
 }
