@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Download, Loader2, Check } from "lucide-react";
+import { Download, Loader2, Check, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,8 @@ import { Progress } from "@/components/ui/progress";
 import { SignaturePad } from "@/components/signature-pad";
 import { useAuth } from "@/hooks/use-auth";
 import {
-  useDeliveryChecklist,
+  useDeliveryChecklists,
+  useAddChecklist,
   useSaveChecklist,
   type ChecklistPatch,
 } from "@/hooks/use-delivery-checklist";
