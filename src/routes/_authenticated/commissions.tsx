@@ -150,7 +150,30 @@ function CommissionsPage() {
                   <td className="px-4 py-3 text-muted-foreground">
                     {COMMISSION_TYPE_LABEL[r.role] ?? r.role}
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">{r.paid ? "Paid" : "Unpaid"}</td>
+                  <td className="px-4 py-3">
+                    {canTogglePaid ? (
+                      <Button
+                        size="sm"
+                        variant={r.paid ? "default" : "outline"}
+                        disabled={togglePaid.isPending}
+                        onClick={() =>
+                          togglePaid.mutate(
+                            { id: r.id, paid: !r.paid },
+                            {
+                              onError: (e: unknown) =>
+                                toast.error((e as Error).message ?? "Could not update"),
+                              onSuccess: () =>
+                                toast.success(r.paid ? "Marked unpaid" : "Marked paid"),
+                            },
+                          )
+                        }
+                      >
+                        {r.paid ? "Paid" : "Mark paid"}
+                      </Button>
+                    ) : (
+                      <span className="text-muted-foreground">{r.paid ? "Paid" : "Unpaid"}</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {formatDate(r.paid_at ?? r.computed_at)}
                   </td>
