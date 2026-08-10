@@ -82,6 +82,9 @@ function DetailPage() {
 
   const names = Object.fromEntries((data!.profiles ?? []).map((p) => [p.id, p.full_name]));
   const checklistReady = ["delivery", "installed"].includes(f.current_stage);
+  const machines = checklists ?? [];
+  const signedOff = machines.filter((c) => !!c.engineer_signoff_at).length;
+  const showSignoffProgress = checklistReady && machines.length > 0;
 
   return (
     <AppShell title={f.client_name} subtitle={`${f.machine_type} · ${f.location}`}>
