@@ -33,6 +33,7 @@ const ROLE_LABEL: Record<string, string> = {
 function AdminPage() {
   const { stage } = Route.useSearch() as { stage?: Stage };
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const { data: fulfillments = [] } = useQuery({
     queryKey: ["fulfillments"],
     queryFn: async () => {
