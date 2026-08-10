@@ -88,7 +88,24 @@ function DetailPage() {
 
   return (
     <AppShell title={f.client_name} subtitle={`${f.machine_type} · ${f.location}`}>
+      {showSignoffProgress && (
+        <div
+          className={`mb-6 rounded-lg border px-4 py-3 text-sm ${
+            signedOff === machines.length
+              ? "border-stage-installed/30 bg-stage-installed/12 text-stage-installed"
+              : "border-border bg-secondary text-foreground"
+          }`}
+        >
+          <span className="font-semibold">
+            {signedOff} of {machines.length} machine{machines.length === 1 ? "" : "s"} signed off
+          </span>{" "}
+          {signedOff === machines.length
+            ? "— engineer sign-off complete, order marked installed."
+            : "— the order is marked installed automatically once every machine has the engineer’s “Delivered & Installed By” sign-off."}
+        </div>
+      )}
       <Tabs defaultValue="overview" className="space-y-6">
+
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="checklist">
