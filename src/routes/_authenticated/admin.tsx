@@ -3,6 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Users, Boxes, Coins, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
+import { AdminOrderActions } from "@/components/admin-order-actions";
+import { AdminUserActions } from "@/components/admin-user-actions";
+import { useAuth } from "@/hooks/use-auth";
 import { formatKES, formatDate, formatDuration } from "@/lib/format";
 import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
@@ -30,6 +33,7 @@ const ROLE_LABEL: Record<string, string> = {
 function AdminPage() {
   const { stage } = Route.useSearch() as { stage?: Stage };
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const { data: fulfillments = [] } = useQuery({
     queryKey: ["fulfillments"],
     queryFn: async () => {
@@ -105,22 +109,28 @@ function AdminPage() {
 
       <section className="mt-8 space-y-3">
         <h2 className="text-lg font-semibold">Team</h2>
+        <p className="text-sm text-muted-foreground">
+          Change a role or remove an account. Users still assigned to an active order can’t be
+          deleted.
+        </p>
         <div className="surface-card overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
                 <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Role</th>
                 <th className="px-4 py-3">Joined</th>
                 <th className="px-4 py-3 text-right">Earned</th>
+                <th className="px-4 py-3 text-right">Manage</th>
               </tr>
             </thead>
             <tbody>
               {profiles.map((p) => (
                 <tr key={p.id} className="border-b border-border last:border-0">
-                  <td className="px-4 py-3 font-medium">{p.full_name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {ROLE_LABEL[p.role] ?? p.role}
+                  <td className="px-4 py-3 font-medium">
+                    {p.full_name}
+                    <span className="ml-2 text-xs text-muted-foreground">
+                      {ROLE_LABEL[p.role] ?? p.role}
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{formatDate(p.created_at)}</td>
                   <td className="px-4 py-3 text-right font-semibold">
@@ -129,6 +139,9 @@ function AdminPage() {
                         .filter((c) => c.user_id === p.id)
                         .reduce((s, c) => s + Number(c.amount), 0),
                     )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <AdminUserActions user={p} isSelf={p.id === profile?.id} />
                   </td>
                 </tr>
               ))}
@@ -150,6 +163,7 @@ function AdminPage() {
                 <th className="px-4 py-3">Sales rep</th>
                 <th className="px-4 py-3">Stage</th>
                 <th className="px-4 py-3 text-right">Price</th>
+                <th className="px-4 py-3 text-right">Manage</th>
               </tr>
             </thead>
             <tbody>
@@ -163,7 +177,7 @@ function AdminPage() {
                     <td className="px-4 py-3 font-medium">{f.client_name}</td>
                     <td className="px-4 py-3 text-muted-foreground">{f.machine_type}</td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {names[f.sales_rep_id] ?? "—"}
+                      {(f.sales_rep_id && names[f.sales_rep_id]) ?? "—"}
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -174,6 +188,9 @@ function AdminPage() {
                     </td>
                     <td className="px-4 py-3 text-right font-semibold">
                       {formatKES(f.agreed_price)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <AdminOrderActions fulfillment={f} people={profiles} />
                     </td>
                   </tr>
                 ),

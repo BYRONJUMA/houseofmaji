@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { PackagePlus, ClipboardList, Paperclip, CheckCircle2 } from "lucide-react";
+import { PackagePlus, ClipboardList, Paperclip } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppShell, EmptyState } from "@/components/app-shell";
@@ -109,20 +109,6 @@ function SalesPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const markDelivered = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("fulfillments")
-        .update({ current_stage: "installed" })
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Marked delivered");
-      qc.invalidateQueries({ queryKey: ["my-fulfillments"] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
 
 
 
@@ -290,16 +276,10 @@ function SalesPage() {
                   </span>
                 </div>
                 {f.current_stage === "delivery" && (
-                  <Button
-                    className="mt-4 w-full"
-                    disabled={markDelivered.isPending}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      markDelivered.mutate(f.id);
-                    }}
-                  >
-                    <CheckCircle2 className="h-4 w-4" /> Mark Delivered
-                  </Button>
+                  <p className="mt-4 rounded-md border border-dashed border-border px-3 py-2 text-xs text-muted-foreground">
+                    Marked installed automatically once every machine has the engineer’s delivery
+                    sign-off on its checklist.
+                  </p>
                 )}
               </article>
             ))

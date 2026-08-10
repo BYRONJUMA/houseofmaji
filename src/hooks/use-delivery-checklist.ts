@@ -105,6 +105,11 @@ export function useSaveChecklist(fulfillmentId: string) {
       qc.setQueryData<DeliveryChecklist[]>(listKey(fulfillmentId), (prev) =>
         (prev ?? []).map((r) => (r.id === row.id ? row : r)),
       );
+      // an engineer sign-off can auto-advance the fulfillment to "installed"
+      qc.invalidateQueries({ queryKey: ["fulfillment", fulfillmentId] });
+      qc.invalidateQueries({ queryKey: ["fulfillments"] });
+      qc.invalidateQueries({ queryKey: ["my-fulfillments"] });
+      qc.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 }
