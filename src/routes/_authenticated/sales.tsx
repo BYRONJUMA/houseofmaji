@@ -109,20 +109,6 @@ function SalesPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const markDelivered = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("fulfillments")
-        .update({ current_stage: "installed" })
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Marked delivered");
-      qc.invalidateQueries({ queryKey: ["my-fulfillments"] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
 
 
 
