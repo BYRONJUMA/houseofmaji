@@ -290,16 +290,10 @@ function SalesPage() {
                   </span>
                 </div>
                 {f.current_stage === "delivery" && (
-                  <Button
-                    className="mt-4 w-full"
-                    disabled={markDelivered.isPending}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      markDelivered.mutate(f.id);
-                    }}
-                  >
-                    <CheckCircle2 className="h-4 w-4" /> Mark Delivered
-                  </Button>
+                  <p className="mt-4 rounded-md border border-dashed border-border px-3 py-2 text-xs text-muted-foreground">
+                    Marked installed automatically once every machine has the engineer’s delivery
+                    sign-off on its checklist.
+                  </p>
                 )}
               </article>
             ))
