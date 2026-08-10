@@ -159,7 +159,7 @@ export type Database = {
           installation_engineer_id: string | null
           location: string
           machine_type: string
-          sales_rep_id: string
+          sales_rep_id: string | null
           updated_at: string
           water_analysis_file_url: string | null
           water_analysis_notes: string | null
@@ -179,7 +179,7 @@ export type Database = {
           installation_engineer_id?: string | null
           location: string
           machine_type: string
-          sales_rep_id: string
+          sales_rep_id?: string | null
           updated_at?: string
           water_analysis_file_url?: string | null
           water_analysis_notes?: string | null
@@ -199,7 +199,7 @@ export type Database = {
           installation_engineer_id?: string | null
           location?: string
           machine_type?: string
-          sales_rep_id?: string
+          sales_rep_id?: string | null
           updated_at?: string
           water_analysis_file_url?: string | null
           water_analysis_notes?: string | null
@@ -285,7 +285,7 @@ export type Database = {
           id: string
           notes: string | null
           paid_at: string
-          recorded_by: string
+          recorded_by: string | null
         }
         Insert: {
           amount: number
@@ -294,7 +294,7 @@ export type Database = {
           id?: string
           notes?: string | null
           paid_at?: string
-          recorded_by: string
+          recorded_by?: string | null
         }
         Update: {
           amount?: number
@@ -303,7 +303,7 @@ export type Database = {
           id?: string
           notes?: string | null
           paid_at?: string
-          recorded_by?: string
+          recorded_by?: string | null
         }
         Relationships: [
           {
