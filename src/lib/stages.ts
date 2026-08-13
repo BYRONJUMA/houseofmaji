@@ -59,6 +59,7 @@ export function stageIndex(stage: string) {
 
 export const ROLE_LABEL: Record<string, string> = {
   sales_rep: "Sales Rep",
+  sales_manager: "Sales Manager",
   engineer: "Engineer",
   chief_engineer: "Chief Engineer",
   admin: "Admin",
@@ -66,6 +67,7 @@ export const ROLE_LABEL: Record<string, string> = {
 
 export const ROLE_HOME: Record<string, string> = {
   sales_rep: "/sales",
+  sales_manager: "/crm",
   chief_engineer: "/chief",
   engineer: "/engineer",
   admin: "/admin",
