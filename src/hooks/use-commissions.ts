@@ -55,3 +55,31 @@ export function useTogglePaid() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["commissions"] }),
   });
 }
+
+/** Marks a batch of commissions paid in one action (admin / chief engineer only). */
+export function useMarkAllPaid() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      if (ids.length === 0) return 0;
+      const { error } = await supabase.from("commissions").update({ paid: true }).in("id", ids);
+      if (error) throw error;
+      return ids.length;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["commissions"] }),
+  });
+}
+
+/** "2026-08" style key used by the month filter. */
+export function monthKey(iso: string) {
+  return iso.slice(0, 7);
+}
+
+export function monthLabel(key: string) {
+  const [y, m] = key.split("-").map(Number);
+  return new Date(y, (m ?? 1) - 1, 1).toLocaleDateString("en-KE", {
+    month: "long",
+    year: "numeric",
+  });
+}
+
