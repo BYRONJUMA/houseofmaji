@@ -66,7 +66,7 @@ function UserDetailPage() {
 
   if (isLoading) {
     return (
-      <AppShell title="Team member">
+      <AppShell title="Team member" showBack>
         <div className="surface-card p-6 text-sm text-muted-foreground">Loading…</div>
       </AppShell>
     );
@@ -74,11 +74,12 @@ function UserDetailPage() {
 
   if (!user) {
     return (
-      <AppShell title="Team member">
+      <AppShell title="Team member" showBack>
         <EmptyState icon={Inbox} title="Not found" message="This account no longer exists." />
       </AppShell>
     );
   }
+
 
   const earned = commissions.reduce((s, c) => s + Number(c.amount), 0);
   const paid = commissions.filter((c) => c.paid).reduce((s, c) => s + Number(c.amount), 0);
