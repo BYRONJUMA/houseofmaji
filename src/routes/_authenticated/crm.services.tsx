@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
+import { useSettings, settingNumber } from "@/hooks/use-crm-extra";
 import { formatDate } from "@/lib/format";
 import {
   serviceInterval,
@@ -61,7 +62,7 @@ function ServicesPage() {
   const logVisit = (s: ServiceRecord) => {
     const today = new Date();
     const next = new Date(today);
-    next.setMonth(next.getMonth() + serviceInterval(s.machine_type));
+    next.setMonth(next.getMonth() + serviceInterval(s.machine_type, defaultInterval));
     mutate.mutate(
       {
         type: "update",
@@ -225,7 +226,7 @@ function ServiceDialog({
     let next = f.next_due_date;
     if (!next && f.last_service_date) {
       const d = new Date(f.last_service_date);
-      d.setMonth(d.getMonth() + serviceInterval(f.machine_type));
+      d.setMonth(d.getMonth() + serviceInterval(f.machine_type, defaultInterval));
       next = isoDate(d);
     }
     const values = {

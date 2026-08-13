@@ -117,6 +117,7 @@ function CrmDashboard() {
   const overdueService = services.filter(
     (s) => s.next_due_date && new Date(s.next_due_date) < now,
   );
+  const { data: settings } = useSettings();
   const lowStockThreshold = settingNumber(settings, "low_stock_threshold");
   const lowStock = inventory.filter((i) => num(i.in_stock) < lowStockThreshold);
   const stockValue = inventory.reduce((s, i) => s + num(i.in_stock) * num(i.selling_price), 0);
