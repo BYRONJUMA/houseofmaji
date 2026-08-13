@@ -70,7 +70,7 @@ export function DeliveryChecklistPanel({
     projectSite: fulfillment.location,
     clientContact: fulfillment.client_contact ?? "",
     machineType: fulfillment.machine_type,
-    capacityLph: checklist?.capacity_lph != null ? String(checklist.capacity_lph) : "",
+    capacityLph: capacity,
     machineSerialNo: checklist?.machine_serial_no ?? "",
     deliveredBy: (engineerId && names[engineerId]) || "",
   };
@@ -83,14 +83,6 @@ export function DeliveryChecklistPanel({
     );
   };
 
-  const addNewMachine = () =>
-    addMachine.mutate(undefined, {
-      onSuccess: (row) => {
-        setActiveId(row.id);
-        toast.success(`Machine ${row.machine_serial_no} added (${row.delivery_no})`);
-      },
-      onError: (e: unknown) => toast.error((e as Error).message ?? "Could not add the machine"),
-    });
 
   const setCell = (sectionKey: string, rowKey: string, cell: Partial<ChecklistCell>) => {
     const next: ChecklistSections = {
