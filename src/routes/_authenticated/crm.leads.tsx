@@ -102,6 +102,10 @@ function LeadsPage() {
   const won = filtered.filter((l) => l.stage === "won");
   const pipelineValue = open.reduce((s, l) => s + num(l.deal_value), 0);
   const wonValue = won.reduce((s, l) => s + num(l.deal_value), 0);
+  const notWon = filtered.filter((l) => l.stage === "not_won");
+  const conversion = won.length + notWon.length
+    ? Math.round((won.length / (won.length + notWon.length)) * 100)
+    : 0;
   const avgAge = open.length
     ? Math.round(open.reduce((s, l) => s + daysBetween(l.created_at), 0) / open.length)
     : 0;
@@ -229,8 +233,8 @@ function LeadsPage() {
               sub={formatKES(wonValue)}
               tone="good"
             />
+            <MiniTile label="Conversion" value={`${conversion}%`} sub="won of closed" />
             <MiniTile label="Avg age" value={`${avgAge}d`} sub="open deals" />
-            <MiniTile label="Avg leads/day" value={avgPerDay} />
           </div>
           <div className="mt-5 grid gap-6 lg:grid-cols-2">
             <div className="space-y-2">
