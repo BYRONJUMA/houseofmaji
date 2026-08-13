@@ -126,6 +126,11 @@ function DetailPage() {
               <Row label="Client" value={f.client_name} />
               <Row label="Client contact" value={f.client_contact ?? "—"} />
               <Row label="Location" value={f.location} />
+              <Row
+                label="Capacity (LPH)"
+                value={f.capacity_lph != null ? String(f.capacity_lph) : "—"}
+              />
+
               <Row label="Agreed price" value={formatKES(f.agreed_price)} />
               <Row label="Delivery date" value={formatDate(f.agreed_delivery_date)} />
               <Row label="Created" value={formatDate(f.created_at)} />
