@@ -30,6 +30,7 @@ import { Route as AuthenticatedCrmProjectsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedCrmMachinesRouteImport } from './routes/_authenticated/crm.machines'
 import { Route as AuthenticatedCrmLeadsRouteImport } from './routes/_authenticated/crm.leads'
 import { Route as AuthenticatedCrmInventoryRouteImport } from './routes/_authenticated/crm.inventory'
+import { Route as AuthenticatedCrmCallsRouteImport } from './routes/_authenticated/crm.calls'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -142,6 +143,11 @@ const AuthenticatedCrmInventoryRoute =
     path: '/inventory',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedCrmCallsRoute = AuthenticatedCrmCallsRouteImport.update({
+  id: '/calls',
+  path: '/calls',
+  getParentRoute: () => AuthenticatedCrmRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
+  '/crm/calls': typeof AuthenticatedCrmCallsRoute
   '/crm/inventory': typeof AuthenticatedCrmInventoryRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
   '/crm/machines': typeof AuthenticatedCrmMachinesRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/commissions': typeof AuthenticatedCommissionsRoute
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
+  '/crm/calls': typeof AuthenticatedCrmCallsRoute
   '/crm/inventory': typeof AuthenticatedCrmInventoryRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
   '/crm/machines': typeof AuthenticatedCrmMachinesRoute
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/_authenticated/engineer': typeof AuthenticatedEngineerRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
+  '/_authenticated/crm/calls': typeof AuthenticatedCrmCallsRoute
   '/_authenticated/crm/inventory': typeof AuthenticatedCrmInventoryRoute
   '/_authenticated/crm/leads': typeof AuthenticatedCrmLeadsRoute
   '/_authenticated/crm/machines': typeof AuthenticatedCrmMachinesRoute
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/engineer'
     | '/sales'
+    | '/crm/calls'
     | '/crm/inventory'
     | '/crm/leads'
     | '/crm/machines'
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
     | '/commissions'
     | '/engineer'
     | '/sales'
+    | '/crm/calls'
     | '/crm/inventory'
     | '/crm/leads'
     | '/crm/machines'
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm'
     | '/_authenticated/engineer'
     | '/_authenticated/sales'
+    | '/_authenticated/crm/calls'
     | '/_authenticated/crm/inventory'
     | '/_authenticated/crm/leads'
     | '/_authenticated/crm/machines'
@@ -434,10 +446,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmInventoryRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/calls': {
+      id: '/_authenticated/crm/calls'
+      path: '/calls'
+      fullPath: '/crm/calls'
+      preLoaderRoute: typeof AuthenticatedCrmCallsRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
   }
 }
 
 interface AuthenticatedCrmRouteChildren {
+  AuthenticatedCrmCallsRoute: typeof AuthenticatedCrmCallsRoute
   AuthenticatedCrmInventoryRoute: typeof AuthenticatedCrmInventoryRoute
   AuthenticatedCrmLeadsRoute: typeof AuthenticatedCrmLeadsRoute
   AuthenticatedCrmMachinesRoute: typeof AuthenticatedCrmMachinesRoute
@@ -451,6 +471,7 @@ interface AuthenticatedCrmRouteChildren {
 }
 
 const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
+  AuthenticatedCrmCallsRoute: AuthenticatedCrmCallsRoute,
   AuthenticatedCrmInventoryRoute: AuthenticatedCrmInventoryRoute,
   AuthenticatedCrmLeadsRoute: AuthenticatedCrmLeadsRoute,
   AuthenticatedCrmMachinesRoute: AuthenticatedCrmMachinesRoute,
