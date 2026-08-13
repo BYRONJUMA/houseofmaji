@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Download, Loader2, Check, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Download, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { SignaturePad } from "@/components/signature-pad";
 import { useAuth } from "@/hooks/use-auth";
 import {
-  useDeliveryChecklists,
-  useAddChecklist,
+  useDeliveryChecklist,
   useSaveChecklist,
   type ChecklistPatch,
 } from "@/hooks/use-delivery-checklist";
@@ -31,10 +30,12 @@ type Fulfillment = {
   location: string;
   client_contact: string | null;
   machine_type: string;
+  capacity_lph?: number | string | null;
   current_stage: string;
   assembly_engineer_id: string | null;
   installation_engineer_id: string | null;
 };
+
 
 export function DeliveryChecklistPanel({
   fulfillment,
