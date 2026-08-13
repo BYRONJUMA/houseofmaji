@@ -18,7 +18,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate } from "@/lib/format";
-import { isCrmManager, label, BADGE_GOOD, BADGE_WARN, BADGE_NEUTRAL } from "@/lib/crm";
+import { isCrmManager, label, BADGE_GOOD, BADGE_WARN } from "@/lib/crm";
 import { useLeads, useTeam, useCrmMutation, nameOf } from "@/hooks/use-crm";
 import {
   useSiteVisits,
@@ -567,5 +567,3 @@ function PhotoTile({ photo }: { photo: SiteVisitPhoto }) {
     </figure>
   );
 }
-
-export { statusBadge as visitStatusBadge, BADGE_NEUTRAL as visitNeutralBadge };

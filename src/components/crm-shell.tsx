@@ -44,6 +44,12 @@ export function CrmShell({
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
+  const nav = [
+    ...CRM_NAV,
+    ...(profile?.role === "admin" || profile?.role === "sales_manager" ? MANAGER_NAV : []),
+    ...(profile?.role === "admin" ? ADMIN_NAV : []),
+  ];
+
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
     queryClient.clear();
@@ -68,7 +74,7 @@ export function CrmShell({
           </Link>
 
           <nav className="ml-4 hidden items-center gap-1 lg:flex">
-            {CRM_NAV.map((i) => (
+            {nav.map((i) => (
               <Link
                 key={i.to}
                 to={i.to}
@@ -116,7 +122,7 @@ export function CrmShell({
         {open && (
           <div className="border-t border-border bg-card px-4 py-3 lg:hidden">
             <div className="flex flex-col gap-1">
-              {CRM_NAV.map((i) => (
+              {nav.map((i) => (
                 <Link
                   key={i.to}
                   to={i.to}
