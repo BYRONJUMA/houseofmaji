@@ -23,6 +23,7 @@ import { Route as AuthenticatedUserIdRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedFulfillmentIdRouteImport } from './routes/_authenticated/fulfillment.$id'
 import { Route as AuthenticatedCrmSalesRouteImport } from './routes/_authenticated/crm.sales'
 import { Route as AuthenticatedCrmLeadsRouteImport } from './routes/_authenticated/crm.leads'
+import { Route as AuthenticatedCrmInventoryRouteImport } from './routes/_authenticated/crm.inventory'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -95,6 +96,12 @@ const AuthenticatedCrmLeadsRoute = AuthenticatedCrmLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedCrmInventoryRoute =
+  AuthenticatedCrmInventoryRouteImport.update({
+    id: '/inventory',
+    path: '/inventory',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
+  '/crm/inventory': typeof AuthenticatedCrmInventoryRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
   '/crm/sales': typeof AuthenticatedCrmSalesRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
@@ -119,6 +127,7 @@ export interface FileRoutesByTo {
   '/commissions': typeof AuthenticatedCommissionsRoute
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
+  '/crm/inventory': typeof AuthenticatedCrmInventoryRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
   '/crm/sales': typeof AuthenticatedCrmSalesRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
@@ -136,6 +145,7 @@ export interface FileRoutesById {
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/_authenticated/engineer': typeof AuthenticatedEngineerRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
+  '/_authenticated/crm/inventory': typeof AuthenticatedCrmInventoryRoute
   '/_authenticated/crm/leads': typeof AuthenticatedCrmLeadsRoute
   '/_authenticated/crm/sales': typeof AuthenticatedCrmSalesRoute
   '/_authenticated/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/engineer'
     | '/sales'
+    | '/crm/inventory'
     | '/crm/leads'
     | '/crm/sales'
     | '/fulfillment/$id'
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/commissions'
     | '/engineer'
     | '/sales'
+    | '/crm/inventory'
     | '/crm/leads'
     | '/crm/sales'
     | '/fulfillment/$id'
@@ -183,6 +195,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm'
     | '/_authenticated/engineer'
     | '/_authenticated/sales'
+    | '/_authenticated/crm/inventory'
     | '/_authenticated/crm/leads'
     | '/_authenticated/crm/sales'
     | '/_authenticated/fulfillment/$id'
@@ -296,16 +309,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmLeadsRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/inventory': {
+      id: '/_authenticated/crm/inventory'
+      path: '/inventory'
+      fullPath: '/crm/inventory'
+      preLoaderRoute: typeof AuthenticatedCrmInventoryRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
   }
 }
 
 interface AuthenticatedCrmRouteChildren {
+  AuthenticatedCrmInventoryRoute: typeof AuthenticatedCrmInventoryRoute
   AuthenticatedCrmLeadsRoute: typeof AuthenticatedCrmLeadsRoute
   AuthenticatedCrmSalesRoute: typeof AuthenticatedCrmSalesRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
 }
 
 const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
+  AuthenticatedCrmInventoryRoute: AuthenticatedCrmInventoryRoute,
   AuthenticatedCrmLeadsRoute: AuthenticatedCrmLeadsRoute,
   AuthenticatedCrmSalesRoute: AuthenticatedCrmSalesRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
