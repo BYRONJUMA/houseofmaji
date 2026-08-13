@@ -193,7 +193,7 @@ function AuthPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {["sales_rep", "engineer", "chief_engineer", "admin"].map((r) => (
+                      {["sales_rep", "sales_manager", "engineer", "chief_engineer", "admin"].map((r) => (
                         <SelectItem key={r} value={r}>
                           {ROLE_LABEL[r]}
                         </SelectItem>
