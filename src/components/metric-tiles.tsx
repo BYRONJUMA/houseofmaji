@@ -8,11 +8,13 @@ export type Metric = {
   hint?: string;
   /** when set, the tile links to the dashboard filtered by this stage */
   stage?: Stage;
+  /** explicit destination — wins over `stage` */
+  link?: { to: string; search?: Record<string, unknown> };
 };
 
 /**
- * Role dashboard summary. Metrics with a `stage` become clickable and filter the
- * dashboard list, matching the Pipeline-by-stage tiles.
+ * Role dashboard summary. Metrics with a `stage` or `link` become clickable and
+ * take you to the matching filtered list.
  */
 export function MetricTiles({
   title = "Summary",
@@ -37,11 +39,12 @@ export function MetricTiles({
               {m.hint && <p className="mt-1 text-xs text-muted-foreground">{m.hint}</p>}
             </>
           );
-          return m.stage ? (
+          const target = m.link ?? (m.stage ? { to: homePath, search: { stage: m.stage } } : null);
+          return target ? (
             <Link
               key={m.label}
-              to={homePath}
-              search={{ stage: m.stage }}
+              to={target.to}
+              search={target.search}
               className="surface-card p-4 transition-all hover:border-primary/40 hover:shadow-lg"
             >
               {body}
@@ -56,6 +59,7 @@ export function MetricTiles({
     </section>
   );
 }
+
 
 /** Compact "orders currently in each stage" strip. */
 export function StageBreakdown({

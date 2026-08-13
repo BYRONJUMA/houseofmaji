@@ -67,16 +67,22 @@ function EngineerPage() {
     .reduce((s, c) => s + Number(c.amount), 0);
 
   const metrics: Metric[] = [
-    { label: "Assemblies completed", value: String(assemblies) },
+    {
+      label: "Assemblies completed",
+      value: String(assemblies),
+      link: { to: "/engineer", search: {} },
+    },
     { label: "Installations completed", value: String(installations), stage: "installed" },
     {
       label: "Commissions earned",
       value: formatKES(earned),
       hint: `${formatKES(paidCommission)} paid · ${formatKES(earned - paidCommission)} unpaid`,
+      link: { to: "/commissions" },
     },
     {
       label: "Currently assigned",
       value: String(jobs.filter((f) => f.current_stage !== "installed").length),
+      link: { to: "/engineer", search: {} },
     },
   ];
 

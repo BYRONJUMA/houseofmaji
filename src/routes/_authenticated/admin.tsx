@@ -94,25 +94,50 @@ function AdminPage() {
   }, {});
 
   const stats: Metric[] = [
-    { label: "Total orders", value: String(fulfillments.length), hint: `${active.length} active` },
-    { label: "Total revenue", value: formatKES(revenue), hint: "Sum of agreed prices" },
+    {
+      label: "Total orders",
+      value: String(fulfillments.length),
+      hint: `${active.length} active`,
+      link: { to: "/admin", search: {} },
+    },
+    {
+      label: "Total revenue",
+      value: formatKES(revenue),
+      hint: "Sum of agreed prices",
+      link: { to: "/admin", search: {} },
+    },
     {
       label: "Revenue collected",
       value: formatKES(collected),
       hint: revenue > 0 ? `${((collected / revenue) * 100).toFixed(0)}% of agreed value` : undefined,
+      link: { to: "/admin", search: {} },
     },
-    { label: "Commissions paid", value: formatKES(paidCommission) },
-    { label: "Commissions unpaid", value: formatKES(totalCommission - paidCommission) },
+    {
+      label: "Commissions paid",
+      value: formatKES(paidCommission),
+      link: { to: "/commissions", search: { paid: "paid" } },
+    },
+    {
+      label: "Commissions unpaid",
+      value: formatKES(totalCommission - paidCommission),
+      link: { to: "/commissions", search: { paid: "unpaid" } },
+    },
     {
       label: "Team members",
       value: String(profiles.length),
       hint: Object.entries(perRole)
         .map(([r, n]) => `${n} ${ROLE_LABEL[r] ?? r}`)
         .join(" · "),
+      link: { to: "/admin", search: {} },
     },
     { label: "Orders installed", value: String(installed.length), stage: "installed" },
-    { label: "Avg. cycle time", value: avgCycle ? formatDuration(avgCycle) : "—" },
+    {
+      label: "Avg. cycle time",
+      value: avgCycle ? formatDuration(avgCycle) : "—",
+      stage: "installed",
+    },
   ];
+
 
   return (
     <AppShell title="Admin Panel" subtitle="Everything happening across the business">
@@ -144,7 +169,11 @@ function AdminPage() {
             </thead>
             <tbody>
               {profiles.map((p) => (
-                <tr key={p.id} className="border-b border-border last:border-0">
+                <tr
+                  key={p.id}
+                  onClick={() => navigate({ to: "/user/$id", params: { id: p.id } })}
+                  className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
+                >
                   <td className="px-4 py-3 font-medium">
                     {p.full_name}
                     <span className="ml-2 text-xs text-muted-foreground">
@@ -159,11 +188,12 @@ function AdminPage() {
                         .reduce((s, c) => s + Number(c.amount), 0),
                     )}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <AdminUserActions user={p} isSelf={p.id === profile?.id} />
                   </td>
                 </tr>
               ))}
+
             </tbody>
           </table>
         </div>
@@ -208,7 +238,8 @@ function AdminPage() {
                     <td className="px-4 py-3 text-right font-semibold">
                       {formatKES(f.agreed_price)}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+
                       <AdminOrderActions fulfillment={f} people={profiles} />
                     </td>
                   </tr>

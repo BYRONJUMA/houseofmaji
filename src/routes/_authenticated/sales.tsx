@@ -83,20 +83,23 @@ function SalesPage() {
   ).length;
 
   const metrics: Metric[] = [
-    { label: "My orders", value: String(list.length) },
+    { label: "My orders", value: String(list.length), link: { to: "/sales", search: {} } },
     {
       label: "Total order value",
       value: formatKES(list.reduce((s, f) => s + Number(f.agreed_price), 0)),
+      link: { to: "/sales", search: {} },
     },
     {
       label: "Commissions earned",
       value: formatKES(earned),
       hint: `${formatKES(paidCommission)} paid · ${formatKES(earned - paidCommission)} unpaid`,
+      link: { to: "/commissions" },
     },
     {
       label: "Awaiting full payment",
       value: String(awaitingFullPayment),
       hint: "Orders not yet 100% paid",
+      link: { to: "/sales", search: {} },
     },
   ];
 

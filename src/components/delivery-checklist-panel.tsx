@@ -298,12 +298,14 @@ export function DeliveryChecklistPanel({
             title="Delivered & Installed By"
             name={checklist?.engineer_signoff_name ?? ""}
             at={checklist?.engineer_signoff_at ?? null}
-            disabled={!canEdit}
+            disabled={!canEdit || !checklist?.chief_signoff_at}
+            note={!checklist?.chief_signoff_at ? "Waiting on Chief Engineer approval" : undefined}
             defaultName={profile?.full_name ?? ""}
             onSign={(name) =>
               patch({ engineer_signoff_name: name, engineer_signoff_at: new Date().toISOString() })
             }
           />
+
           <div className="space-y-2">
             <p className="text-sm font-semibold">Received By (Client)</p>
             <SignaturePad
@@ -343,6 +345,7 @@ function SignOff({
   name,
   at,
   disabled,
+  note,
   defaultName,
   onSign,
 }: {
@@ -350,6 +353,7 @@ function SignOff({
   name: string;
   at: string | null;
   disabled?: boolean;
+  note?: string;
   defaultName: string;
   onSign: (name: string) => void;
 }) {
@@ -373,6 +377,7 @@ function SignOff({
       ) : (
         <p className="text-xs text-muted-foreground">Not signed yet</p>
       )}
+      {note && <p className="text-xs font-medium text-destructive">{note}</p>}
       {!disabled && (
         <Button size="sm" variant="outline" onClick={() => value.trim() && onSign(value.trim())}>
           {at ? "Update sign-off" : "Sign off"}
@@ -381,6 +386,7 @@ function SignOff({
     </div>
   );
 }
+
 
 
 function ReadOnly({ label, value }: { label: string; value: string }) {

@@ -28,6 +28,7 @@ import { useAllPayments, paidPercent } from "@/hooks/use-payments";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
 import { formatDuration } from "@/lib/format";
+import { useCommissions } from "@/hooks/use-commissions";
 
 export const Route = createFileRoute("/_authenticated/chief")({
   validateSearch: stageSearchSchema,
@@ -78,6 +79,7 @@ function ChiefPage() {
   const { data: fulfillments = [], isLoading } = useFulfillments();
   const { data: profiles = [] } = useProfiles();
   const { data: payments = [] } = useAllPayments();
+  const { data: allCommissions = [] } = useCommissions({ userId: profile?.id, all: true });
   // the chief engineer can also assign the job to themselves
   const engineers = profiles.filter(
     (p) => p.role === "engineer" || (profile?.id && p.id === profile.id),
@@ -128,18 +130,33 @@ function ChiefPage() {
   }).length;
 
   const metrics: Metric[] = [
-    { label: "Orders in pipeline", value: String(fulfillments.length - installedAll.length) },
+    {
+      label: "Orders in pipeline",
+      value: String(fulfillments.length - installedAll.length),
+      link: { to: "/chief", search: {} },
+    },
     {
       label: "Awaiting payment threshold",
       value: String(blocked),
       hint: "Blocked on the 50% / 80% gates",
+      link: { to: "/chief", search: {} },
     },
     { label: "Completed this month", value: String(completedThisMonth), stage: "installed" },
     {
+      label: "Unpaid commissions",
+      value: formatKES(
+        allCommissions.filter((c) => !c.paid).reduce((s, c) => s + Number(c.amount), 0),
+      ),
+      hint: "Open the payouts list",
+      link: { to: "/commissions", search: { paid: "unpaid" } },
+    },
+    {
       label: "Avg. received → installed",
       value: avgCycle ? formatDuration(avgCycle) : "—",
+      stage: "installed",
     },
   ];
+
 
   return (
     <AppShell title="Chief Engineer" subtitle="All fulfillments across the pipeline">
