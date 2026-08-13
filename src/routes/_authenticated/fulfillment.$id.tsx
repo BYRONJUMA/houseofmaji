@@ -65,7 +65,7 @@ function DetailPage() {
 
   if (isLoading) {
     return (
-      <AppShell title="Fulfillment">
+      <AppShell title="Fulfillment" showBack>
         <div className="surface-card p-6 text-sm text-muted-foreground">Loading…</div>
       </AppShell>
     );
@@ -74,11 +74,12 @@ function DetailPage() {
   const f = data?.fulfillment;
   if (!f) {
     return (
-      <AppShell title="Fulfillment">
+      <AppShell title="Fulfillment" showBack>
         <div className="surface-card p-6 text-sm text-muted-foreground">Not found.</div>
       </AppShell>
     );
   }
+
 
   const names = Object.fromEntries((data!.profiles ?? []).map((p) => [p.id, p.full_name]));
   const checklistReady = ["assembling", "delivery", "installed"].includes(f.current_stage);
@@ -87,7 +88,8 @@ function DetailPage() {
   const showSignoffProgress = ["delivery", "installed"].includes(f.current_stage) && !!checklist;
 
   return (
-    <AppShell title={f.client_name} subtitle={`${f.machine_type} · ${f.location}`}>
+    <AppShell title={f.client_name} subtitle={`${f.machine_type} · ${f.location}`} showBack>
+
       {showSignoffProgress && (
         <div
           className={`mb-6 rounded-lg border px-4 py-3 text-sm ${

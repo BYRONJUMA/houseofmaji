@@ -66,7 +66,7 @@ function UserDetailPage() {
 
   if (isLoading) {
     return (
-      <AppShell title="Team member">
+      <AppShell title="Team member" showBack>
         <div className="surface-card p-6 text-sm text-muted-foreground">Loading…</div>
       </AppShell>
     );
@@ -74,11 +74,12 @@ function UserDetailPage() {
 
   if (!user) {
     return (
-      <AppShell title="Team member">
+      <AppShell title="Team member" showBack>
         <EmptyState icon={Inbox} title="Not found" message="This account no longer exists." />
       </AppShell>
     );
   }
+
 
   const earned = commissions.reduce((s, c) => s + Number(c.amount), 0);
   const paid = commissions.filter((c) => c.paid).reduce((s, c) => s + Number(c.amount), 0);
@@ -103,10 +104,12 @@ function UserDetailPage() {
     <AppShell
       title={user.full_name || "Unnamed"}
       subtitle={`${ROLE_LABEL[user.role] ?? user.role} · joined ${formatDate(user.created_at)}`}
+      showBack
       actions={
         isAdmin ? <AdminUserActions user={user} isSelf={user.id === profile?.id} /> : undefined
       }
     >
+
       <MetricTiles metrics={metrics} homePath="/admin" />
 
       <section className="mt-8 space-y-3">
