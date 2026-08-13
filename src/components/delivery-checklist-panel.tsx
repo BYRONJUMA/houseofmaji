@@ -345,6 +345,7 @@ function SignOff({
   name,
   at,
   disabled,
+  note,
   defaultName,
   onSign,
 }: {
@@ -352,6 +353,7 @@ function SignOff({
   name: string;
   at: string | null;
   disabled?: boolean;
+  note?: string;
   defaultName: string;
   onSign: (name: string) => void;
 }) {
@@ -375,6 +377,7 @@ function SignOff({
       ) : (
         <p className="text-xs text-muted-foreground">Not signed yet</p>
       )}
+      {note && <p className="text-xs font-medium text-destructive">{note}</p>}
       {!disabled && (
         <Button size="sm" variant="outline" onClick={() => value.trim() && onSign(value.trim())}>
           {at ? "Update sign-off" : "Sign off"}
@@ -383,6 +386,7 @@ function SignOff({
     </div>
   );
 }
+
 
 
 function ReadOnly({ label, value }: { label: string; value: string }) {

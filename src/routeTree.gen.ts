@@ -17,6 +17,7 @@ import { Route as AuthenticatedEngineerRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedCommissionsRouteImport } from './routes/_authenticated/commissions'
 import { Route as AuthenticatedChiefRouteImport } from './routes/_authenticated/chief'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedUserIdRouteImport } from './routes/_authenticated/user.$id'
 import { Route as AuthenticatedFulfillmentIdRouteImport } from './routes/_authenticated/fulfillment.$id'
 
 const AuthRoute = AuthRouteImport.update({
@@ -59,6 +60,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedUserIdRoute = AuthenticatedUserIdRouteImport.update({
+  id: '/user/$id',
+  path: '/user/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedFulfillmentIdRoute =
   AuthenticatedFulfillmentIdRouteImport.update({
     id: '/fulfillment/$id',
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/user/$id': typeof AuthenticatedUserIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/user/$id': typeof AuthenticatedUserIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/_authenticated/engineer': typeof AuthenticatedEngineerRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/_authenticated/user/$id': typeof AuthenticatedUserIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/engineer'
     | '/sales'
     | '/fulfillment/$id'
+    | '/user/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/engineer'
     | '/sales'
     | '/fulfillment/$id'
+    | '/user/$id'
   id:
     | '__root__'
     | '/'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/_authenticated/engineer'
     | '/_authenticated/sales'
     | '/_authenticated/fulfillment/$id'
+    | '/_authenticated/user/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -196,6 +208,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/user/$id': {
+      id: '/_authenticated/user/$id'
+      path: '/user/$id'
+      fullPath: '/user/$id'
+      preLoaderRoute: typeof AuthenticatedUserIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/fulfillment/$id': {
       id: '/_authenticated/fulfillment/$id'
       path: '/fulfillment/$id'
@@ -213,6 +232,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEngineerRoute: typeof AuthenticatedEngineerRoute
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
   AuthenticatedFulfillmentIdRoute: typeof AuthenticatedFulfillmentIdRoute
+  AuthenticatedUserIdRoute: typeof AuthenticatedUserIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -222,6 +242,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEngineerRoute: AuthenticatedEngineerRoute,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
   AuthenticatedFulfillmentIdRoute: AuthenticatedFulfillmentIdRoute,
+  AuthenticatedUserIdRoute: AuthenticatedUserIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
