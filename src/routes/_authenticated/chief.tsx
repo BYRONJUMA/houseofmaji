@@ -199,7 +199,7 @@ function ChiefPage() {
 
   return (
     <AppShell title="Chief Engineer" subtitle="All fulfillments across the pipeline">
-      <MetricTiles metrics={metrics} homePath="/chief" />
+      <MetricTiles metrics={stats} homePath="/chief" />
 
       <div className="mt-4">
         <StageBreakdown items={fulfillments} homePath="/chief" />
