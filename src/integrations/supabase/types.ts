@@ -373,7 +373,6 @@ export type Database = {
           rep_id: string | null
           source: string | null
           stage: string
-          temp: string
           updated_at: string
         }
         Insert: {
@@ -388,7 +387,6 @@ export type Database = {
           rep_id?: string | null
           source?: string | null
           stage?: string
-          temp?: string
           updated_at?: string
         }
         Update: {
@@ -403,7 +401,6 @@ export type Database = {
           rep_id?: string | null
           source?: string | null
           stage?: string
-          temp?: string
           updated_at?: string
         }
         Relationships: [
