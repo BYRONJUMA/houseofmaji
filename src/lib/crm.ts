@@ -41,17 +41,12 @@ export const BADGE_NEUTRAL = "border-border bg-secondary text-secondary-foregrou
 
 export const LEAD_STAGE_BADGE: Record<string, string> = {
   new: BADGE_NEUTRAL,
-  contacted: "border-primary/30 bg-primary/10 text-primary",
-  not_responding: BADGE_WARN,
-  ghost: BADGE_NEUTRAL,
-  qualified: "border-primary/30 bg-primary/10 text-primary",
-  not_qualified: BADGE_NEUTRAL,
-  showroom_demo: "border-primary/30 bg-primary/10 text-primary",
-  quote_sent: BADGE_WARN,
-  negotiation: BADGE_WARN,
+  warm: BADGE_WARN,
+  hot: BADGE_BAD,
   won: BADGE_GOOD,
-  lost: BADGE_BAD,
+  not_won: BADGE_NEUTRAL,
 };
+
 
 export const SCHOOL_STATUS_BADGE: Record<string, string> = {
   prospect: BADGE_NEUTRAL,
