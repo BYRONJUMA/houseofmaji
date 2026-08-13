@@ -15,6 +15,8 @@ import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { useCommissions } from "@/hooks/use-commissions";
 import { MyCommissionsCard } from "@/components/commission-report";
+import { MetricTiles, type Metric } from "@/components/metric-tiles";
+import { useAllPayments, paidPercent } from "@/hooks/use-payments";
 
 export const Route = createFileRoute("/_authenticated/sales")({
   validateSearch: stageSearchSchema,
@@ -65,7 +67,38 @@ function SalesPage() {
   });
 
   const { data: commissions = [] } = useCommissions({ userId: profile?.id });
+  const { data: payments = [] } = useAllPayments();
   const visible = stage ? list.filter((f) => f.current_stage === stage) : list;
+
+  const paidByFulfillment = payments.reduce<Record<string, number>>((acc, p) => {
+    acc[p.fulfillment_id] = (acc[p.fulfillment_id] ?? 0) + Number(p.amount);
+    return acc;
+  }, {});
+  const earned = commissions.reduce((s, c) => s + Number(c.amount), 0);
+  const paidCommission = commissions
+    .filter((c) => c.paid)
+    .reduce((s, c) => s + Number(c.amount), 0);
+  const awaitingFullPayment = list.filter(
+    (f) => paidPercent(paidByFulfillment[f.id] ?? 0, f.agreed_price) < 100,
+  ).length;
+
+  const metrics: Metric[] = [
+    { label: "My orders", value: String(list.length) },
+    {
+      label: "Total order value",
+      value: formatKES(list.reduce((s, f) => s + Number(f.agreed_price), 0)),
+    },
+    {
+      label: "Commissions earned",
+      value: formatKES(earned),
+      hint: `${formatKES(paidCommission)} paid · ${formatKES(earned - paidCommission)} unpaid`,
+    },
+    {
+      label: "Awaiting full payment",
+      value: String(awaitingFullPayment),
+      hint: "Orders not yet 100% paid",
+    },
+  ];
 
   const create = useMutation({
     mutationFn: async () => {
@@ -116,7 +149,9 @@ function SalesPage() {
 
   return (
     <AppShell title="Sales Handover" subtitle="Submit a new machine sale to the workshop">
-      <div className="mb-8">
+      <MetricTiles metrics={metrics} homePath="/sales" />
+
+      <div className="mb-8 mt-8">
         <StageTiles items={list} homePath="/sales" activeStage={stage} />
       </div>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">

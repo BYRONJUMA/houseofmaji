@@ -12,6 +12,7 @@ import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { useCommissions } from "@/hooks/use-commissions";
 import { MyCommissionsCard } from "@/components/commission-report";
+import { MetricTiles, type Metric } from "@/components/metric-tiles";
 
 export const Route = createFileRoute("/_authenticated/engineer")({
   validateSearch: stageSearchSchema,
@@ -50,6 +51,35 @@ function EngineerPage() {
 
   const visible = stage ? jobs.filter((f) => f.current_stage === stage) : jobs;
 
+  const assemblies = jobs.filter(
+    (f) =>
+      f.assembly_engineer_id === profile?.id &&
+      ["delivery", "installed"].includes(f.current_stage),
+  ).length;
+  const installations = jobs.filter(
+    (f) =>
+      (f.installation_engineer_id ?? f.assembly_engineer_id) === profile?.id &&
+      f.current_stage === "installed",
+  ).length;
+  const earned = commissions.reduce((s, c) => s + Number(c.amount), 0);
+  const paidCommission = commissions
+    .filter((c) => c.paid)
+    .reduce((s, c) => s + Number(c.amount), 0);
+
+  const metrics: Metric[] = [
+    { label: "Assemblies completed", value: String(assemblies) },
+    { label: "Installations completed", value: String(installations), stage: "installed" },
+    {
+      label: "Commissions earned",
+      value: formatKES(earned),
+      hint: `${formatKES(paidCommission)} paid · ${formatKES(earned - paidCommission)} unpaid`,
+    },
+    {
+      label: "Currently assigned",
+      value: String(jobs.filter((f) => f.current_stage !== "installed").length),
+    },
+  ];
+
   const mutate = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: TablesUpdate<"fulfillments"> }) => {
       const { error } = await supabase.from("fulfillments").update(patch).eq("id", id);
@@ -64,7 +94,9 @@ function EngineerPage() {
 
   return (
     <AppShell title="My Jobs" subtitle="Machines assigned to you">
-      <div className="mb-8">
+      <MetricTiles metrics={metrics} homePath="/engineer" />
+
+      <div className="mb-8 mt-8">
         <StageTiles items={jobs} homePath="/engineer" activeStage={stage} />
       </div>
 

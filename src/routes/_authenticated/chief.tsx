@@ -26,6 +26,8 @@ import {
 } from "@/lib/stages";
 import { useAllPayments, paidPercent } from "@/hooks/use-payments";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
+import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
+import { formatDuration } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/chief")({
   validateSearch: stageSearchSchema,
@@ -100,9 +102,54 @@ function ChiefPage() {
     return acc;
   }, {});
 
+  const now = new Date();
+  const installedAll = fulfillments.filter((f) => f.current_stage === "installed");
+  const completedThisMonth = installedAll.filter((f) => {
+    const d = new Date(f.updated_at);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
+  const avgCycle =
+    installedAll.length > 0
+      ? installedAll.reduce(
+          (acc, f) =>
+            acc + (new Date(f.updated_at).getTime() - new Date(f.created_at).getTime()) / 1000,
+          0,
+        ) / installedAll.length
+      : 0;
+  const blocked = fulfillments.filter((f) => {
+    const next: Stage | null =
+      f.current_stage === "received"
+        ? "waiting_for_frame"
+        : f.current_stage === "waiting_for_frame"
+          ? "material_procurement"
+          : null;
+    if (!next) return false;
+    return paidPercent(paidByFulfillment[f.id] ?? 0, f.agreed_price) < (PAYMENT_GATE[next] ?? 0);
+  }).length;
+
+  const metrics: Metric[] = [
+    { label: "Orders in pipeline", value: String(fulfillments.length - installedAll.length) },
+    {
+      label: "Awaiting payment threshold",
+      value: String(blocked),
+      hint: "Blocked on the 50% / 80% gates",
+    },
+    { label: "Completed this month", value: String(completedThisMonth), stage: "installed" },
+    {
+      label: "Avg. received → installed",
+      value: avgCycle ? formatDuration(avgCycle) : "—",
+    },
+  ];
+
   return (
     <AppShell title="Chief Engineer" subtitle="All fulfillments across the pipeline">
-      <div className="mb-8">
+      <MetricTiles metrics={metrics} homePath="/chief" />
+
+      <div className="mt-4">
+        <StageBreakdown items={fulfillments} homePath="/chief" />
+      </div>
+
+      <div className="mb-8 mt-8">
         <StageTiles items={fulfillments} homePath="/chief" activeStage={stageFilter} />
       </div>
 
