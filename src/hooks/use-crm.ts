@@ -8,7 +8,6 @@ export type Lead = {
   machine_interest: string | null;
   location: string | null;
   source: string | null;
-  temp: string;
   stage: string;
   rep_id: string | null;
   follow_up_due_at: string | null;

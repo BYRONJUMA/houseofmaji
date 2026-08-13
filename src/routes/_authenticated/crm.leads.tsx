@@ -21,9 +21,7 @@ import {
   LEAD_STAGES,
   LEAD_STAGE_LABEL,
   LEAD_STAGE_BADGE,
-  LEAD_TEMPS,
   LEAD_SOURCES,
-  TEMP_BADGE,
   isOpenStage,
   isCrmManager,
   daysBetween,
@@ -76,7 +74,6 @@ function LeadsPage() {
   const [repTab, setRepTab] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [range, setRange] = useState<Range>("all");
-  const [temp, setTemp] = useState("all");
   const [source, setSource] = useState("all");
   const [followUp, setFollowUp] = useState("all");
   const [openLead, setOpenLead] = useState<Lead | null>(null);
@@ -88,7 +85,6 @@ function LeadsPage() {
     const q = search.trim().toLowerCase();
     return leads.filter((l) => {
       if (repTab !== "all" && l.rep_id !== repTab) return false;
-      if (temp !== "all" && l.temp !== temp) return false;
       if (source !== "all" && l.source !== source) return false;
       if (!withinRange(l.created_at, range)) return false;
       if (followUp === "overdue")
@@ -100,7 +96,7 @@ function LeadsPage() {
         .filter(Boolean)
         .some((v) => String(v).toLowerCase().includes(q));
     });
-  }, [leads, repTab, temp, source, range, followUp, search]);
+  }, [leads, repTab, source, range, followUp, search]);
 
   const open = filtered.filter((l) => isOpenStage(l.stage));
   const won = filtered.filter((l) => l.stage === "won");
@@ -179,19 +175,6 @@ function LeadsPage() {
               <SelectItem value="all">All time</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={temp} onValueChange={setTemp}>
-            <SelectTrigger className="w-[9rem]">
-              <SelectValue placeholder="Temperature" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All temps</SelectItem>
-              {LEAD_TEMPS.map((t) => (
-                <SelectItem key={t} value={t}>
-                  {label(t)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           <Select value={source} onValueChange={setSource}>
             <SelectTrigger className="w-[9rem]">
               <SelectValue placeholder="Source" />
@@ -249,7 +232,7 @@ function LeadsPage() {
             <MiniTile label="Avg age" value={`${avgAge}d`} sub="open deals" />
             <MiniTile label="Avg leads/day" value={avgPerDay} />
           </div>
-          <div className="mt-5 grid gap-6 lg:grid-cols-3">
+          <div className="mt-5 grid gap-6 lg:grid-cols-2">
             <div className="space-y-2">
               <h3 className="text-sm font-semibold">Deals by stage</h3>
               {LEAD_STAGES.map((s) => {
@@ -261,22 +244,6 @@ function LeadsPage() {
                     value={c}
                     max={Math.max(1, ...LEAD_STAGES.map((x) => filtered.filter((l) => l.stage === x).length))}
                     sub={String(c)}
-                  />
-                );
-              })}
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold">Lead temperature</h3>
-              {LEAD_TEMPS.map((t) => {
-                const c = open.filter((l) => l.temp === t).length;
-                const pct = open.length ? Math.round((c / open.length) * 100) : 0;
-                return (
-                  <Bar
-                    key={t}
-                    label={label(t)}
-                    value={c}
-                    max={Math.max(1, open.length)}
-                    sub={`${c} · ${pct}%`}
                   />
                 );
               })}
@@ -340,7 +307,9 @@ function LeadCard({
     >
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm font-semibold leading-tight">{lead.name || lead.phone}</p>
-        <Badge className={TEMP_BADGE[lead.temp] ?? ""}>{label(lead.temp)}</Badge>
+        <Badge className={LEAD_STAGE_BADGE[lead.stage] ?? ""}>
+          {LEAD_STAGE_LABEL[lead.stage] ?? lead.stage}
+        </Badge>
       </div>
       <p className="mt-0.5 text-xs text-muted-foreground">{lead.phone}</p>
       {lead.machine_interest && <p className="text-xs">{lead.machine_interest}</p>}
@@ -433,7 +402,7 @@ function TriageView({
     { title: "No follow-up scheduled", items: leads.filter((l) => !l.follow_up_due_at) },
     {
       title: "Hot & open",
-      items: leads.filter((l) => l.temp === "hot" && isOpenStage(l.stage)),
+      items: leads.filter((l) => l.stage === "hot"),
     },
     {
       title: "Stale 14d+",
@@ -477,8 +446,7 @@ function ListView({
             <th className="px-3 py-2">Machine</th>
             <th className="px-3 py-2">Location</th>
             <th className="px-3 py-2">Source</th>
-            <th className="px-3 py-2">Temp</th>
-            <th className="px-3 py-2">Stage</th>
+              <th className="px-3 py-2">Stage</th>
             <th className="px-3 py-2">Rep</th>
             <th className="px-3 py-2 text-right">Deal value</th>
             <th className="px-3 py-2">Follow-up</th>
@@ -499,9 +467,6 @@ function ListView({
                 <td className="px-3 py-2">{l.location || "—"}</td>
                 <td className="px-3 py-2">{label(l.source)}</td>
                 <td className="px-3 py-2">
-                  <Badge className={TEMP_BADGE[l.temp] ?? ""}>{label(l.temp)}</Badge>
-                </td>
-                <td className="px-3 py-2">
                   <Badge className={LEAD_STAGE_BADGE[l.stage] ?? ""}>
                     {LEAD_STAGE_LABEL[l.stage] ?? l.stage}
                   </Badge>
@@ -518,7 +483,7 @@ function ListView({
           })}
           {leads.length === 0 && (
             <tr>
-              <td colSpan={10} className="px-3 py-8 text-center text-muted-foreground">
+              <td colSpan={9} className="px-3 py-8 text-center text-muted-foreground">
                 No leads match these filters.
               </td>
             </tr>
@@ -624,21 +589,6 @@ function LeadDetail({
                   {LEAD_STAGES.map((s) => (
                     <SelectItem key={s} value={s}>
                       {LEAD_STAGE_LABEL[s]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Temperature</Label>
-              <Select value={lead.temp} onValueChange={(v) => patch({ temp: v })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {LEAD_TEMPS.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {label(t)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -755,7 +705,7 @@ function NewLeadDialog({
     machine_interest: "",
     location: "",
     source: "phone",
-    temp: "warm",
+    stage: "new",
     deal_value: "",
     rep_id: profile?.id ?? "none",
   });
@@ -776,8 +726,7 @@ function NewLeadDialog({
           machine_interest: f.machine_interest.trim() || null,
           location: f.location.trim() || null,
           source: f.source,
-          temp: f.temp,
-          stage: "new",
+          stage: f.stage,
           deal_value: f.deal_value ? Number(f.deal_value) : null,
           rep_id: f.rep_id === "none" ? null : f.rep_id,
         },
@@ -834,15 +783,15 @@ function NewLeadDialog({
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label>Temperature</Label>
-            <Select value={f.temp} onValueChange={(v) => set("temp", v)}>
+            <Label>Stage</Label>
+            <Select value={f.stage} onValueChange={(v) => set("stage", v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {LEAD_TEMPS.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {label(t)}
+                {LEAD_STAGES.map((st) => (
+                  <SelectItem key={st} value={st}>
+                    {LEAD_STAGE_LABEL[st]}
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -6,7 +6,6 @@ import {
   LEAD_STAGES,
   LEAD_STAGE_LABEL,
   LEAD_STAGE_BADGE,
-  TEMP_BADGE,
   isOpenStage,
   monthStart,
   monthEnd,
@@ -219,7 +218,7 @@ function CrmDashboard() {
         </div>
 
         <div className="grid gap-4 lg:grid-cols-3">
-          <CrmCard title="Pipeline by stage" className="lg:col-span-1">
+          <CrmCard title="Lead funnel" className="lg:col-span-1">
             <div className="space-y-2">
               {LEAD_STAGES.map((s) => {
                 const c = leads.filter((l) => l.stage === s).length;
@@ -291,7 +290,6 @@ function CrmDashboard() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge className={TEMP_BADGE[l.temp] ?? ""}>{label(l.temp)}</Badge>
                     <Badge className={LEAD_STAGE_BADGE[l.stage] ?? ""}>
                       {LEAD_STAGE_LABEL[l.stage] ?? l.stage}
                     </Badge>
