@@ -104,10 +104,12 @@ function UserDetailPage() {
     <AppShell
       title={user.full_name || "Unnamed"}
       subtitle={`${ROLE_LABEL[user.role] ?? user.role} · joined ${formatDate(user.created_at)}`}
+      showBack
       actions={
         isAdmin ? <AdminUserActions user={user} isSelf={user.id === profile?.id} /> : undefined
       }
     >
+
       <MetricTiles metrics={metrics} homePath="/admin" />
 
       <section className="mt-8 space-y-3">
