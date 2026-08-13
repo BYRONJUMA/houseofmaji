@@ -42,6 +42,13 @@ export const Route = createFileRoute("/_authenticated/chief")({
   component: ChiefPage,
 });
 
+const ROLE_LABEL: Record<string, string> = {
+  sales_rep: "Sales Rep",
+  chief_engineer: "Chief Engineer",
+  engineer: "Engineer",
+  admin: "Admin",
+};
+
 export function useFulfillments() {
   return useQuery({
     queryKey: ["fulfillments"],
