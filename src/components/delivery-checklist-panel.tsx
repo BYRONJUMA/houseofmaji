@@ -45,15 +45,19 @@ export function DeliveryChecklistPanel({
   names: Record<string, string>;
 }) {
   const { profile } = useAuth();
-  const { data: checklists = [], isLoading } = useDeliveryChecklists(fulfillment.id);
-  const addMachine = useAddChecklist(fulfillment.id);
+  const { data: checklist, isLoading } = useDeliveryChecklist(fulfillment.id);
   const save = useSaveChecklist(fulfillment.id);
 
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const checklist = checklists.find((c) => c.id === activeId) ?? checklists[0] ?? null;
+  const canEdit =
+    profile?.role === "engineer" || profile?.role === "chief_engineer" || profile?.role === "admin";
+  const available = ["assembling", "delivery", "installed"].includes(fulfillment.current_stage);
+  const capacity =
+    fulfillment.capacity_lph != null
+      ? String(fulfillment.capacity_lph)
+      : checklist?.capacity_lph != null
+        ? String(checklist.capacity_lph)
+        : "";
 
-  const canEdit = profile?.role === "engineer" || profile?.role === "chief_engineer" || profile?.role === "admin";
-  const available = ["delivery", "installed"].includes(fulfillment.current_stage);
 
   const sections = (checklist?.sections ?? {}) as ChecklistSections;
   const filled = filledRowCount(sections);
