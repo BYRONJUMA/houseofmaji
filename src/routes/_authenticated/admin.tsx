@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Users, Boxes, Coins, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { AdminOrderActions } from "@/components/admin-order-actions";
@@ -9,6 +8,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { formatKES, formatDate, formatDuration } from "@/lib/format";
 import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
+import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
+import { useAllPayments, totalPaid } from "@/hooks/use-payments";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   validateSearch: stageSearchSchema,
@@ -67,9 +68,16 @@ function AdminPage() {
     },
   });
 
+  const { data: payments = [] } = useAllPayments();
+
   const names = Object.fromEntries(profiles.map((p) => [p.id, p.full_name]));
   const active = fulfillments.filter((f) => f.current_stage !== "installed");
   const totalCommission = commissions.reduce((s, c) => s + Number(c.amount), 0);
+  const paidCommission = commissions
+    .filter((c) => c.paid)
+    .reduce((s, c) => s + Number(c.amount), 0);
+  const revenue = fulfillments.reduce((s, f) => s + Number(f.agreed_price), 0);
+  const collected = totalPaid(payments);
   const installed = fulfillments.filter((f) => f.current_stage === "installed");
   const avgCycle =
     installed.length > 0
@@ -80,27 +88,38 @@ function AdminPage() {
         ) / installed.length
       : 0;
 
-  const stats = [
-    { icon: Boxes, label: "Active fulfillments", value: String(active.length) },
-    { icon: Users, label: "Team members", value: String(profiles.length) },
-    { icon: Coins, label: "Commissions owed", value: formatKES(totalCommission) },
+  const perRole = profiles.reduce<Record<string, number>>((acc, p) => {
+    acc[p.role] = (acc[p.role] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const stats: Metric[] = [
+    { label: "Total orders", value: String(fulfillments.length), hint: `${active.length} active` },
+    { label: "Total revenue", value: formatKES(revenue), hint: "Sum of agreed prices" },
     {
-      icon: Clock,
-      label: "Avg. cycle time",
-      value: avgCycle ? formatDuration(avgCycle) : "—",
+      label: "Revenue collected",
+      value: formatKES(collected),
+      hint: revenue > 0 ? `${((collected / revenue) * 100).toFixed(0)}% of agreed value` : undefined,
     },
+    { label: "Commissions paid", value: formatKES(paidCommission) },
+    { label: "Commissions unpaid", value: formatKES(totalCommission - paidCommission) },
+    {
+      label: "Team members",
+      value: String(profiles.length),
+      hint: Object.entries(perRole)
+        .map(([r, n]) => `${n} ${ROLE_LABEL[r] ?? r}`)
+        .join(" · "),
+    },
+    { label: "Orders installed", value: String(installed.length), stage: "installed" },
+    { label: "Avg. cycle time", value: avgCycle ? formatDuration(avgCycle) : "—" },
   ];
 
   return (
     <AppShell title="Admin Panel" subtitle="Everything happening across the business">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((s) => (
-          <div key={s.label} className="surface-card p-5">
-            <s.icon className="h-5 w-5 text-primary" />
-            <p className="mt-3 text-2xl font-bold tracking-tight">{s.value}</p>
-            <p className="text-sm text-muted-foreground">{s.label}</p>
-          </div>
-        ))}
+      <MetricTiles metrics={stats} homePath="/admin" />
+
+      <div className="mt-4">
+        <StageBreakdown items={fulfillments} homePath="/admin" />
       </div>
 
       <div className="mt-8">
