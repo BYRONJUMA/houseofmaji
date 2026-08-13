@@ -85,7 +85,14 @@ function ChiefPage() {
   const { data: fulfillments = [], isLoading } = useFulfillments();
   const { data: profiles = [] } = useProfiles();
   const { data: payments = [] } = useAllPayments();
-  const { data: allCommissions = [] } = useCommissions({ userId: profile?.id, all: true });
+  const { data: commissions = [] } = useQuery({
+    queryKey: ["commissions"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("commissions").select("*");
+      if (error) throw error;
+      return data;
+    },
+  });
   // the chief engineer can also assign the job to themselves
   const engineers = profiles.filter(
     (p) => p.role === "engineer" || (profile?.id && p.id === profile.id),
