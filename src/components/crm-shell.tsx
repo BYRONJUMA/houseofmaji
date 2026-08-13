@@ -22,7 +22,7 @@ const CRM_NAV = [
   { to: "/crm/whatsapp", label: "WhatsApp" },
 ] as const;
 
-const MANAGER_NAV = [{ to: "/crm/machines", label: "Machines" }] as const;
+const MANAGER_NAV = [{ to: "/crm/machines", label: "Taxonomy" }] as const;
 const ADMIN_NAV = [{ to: "/crm/settings", label: "Settings" }] as const;
 
 
