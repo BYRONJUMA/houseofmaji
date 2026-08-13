@@ -26,6 +26,7 @@ import { Route as AuthenticatedCrmServicesRouteImport } from './routes/_authenti
 import { Route as AuthenticatedCrmSchoolsRouteImport } from './routes/_authenticated/crm.schools'
 import { Route as AuthenticatedCrmSalesRouteImport } from './routes/_authenticated/crm.sales'
 import { Route as AuthenticatedCrmProjectsRouteImport } from './routes/_authenticated/crm.projects'
+import { Route as AuthenticatedCrmMachinesRouteImport } from './routes/_authenticated/crm.machines'
 import { Route as AuthenticatedCrmLeadsRouteImport } from './routes/_authenticated/crm.leads'
 import { Route as AuthenticatedCrmInventoryRouteImport } from './routes/_authenticated/crm.inventory'
 
@@ -117,6 +118,12 @@ const AuthenticatedCrmProjectsRoute =
     path: '/projects',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedCrmMachinesRoute =
+  AuthenticatedCrmMachinesRouteImport.update({
+    id: '/machines',
+    path: '/machines',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmLeadsRoute = AuthenticatedCrmLeadsRouteImport.update({
   id: '/leads',
   path: '/leads',
@@ -140,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/sales': typeof AuthenticatedSalesRoute
   '/crm/inventory': typeof AuthenticatedCrmInventoryRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
+  '/crm/machines': typeof AuthenticatedCrmMachinesRoute
   '/crm/projects': typeof AuthenticatedCrmProjectsRoute
   '/crm/sales': typeof AuthenticatedCrmSalesRoute
   '/crm/schools': typeof AuthenticatedCrmSchoolsRoute
@@ -159,6 +167,7 @@ export interface FileRoutesByTo {
   '/sales': typeof AuthenticatedSalesRoute
   '/crm/inventory': typeof AuthenticatedCrmInventoryRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
+  '/crm/machines': typeof AuthenticatedCrmMachinesRoute
   '/crm/projects': typeof AuthenticatedCrmProjectsRoute
   '/crm/sales': typeof AuthenticatedCrmSalesRoute
   '/crm/schools': typeof AuthenticatedCrmSchoolsRoute
@@ -181,6 +190,7 @@ export interface FileRoutesById {
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/crm/inventory': typeof AuthenticatedCrmInventoryRoute
   '/_authenticated/crm/leads': typeof AuthenticatedCrmLeadsRoute
+  '/_authenticated/crm/machines': typeof AuthenticatedCrmMachinesRoute
   '/_authenticated/crm/projects': typeof AuthenticatedCrmProjectsRoute
   '/_authenticated/crm/sales': typeof AuthenticatedCrmSalesRoute
   '/_authenticated/crm/schools': typeof AuthenticatedCrmSchoolsRoute
@@ -203,6 +213,7 @@ export interface FileRouteTypes {
     | '/sales'
     | '/crm/inventory'
     | '/crm/leads'
+    | '/crm/machines'
     | '/crm/projects'
     | '/crm/sales'
     | '/crm/schools'
@@ -222,6 +233,7 @@ export interface FileRouteTypes {
     | '/sales'
     | '/crm/inventory'
     | '/crm/leads'
+    | '/crm/machines'
     | '/crm/projects'
     | '/crm/sales'
     | '/crm/schools'
@@ -243,6 +255,7 @@ export interface FileRouteTypes {
     | '/_authenticated/sales'
     | '/_authenticated/crm/inventory'
     | '/_authenticated/crm/leads'
+    | '/_authenticated/crm/machines'
     | '/_authenticated/crm/projects'
     | '/_authenticated/crm/sales'
     | '/_authenticated/crm/schools'
@@ -380,6 +393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmProjectsRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/machines': {
+      id: '/_authenticated/crm/machines'
+      path: '/machines'
+      fullPath: '/crm/machines'
+      preLoaderRoute: typeof AuthenticatedCrmMachinesRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/leads': {
       id: '/_authenticated/crm/leads'
       path: '/leads'
@@ -400,6 +420,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmInventoryRoute: typeof AuthenticatedCrmInventoryRoute
   AuthenticatedCrmLeadsRoute: typeof AuthenticatedCrmLeadsRoute
+  AuthenticatedCrmMachinesRoute: typeof AuthenticatedCrmMachinesRoute
   AuthenticatedCrmProjectsRoute: typeof AuthenticatedCrmProjectsRoute
   AuthenticatedCrmSalesRoute: typeof AuthenticatedCrmSalesRoute
   AuthenticatedCrmSchoolsRoute: typeof AuthenticatedCrmSchoolsRoute
@@ -411,6 +432,7 @@ interface AuthenticatedCrmRouteChildren {
 const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmInventoryRoute: AuthenticatedCrmInventoryRoute,
   AuthenticatedCrmLeadsRoute: AuthenticatedCrmLeadsRoute,
+  AuthenticatedCrmMachinesRoute: AuthenticatedCrmMachinesRoute,
   AuthenticatedCrmProjectsRoute: AuthenticatedCrmProjectsRoute,
   AuthenticatedCrmSalesRoute: AuthenticatedCrmSalesRoute,
   AuthenticatedCrmSchoolsRoute: AuthenticatedCrmSchoolsRoute,
