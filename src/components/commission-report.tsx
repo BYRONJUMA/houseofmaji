@@ -1,4 +1,5 @@
 import { Download } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -85,6 +86,7 @@ export function MyCommissionsCard({
   fallbackName: string;
   scope?: string;
 }) {
+  const navigate = useNavigate();
   const total = rows.reduce((s, r) => s + Number(r.amount), 0);
   return (
     <section className="surface-card mt-8 p-5">
@@ -116,7 +118,13 @@ export function MyCommissionsCard({
             </thead>
             <tbody>
               {rows.slice(0, 6).map((r) => (
-                <tr key={r.id} className="border-b border-border last:border-0">
+                <tr
+                  key={r.id}
+                  onClick={() =>
+                    navigate({ to: "/fulfillment/$id", params: { id: r.fulfillment_id } })
+                  }
+                  className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
+                >
                   <td className="py-2 pr-4 font-medium">{r.fulfillments?.client_name ?? "—"}</td>
                   <td className="py-2 pr-4 text-muted-foreground">
                     {COMMISSION_TYPE_LABEL[r.role] ?? r.role}
