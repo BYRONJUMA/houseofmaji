@@ -169,7 +169,11 @@ function AdminPage() {
             </thead>
             <tbody>
               {profiles.map((p) => (
-                <tr key={p.id} className="border-b border-border last:border-0">
+                <tr
+                  key={p.id}
+                  onClick={() => navigate({ to: "/user/$id", params: { id: p.id } })}
+                  className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
+                >
                   <td className="px-4 py-3 font-medium">
                     {p.full_name}
                     <span className="ml-2 text-xs text-muted-foreground">
@@ -184,11 +188,12 @@ function AdminPage() {
                         .reduce((s, c) => s + Number(c.amount), 0),
                     )}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <AdminUserActions user={p} isSelf={p.id === profile?.id} />
                   </td>
                 </tr>
               ))}
+
             </tbody>
           </table>
         </div>
