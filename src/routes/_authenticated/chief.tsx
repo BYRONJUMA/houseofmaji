@@ -76,7 +76,10 @@ function ChiefPage() {
   const { data: fulfillments = [], isLoading } = useFulfillments();
   const { data: profiles = [] } = useProfiles();
   const { data: payments = [] } = useAllPayments();
-  const engineers = profiles.filter((p) => p.role === "engineer");
+  // the chief engineer can also assign the job to themselves
+  const engineers = profiles.filter(
+    (p) => p.role === "engineer" || (profile?.id && p.id === profile.id),
+  );
   const [assign, setAssign] = useState<Record<string, { asm?: string; inst?: string }>>({});
 
   const mutate = useMutation({
@@ -258,6 +261,7 @@ function ChiefPage() {
                                 {engineers.map((e) => (
                                   <SelectItem key={e.id} value={e.id}>
                                     {e.full_name}
+                                    {e.id === profile?.id ? " (me)" : ""}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -279,6 +283,7 @@ function ChiefPage() {
                                 {engineers.map((e) => (
                                   <SelectItem key={e.id} value={e.id}>
                                     {e.full_name}
+                                    {e.id === profile?.id ? " (me)" : ""}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -329,6 +334,7 @@ function ChiefPage() {
                                 {engineers.map((e) => (
                                   <SelectItem key={e.id} value={e.id}>
                                     {e.full_name}
+                                    {e.id === profile?.id ? " (me)" : ""}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -350,6 +356,7 @@ function ChiefPage() {
                                 {engineers.map((e) => (
                                   <SelectItem key={e.id} value={e.id}>
                                     {e.full_name}
+                                    {e.id === profile?.id ? " (me)" : ""}
                                   </SelectItem>
                                 ))}
                               </SelectContent>

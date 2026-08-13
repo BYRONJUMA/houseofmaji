@@ -36,6 +36,7 @@ const EMPTY = {
   location: "",
   additional_notes: "",
   machine_type: "",
+  capacity_lph: "",
   agreed_price: "",
   agreed_delivery_date: "",
 };
@@ -90,6 +91,7 @@ function SalesPage() {
           water_analysis_file_url: filePath,
           additional_notes: form.additional_notes.trim() || null,
           machine_type: form.machine_type.trim(),
+          capacity_lph: Number(form.capacity_lph),
           agreed_price: Number(form.agreed_price),
           agreed_delivery_date: form.agreed_delivery_date,
           sales_rep_id: profile!.id,
@@ -188,14 +190,28 @@ function SalesPage() {
               onChange={(e) => setForm({ ...form, additional_notes: e.target.value })}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="machine">Machine type</Label>
-            <Input
-              id="machine"
-              value={form.machine_type}
-              onChange={(e) => setForm({ ...form, machine_type: e.target.value })}
-              required
-            />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="machine">Machine type</Label>
+              <Input
+                id="machine"
+                value={form.machine_type}
+                onChange={(e) => setForm({ ...form, machine_type: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="capacity">Machine capacity (LPH)</Label>
+              <Input
+                id="capacity"
+                type="number"
+                min="1"
+                step="1"
+                value={form.capacity_lph}
+                onChange={(e) => setForm({ ...form, capacity_lph: e.target.value })}
+                required
+              />
+            </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
