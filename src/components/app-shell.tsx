@@ -13,8 +13,9 @@ import { BackButton } from "@/components/back-button";
 function navFor(role?: string) {
   const items: { to: string; label: string }[] = [];
   if (!role) return items;
-  items.push({ to: ROLE_HOME[role], label: "Dashboard" });
+  items.push({ to: ROLE_HOME[role] ?? "/", label: "Dashboard" });
   items.push({ to: "/commissions", label: "Commissions" });
+  if (isCrmMember(role)) items.push({ to: "/crm", label: "CRM" });
   return items;
 }
 
