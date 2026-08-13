@@ -88,7 +88,8 @@ function DetailPage() {
   const showSignoffProgress = ["delivery", "installed"].includes(f.current_stage) && !!checklist;
 
   return (
-    <AppShell title={f.client_name} subtitle={`${f.machine_type} · ${f.location}`}>
+    <AppShell title={f.client_name} subtitle={`${f.machine_type} · ${f.location}`} showBack>
+
       {showSignoffProgress && (
         <div
           className={`mb-6 rounded-lg border px-4 py-3 text-sm ${
