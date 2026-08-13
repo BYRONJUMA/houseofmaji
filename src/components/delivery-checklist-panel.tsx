@@ -298,12 +298,14 @@ export function DeliveryChecklistPanel({
             title="Delivered & Installed By"
             name={checklist?.engineer_signoff_name ?? ""}
             at={checklist?.engineer_signoff_at ?? null}
-            disabled={!canEdit}
+            disabled={!canEdit || !checklist?.chief_signoff_at}
+            note={!checklist?.chief_signoff_at ? "Waiting on Chief Engineer approval" : undefined}
             defaultName={profile?.full_name ?? ""}
             onSign={(name) =>
               patch({ engineer_signoff_name: name, engineer_signoff_at: new Date().toISOString() })
             }
           />
+
           <div className="space-y-2">
             <p className="text-sm font-semibold">Received By (Client)</p>
             <SignaturePad
