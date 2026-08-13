@@ -18,9 +18,9 @@ export const Route = createFileRoute("/_authenticated/engineer")({
   validateSearch: stageSearchSchema,
   head: () => ({
     meta: [
-      { title: "My Jobs — House of Maji Machines" },
+      { title: "My Jobs — Machines" },
       { name: "description", content: "Machines assigned to you for assembly and installation." },
-      { property: "og:title", content: "My Jobs — House of Maji Machines" },
+      { property: "og:title", content: "My Jobs — Machines" },
       { property: "og:description", content: "Mark assembly complete and machines installed." },
     ],
   }),

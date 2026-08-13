@@ -15,9 +15,9 @@ export const Route = createFileRoute("/_authenticated/admin")({
   validateSearch: stageSearchSchema,
   head: () => ({
     meta: [
-      { title: "Admin Panel — House of Maji Machines" },
+      { title: "Admin Panel — Machines" },
       { name: "description", content: "Team overview, pipeline stats and commission payouts." },
-      { property: "og:title", content: "Admin Panel — House of Maji Machines" },
+      { property: "og:title", content: "Admin Panel — Machines" },
       { property: "og:description", content: "Monitor every fulfillment and every payout." },
     ],
   }),

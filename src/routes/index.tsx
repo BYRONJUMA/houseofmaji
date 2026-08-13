@@ -8,13 +8,13 @@ export const Route = createFileRoute("/")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "House of Maji Machines — Fulfillment Tracking" },
+      { title: "Machines — Fulfillment Tracking" },
       {
         name: "description",
         content:
           "Track every water machine from sale to installation: handover, frame ordering, assembly, delivery and commissions.",
       },
-      { property: "og:title", content: "House of Maji Machines — Fulfillment Tracking" },
+      { property: "og:title", content: "Machines — Fulfillment Tracking" },
       {
         property: "og:description",
         content: "Track every water machine from sale to installation: handover, frame ordering, assembly, delivery and commissions.",
@@ -42,7 +42,7 @@ function Index() {
       <span className="flex h-14 w-14 animate-pulse items-center justify-center rounded-2xl bg-primary text-primary-foreground">
         <Droplets className="h-7 w-7" />
       </span>
-      <h1 className="page-title">House of Maji Machines</h1>
+      <h1 className="page-title">Machines</h1>
       <p className="text-sm text-muted-foreground">Loading your workspace…</p>
     </div>
   );

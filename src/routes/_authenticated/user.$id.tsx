@@ -12,9 +12,9 @@ import { MetricTiles, type Metric } from "@/components/metric-tiles";
 export const Route = createFileRoute("/_authenticated/user/$id")({
   head: () => ({
     meta: [
-      { title: "Team Member — House of Maji Machines" },
+      { title: "Team Member — Machines" },
       { name: "description", content: "Team member details, assigned orders and commissions." },
-      { property: "og:title", content: "Team Member — House of Maji Machines" },
+      { property: "og:title", content: "Team Member — Machines" },
       { property: "og:description", content: "Manage a team member's role and account." },
     ],
   }),

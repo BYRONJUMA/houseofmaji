@@ -16,12 +16,12 @@ import { useSettings, settingNumber } from "@/hooks/use-crm-extra";
 export const Route = createFileRoute("/_authenticated/crm/inventory")({
   head: () => ({
     meta: [
-      { title: "Inventory — House of Maji CRM" },
+      { title: "Inventory — Machines CRM" },
       {
         name: "description",
         content: "Stock levels, buying and selling prices, margins and low-stock alerts.",
       },
-      { property: "og:title", content: "Inventory — House of Maji CRM" },
+      { property: "og:title", content: "Inventory — Machines CRM" },
       { property: "og:description", content: "Live stock levels and margin per product." },
     ],
   }),

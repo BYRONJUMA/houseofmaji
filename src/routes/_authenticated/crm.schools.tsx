@@ -29,12 +29,12 @@ import { useSchools, useTeam, useCrmMutation, nameOf, type School } from "@/hook
 export const Route = createFileRoute("/_authenticated/crm/schools")({
   head: () => ({
     meta: [
-      { title: "Schools Outreach — House of Maji CRM" },
+      { title: "Schools Outreach — Machines CRM" },
       {
         name: "description",
         content: "School prospect list by county and tier with visit tracking and follow-ups.",
       },
-      { property: "og:title", content: "Schools Outreach — House of Maji CRM" },
+      { property: "og:title", content: "Schools Outreach — Machines CRM" },
       { property: "og:description", content: "Plan and track school outreach visits county by county." },
     ],
   }),

@@ -31,12 +31,12 @@ import { useInvoices, useTargets, useTeam, useCrmMutation, nameOf } from "@/hook
 export const Route = createFileRoute("/_authenticated/crm/sales")({
   head: () => ({
     meta: [
-      { title: "Sales & Invoices — House of Maji CRM" },
+      { title: "Sales & Invoices — Machines CRM" },
       {
         name: "description",
         content: "Monthly revenue, outstanding balances, invoice records and targets per rep.",
       },
-      { property: "og:title", content: "Sales & Invoices — House of Maji CRM" },
+      { property: "og:title", content: "Sales & Invoices — Machines CRM" },
       {
         property: "og:description",
         content: "Track invoices, collections and revenue against monthly targets.",

@@ -43,9 +43,9 @@ export const Route = createFileRoute("/_authenticated/commissions")({
   }),
   head: () => ({
     meta: [
-      { title: "Commissions — House of Maji Machines" },
+      { title: "Commissions — Machines" },
       { name: "description", content: "Track every commission earned across sales and jobs." },
-      { property: "og:title", content: "Commissions — House of Maji Machines" },
+      { property: "og:title", content: "Commissions — Machines" },
       { property: "og:description", content: "Your earnings from sales and engineering work." },
     ],
   }),

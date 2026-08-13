@@ -9,7 +9,7 @@ export async function downloadPdf(
   headers: string[],
   rows: (string | number)[][],
   scope?: string,
-  title = "House of Maji Machines — Commissions",
+  title = "Machines — Commissions",
 ) {
   const [{ jsPDF }, autoTableMod] = await Promise.all([import("jspdf"), import("jspdf-autotable")]);
   const autoTable = autoTableMod.default;

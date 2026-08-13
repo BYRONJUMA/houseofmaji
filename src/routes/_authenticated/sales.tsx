@@ -22,9 +22,9 @@ export const Route = createFileRoute("/_authenticated/sales")({
   validateSearch: stageSearchSchema,
   head: () => ({
     meta: [
-      { title: "Sales Handover — House of Maji Machines" },
+      { title: "Sales Handover — Machines" },
       { name: "description", content: "Hand over a new water machine sale to the workshop." },
-      { property: "og:title", content: "Sales Handover — House of Maji Machines" },
+      { property: "og:title", content: "Sales Handover — Machines" },
       { property: "og:description", content: "Create and track your machine handovers." },
     ],
   }),

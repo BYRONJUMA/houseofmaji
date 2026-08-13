@@ -16,9 +16,9 @@ import { formatKES, formatDate } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
   head: () => ({
     meta: [
-      { title: "Fulfillment Detail — House of Maji Machines" },
+      { title: "Fulfillment Detail — Machines" },
       { name: "description", content: "Full stage timeline for a single machine fulfillment." },
-      { property: "og:title", content: "Fulfillment Detail — House of Maji Machines" },
+      { property: "og:title", content: "Fulfillment Detail — Machines" },
       { property: "og:description", content: "Track stage durations and assigned engineers." },
     ],
   }),

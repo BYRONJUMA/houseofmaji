@@ -36,13 +36,13 @@ import {
 export const Route = createFileRoute("/_authenticated/crm/visits")({
   head: () => ({
     meta: [
-      { title: "Site Visits — House of Maji CRM" },
+      { title: "Site Visits — Machines CRM" },
       {
         name: "description",
         content:
           "File installation, maintenance, repair and inspection visit reports with checklists and site photos.",
       },
-      { property: "og:title", content: "Site Visits — House of Maji CRM" },
+      { property: "og:title", content: "Site Visits — Machines CRM" },
       {
         property: "og:description",
         content: "Engineer visit reports, installation checklists and site photos.",
