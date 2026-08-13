@@ -238,6 +238,222 @@ export type Database = {
           },
         ]
       }
+      inventory: {
+        Row: {
+          buying_price: number | null
+          created_at: string
+          id: string
+          in_stock: number
+          model: string | null
+          product_name: string
+          selling_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          buying_price?: number | null
+          created_at?: string
+          id?: string
+          in_stock?: number
+          model?: string | null
+          product_name?: string
+          selling_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          buying_price?: number | null
+          created_at?: string
+          id?: string
+          in_stock?: number
+          model?: string | null
+          product_name?: string
+          selling_price?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      invoices: {
+        Row: {
+          amount: number
+          balance: number | null
+          client_name: string
+          created_at: string
+          date: string
+          id: string
+          invoice_no: string
+          machine: string | null
+          rep_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          balance?: number | null
+          client_name?: string
+          created_at?: string
+          date?: string
+          id?: string
+          invoice_no?: string
+          machine?: string | null
+          rep_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          balance?: number | null
+          client_name?: string
+          created_at?: string
+          date?: string
+          id?: string
+          invoice_no?: string
+          machine?: string | null
+          rep_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_rep_id_fkey"
+            columns: ["rep_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_activities: {
+        Row: {
+          created_at: string
+          id: string
+          lead_id: string
+          outcome_note: string | null
+          reached: boolean
+          rep_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lead_id: string
+          outcome_note?: string | null
+          reached?: boolean
+          rep_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lead_id?: string
+          outcome_note?: string | null
+          reached?: boolean
+          rep_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_activities_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_activities_rep_id_fkey"
+            columns: ["rep_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          created_at: string
+          deal_value: number | null
+          follow_up_due_at: string | null
+          id: string
+          location: string | null
+          machine_interest: string | null
+          name: string
+          phone: string
+          rep_id: string | null
+          source: string | null
+          stage: string
+          temp: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deal_value?: number | null
+          follow_up_due_at?: string | null
+          id?: string
+          location?: string | null
+          machine_interest?: string | null
+          name?: string
+          phone?: string
+          rep_id?: string | null
+          source?: string | null
+          stage?: string
+          temp?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deal_value?: number | null
+          follow_up_due_at?: string | null
+          id?: string
+          location?: string | null
+          machine_interest?: string | null
+          name?: string
+          phone?: string
+          rep_id?: string | null
+          source?: string | null
+          stage?: string
+          temp?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_rep_id_fkey"
+            columns: ["rep_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      monthly_targets: {
+        Row: {
+          created_at: string
+          deals_target: number
+          id: string
+          month: string
+          revenue_target: number
+          set_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deals_target?: number
+          id?: string
+          month: string
+          revenue_target?: number
+          set_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deals_target?: number
+          id?: string
+          month?: string
+          revenue_target?: number
+          set_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_targets_set_by_fkey"
+            columns: ["set_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -346,6 +562,156 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          balance: number | null
+          client_name: string | null
+          created_at: string
+          created_by: string | null
+          date: string
+          id: string
+          location: string | null
+          machine_description: string | null
+          status: string
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          balance?: number | null
+          client_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          id?: string
+          location?: string | null
+          machine_description?: string | null
+          status?: string
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          balance?: number | null
+          client_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          id?: string
+          location?: string | null
+          machine_description?: string | null
+          status?: string
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      schools: {
+        Row: {
+          area: string | null
+          county: string | null
+          created_at: string
+          id: string
+          last_contact_date: string | null
+          next_follow_up_date: string | null
+          rep_id: string | null
+          school_name: string
+          status: string
+          tier: string | null
+          updated_at: string
+          visit_count: number
+        }
+        Insert: {
+          area?: string | null
+          county?: string | null
+          created_at?: string
+          id?: string
+          last_contact_date?: string | null
+          next_follow_up_date?: string | null
+          rep_id?: string | null
+          school_name?: string
+          status?: string
+          tier?: string | null
+          updated_at?: string
+          visit_count?: number
+        }
+        Update: {
+          area?: string | null
+          county?: string | null
+          created_at?: string
+          id?: string
+          last_contact_date?: string | null
+          next_follow_up_date?: string | null
+          rep_id?: string | null
+          school_name?: string
+          status?: string
+          tier?: string | null
+          updated_at?: string
+          visit_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schools_rep_id_fkey"
+            columns: ["rep_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          client_name: string
+          contact: string | null
+          created_at: string
+          id: string
+          last_service_date: string | null
+          machine_type: string | null
+          next_due_date: string | null
+          recorded_by: string | null
+          updated_at: string
+          visit_count: number
+        }
+        Insert: {
+          client_name?: string
+          contact?: string | null
+          created_at?: string
+          id?: string
+          last_service_date?: string | null
+          machine_type?: string | null
+          next_due_date?: string | null
+          recorded_by?: string | null
+          updated_at?: string
+          visit_count?: number
+        }
+        Update: {
+          client_name?: string
+          contact?: string | null
+          created_at?: string
+          id?: string
+          last_service_date?: string | null
+          machine_type?: string | null
+          next_due_date?: string | null
+          recorded_by?: string | null
+          updated_at?: string
+          visit_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_recorded_by_fkey"
+            columns: ["recorded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stage_events: {
         Row: {
           actor_id: string | null
@@ -403,9 +769,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_crm_manager: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "sales_rep" | "chief_engineer" | "engineer" | "admin"
+      app_role:
+        | "sales_rep"
+        | "chief_engineer"
+        | "engineer"
+        | "admin"
+        | "sales_manager"
       commission_role: "sales" | "assembly" | "installation"
     }
     CompositeTypes: {
@@ -534,7 +906,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["sales_rep", "chief_engineer", "engineer", "admin"],
+      app_role: [
+        "sales_rep",
+        "chief_engineer",
+        "engineer",
+        "admin",
+        "sales_manager",
+      ],
       commission_role: ["sales", "assembly", "installation"],
     },
   },
