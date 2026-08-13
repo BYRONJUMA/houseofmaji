@@ -66,7 +66,7 @@ export function CrmShell({
               <Droplets className="h-5 w-5" />
             </span>
             <span className="font-display text-sm font-bold leading-tight tracking-tight sm:text-base">
-              House of Maji
+              Machines
               <span className="block text-[0.65rem] font-medium uppercase tracking-widest text-muted-foreground">
                 CRM
               </span>

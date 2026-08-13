@@ -43,12 +43,12 @@ import {
 export const Route = createFileRoute("/_authenticated/crm/leads")({
   head: () => ({
     meta: [
-      { title: "Leads — House of Maji CRM" },
+      { title: "Leads — Machines CRM" },
       {
         name: "description",
         content: "Every sales rep's lead pipeline: kanban stages, follow-ups and deal values.",
       },
-      { property: "og:title", content: "Leads — House of Maji CRM" },
+      { property: "og:title", content: "Leads — Machines CRM" },
       { property: "og:description", content: "Track and move every lead through the pipeline." },
     ],
   }),

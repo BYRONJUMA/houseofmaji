@@ -29,12 +29,12 @@ import { useProjects, useTeam, useCrmMutation, nameOf, type Project } from "@/ho
 export const Route = createFileRoute("/_authenticated/crm/projects")({
   head: () => ({
     meta: [
-      { title: "Projects — House of Maji CRM" },
+      { title: "Projects — Machines CRM" },
       {
         name: "description",
         content: "Installation and bulk-supply projects with totals, balances and status.",
       },
-      { property: "og:title", content: "Projects — House of Maji CRM" },
+      { property: "og:title", content: "Projects — Machines CRM" },
       { property: "og:description", content: "Track project totals, balances and completion." },
     ],
   }),

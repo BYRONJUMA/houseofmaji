@@ -31,12 +31,12 @@ import { useServices, useTeam, useCrmMutation, nameOf, type ServiceRecord } from
 export const Route = createFileRoute("/_authenticated/crm/services")({
   head: () => ({
     meta: [
-      { title: "Service Visits — House of Maji CRM" },
+      { title: "Service Visits — Machines CRM" },
       {
         name: "description",
         content: "Service schedule per client: last visit, next due date and overdue alerts.",
       },
-      { property: "og:title", content: "Service Visits — House of Maji CRM" },
+      { property: "og:title", content: "Service Visits — Machines CRM" },
       { property: "og:description", content: "Never miss a scheduled machine service again." },
     ],
   }),

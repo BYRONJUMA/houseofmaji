@@ -33,9 +33,9 @@ export const Route = createFileRoute("/_authenticated/chief")({
   validateSearch: stageSearchSchema,
   head: () => ({
     meta: [
-      { title: "Chief Engineer — House of Maji Machines" },
+      { title: "Chief Engineer — Machines" },
       { name: "description", content: "Run the assembly and delivery pipeline stage by stage." },
-      { property: "og:title", content: "Chief Engineer — House of Maji Machines" },
+      { property: "og:title", content: "Chief Engineer — Machines" },
       { property: "og:description", content: "Order frames and assign engineers to machines." },
     ],
   }),

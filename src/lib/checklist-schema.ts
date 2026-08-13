@@ -1,4 +1,4 @@
-/** Structure of the House of Maji "Machine Delivery Checklist & Handover Form". */
+/** Structure of the Machines "Machine Delivery Checklist & Handover Form". */
 
 export type ChecklistRowDef = {
   key: string;

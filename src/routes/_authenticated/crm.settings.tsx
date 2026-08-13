@@ -13,13 +13,13 @@ import { useSettings, SETTING_DEFAULTS } from "@/hooks/use-crm-extra";
 export const Route = createFileRoute("/_authenticated/crm/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — House of Maji CRM" },
+      { title: "Settings — Machines CRM" },
       {
         name: "description",
         content:
           "System-wide configuration: service interval, low-stock threshold and company identity.",
       },
-      { property: "og:title", content: "Settings — House of Maji CRM" },
+      { property: "og:title", content: "Settings — Machines CRM" },
       { property: "og:description", content: "Admin-only system configuration for the CRM." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

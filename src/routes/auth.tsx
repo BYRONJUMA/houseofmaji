@@ -21,13 +21,13 @@ export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Sign in — House of Maji Machines" },
+      { title: "Sign in — Machines" },
       {
         name: "description",
         content: "Sign in or create an account to track water machine fulfillments.",
       },
-      { property: "og:title", content: "Sign in — House of Maji Machines" },
-      { property: "og:description", content: "Access your House of Maji Machines workspace." },
+      { property: "og:title", content: "Sign in — Machines" },
+      { property: "og:description", content: "Access your Machines workspace." },
     ],
   }),
   component: AuthPage,
@@ -137,7 +137,7 @@ function AuthPage() {
           <span className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
             <Droplets className="h-7 w-7" />
           </span>
-          <h1 className="page-title">House of Maji Machines</h1>
+          <h1 className="page-title">Machines</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Fulfillment tracking from sale to installation
           </p>

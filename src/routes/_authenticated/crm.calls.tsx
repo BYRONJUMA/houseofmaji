@@ -23,13 +23,13 @@ import {
 export const Route = createFileRoute("/_authenticated/crm/calls")({
   head: () => ({
     meta: [
-      { title: "Call Reviews — House of Maji CRM" },
+      { title: "Call Reviews — Machines CRM" },
       {
         name: "description",
         content:
           "Uploaded sales call recordings with playback, transcripts, scores and coaching notes.",
       },
-      { property: "og:title", content: "Call Reviews — House of Maji CRM" },
+      { property: "og:title", content: "Call Reviews — Machines CRM" },
       {
         property: "og:description",
         content: "Review uploaded call recordings and attach coaching notes.",

@@ -32,13 +32,13 @@ import {
 export const Route = createFileRoute("/_authenticated/crm/")({
   head: () => ({
     meta: [
-      { title: "CRM Command Center — House of Maji" },
+      { title: "CRM Command Center — Machines" },
       {
         name: "description",
         content:
           "Live sales command center: pipeline value, monthly revenue against target, service visits due and school outreach.",
       },
-      { property: "og:title", content: "CRM Command Center — House of Maji" },
+      { property: "og:title", content: "CRM Command Center — Machines" },
       {
         property: "og:description",
         content: "Pipeline, revenue, inventory and service health in one view.",

@@ -20,13 +20,13 @@ import {
 export const Route = createFileRoute("/_authenticated/crm/whatsapp")({
   head: () => ({
     meta: [
-      { title: "WhatsApp — House of Maji CRM" },
+      { title: "WhatsApp — Machines CRM" },
       {
         name: "description",
         content:
-          "WhatsApp inbox mirror, recipient lists and drip sequences for the House of Maji sales team.",
+          "WhatsApp inbox mirror, recipient lists and drip sequences for the Machines sales team.",
       },
-      { property: "og:title", content: "WhatsApp — House of Maji CRM" },
+      { property: "og:title", content: "WhatsApp — Machines CRM" },
       {
         property: "og:description",
         content: "Manage recipient lists and drip message sequences.",

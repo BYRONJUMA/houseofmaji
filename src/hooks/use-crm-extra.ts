@@ -128,7 +128,7 @@ export function useSettings() {
 export const SETTING_DEFAULTS: Record<string, string> = {
   default_service_interval_months: "6",
   low_stock_threshold: "50",
-  company_name: "House of Maji",
+  company_name: "Machines",
   company_logo_url: "",
 };
 

@@ -17,13 +17,13 @@ import {
 export const Route = createFileRoute("/_authenticated/crm/machines")({
   head: () => ({
     meta: [
-      { title: "Machine Taxonomy — House of Maji CRM" },
+      { title: "Machine Taxonomy — Machines CRM" },
       {
         name: "description",
         content:
           "Manage machine categories, types and capacities used across lead intake and reporting.",
       },
-      { property: "og:title", content: "Machine Taxonomy — House of Maji CRM" },
+      { property: "og:title", content: "Machine Taxonomy — Machines CRM" },
       {
         property: "og:description",
         content: "Keep machine categories, types and capacities clean for reporting.",

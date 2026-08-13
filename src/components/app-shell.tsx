@@ -56,7 +56,7 @@ export function AppShell({
               <Droplets className="h-5 w-5" />
             </span>
             <span className="font-display text-base font-bold tracking-tight sm:text-lg">
-              House of Maji Machines
+              Machines
             </span>
           </Link>
 
