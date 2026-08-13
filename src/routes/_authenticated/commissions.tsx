@@ -104,6 +104,7 @@ function CommissionsPage() {
             ? "All team payouts (read-only)"
             : "Your earnings"
       }
+      showBack
       actions={
         <DownloadReportButton
           rows={rows}
@@ -112,6 +113,7 @@ function CommissionsPage() {
         />
       }
     >
+
       <div className="surface-card mb-6 flex flex-wrap items-end justify-between gap-4 p-5">
         <div>
           <p className="text-sm text-muted-foreground">
