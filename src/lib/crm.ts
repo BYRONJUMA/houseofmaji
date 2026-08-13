@@ -72,9 +72,12 @@ export const SERVICE_INTERVAL_MONTHS: Record<string, number> = {
   Softener: 12,
 };
 
-export function serviceInterval(machineType?: string | null) {
-  if (!machineType) return DEFAULT_SERVICE_INTERVAL_MONTHS;
-  return SERVICE_INTERVAL_MONTHS[machineType] ?? DEFAULT_SERVICE_INTERVAL_MONTHS;
+export function serviceInterval(
+  machineType?: string | null,
+  fallback: number = DEFAULT_SERVICE_INTERVAL_MONTHS,
+) {
+  if (!machineType) return fallback;
+  return SERVICE_INTERVAL_MONTHS[machineType] ?? fallback;
 }
 
 export const isCrmManager = (role?: string | null) => role === "admin" || role === "sales_manager";

@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { formatKES } from "@/lib/format";
-import { isCrmManager, LOW_STOCK_THRESHOLD, BADGE_GOOD, BADGE_WARN, BADGE_BAD, num } from "@/lib/crm";
+import { isCrmManager, BADGE_GOOD, BADGE_WARN, BADGE_BAD, num } from "@/lib/crm";
 import { useInventory, useCrmMutation, type InventoryItem } from "@/hooks/use-crm";
+import { useSettings, settingNumber } from "@/hooks/use-crm-extra";
 
 export const Route = createFileRoute("/_authenticated/crm/inventory")({
   head: () => ({
@@ -27,9 +28,9 @@ export const Route = createFileRoute("/_authenticated/crm/inventory")({
   component: InventoryPage,
 });
 
-function stockBadge(qty: number) {
+function stockBadge(qty: number, threshold: number) {
   if (qty <= 0) return { cls: BADGE_BAD, text: "Out of stock" };
-  if (qty < LOW_STOCK_THRESHOLD) return { cls: BADGE_WARN, text: "Low" };
+  if (qty < threshold) return { cls: BADGE_WARN, text: "Low" };
   return { cls: BADGE_GOOD, text: "In stock" };
 }
 
@@ -37,6 +38,8 @@ function InventoryPage() {
   const { profile } = useAuth();
   const manager = isCrmManager(profile?.role);
   const { data: items = [] } = useInventory();
+  const { data: settings } = useSettings();
+  const threshold = settingNumber(settings, "low_stock_threshold");
   const mutate = useCrmMutation("inventory", ["crm-inventory"]);
   const [editing, setEditing] = useState<InventoryItem | null>(null);
   const [creating, setCreating] = useState(false);
@@ -44,7 +47,7 @@ function InventoryPage() {
   const totalUnits = items.reduce((s, i) => s + num(i.in_stock), 0);
   const stockValue = items.reduce((s, i) => s + num(i.in_stock) * num(i.selling_price), 0);
   const costValue = items.reduce((s, i) => s + num(i.in_stock) * num(i.buying_price), 0);
-  const low = items.filter((i) => num(i.in_stock) < LOW_STOCK_THRESHOLD);
+  const low = items.filter((i) => num(i.in_stock) < threshold);
 
   const remove = (item: InventoryItem) => {
     if (!confirm(`Delete ${item.product_name}?`)) return;
@@ -85,7 +88,7 @@ function InventoryPage() {
           <CrmCard title={`Low stock (${low.length})`}>
             <div className="flex flex-wrap gap-2">
               {low.map((i) => (
-                <Badge key={i.id} className={stockBadge(num(i.in_stock)).cls}>
+                <Badge key={i.id} className={stockBadge(num(i.in_stock), threshold).cls}>
                   {i.product_name} · {num(i.in_stock)}
                 </Badge>
               ))}
@@ -109,7 +112,7 @@ function InventoryPage() {
             </thead>
             <tbody>
               {items.map((i) => {
-                const b = stockBadge(num(i.in_stock));
+                const b = stockBadge(num(i.in_stock), threshold);
                 const margin = num(i.selling_price) - num(i.buying_price);
                 return (
                   <tr
