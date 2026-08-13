@@ -382,37 +382,6 @@ function SignOff({
   );
 }
 
-function Field({
-  label,
-  value,
-  onCommit,
-  disabled,
-  type = "text",
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onCommit: (v: string) => void;
-  disabled?: boolean;
-  type?: string;
-  placeholder?: string;
-}) {
-  const id = useMemo(() => `f-${label.replace(/\W+/g, "-").toLowerCase()}`, [label]);
-  return (
-    <div className="space-y-1.5">
-      <Label htmlFor={id}>{label}</Label>
-      <Input
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        defaultValue={value}
-        disabled={disabled}
-        key={value}
-        onBlur={(e) => e.target.value !== value && onCommit(e.target.value)}
-      />
-    </div>
-  );
-}
 
 function ReadOnly({ label, value }: { label: string; value: string }) {
   return (
