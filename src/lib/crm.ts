@@ -1,44 +1,19 @@
 /** Shared CRM constants, labels and small helpers. */
 
-export const LEAD_STAGES = [
-  "new",
-  "contacted",
-  "not_responding",
-  "ghost",
-  "qualified",
-  "not_qualified",
-  "showroom_demo",
-  "quote_sent",
-  "negotiation",
-  "won",
-  "lost",
-] as const;
+export const LEAD_STAGES = ["new", "warm", "hot", "won", "not_won"] as const;
 export type LeadStage = (typeof LEAD_STAGES)[number];
 
 export const LEAD_STAGE_LABEL: Record<string, string> = {
   new: "New",
-  contacted: "Contacted",
-  not_responding: "Not Responding",
-  ghost: "Ghost",
-  qualified: "Qualified",
-  not_qualified: "Not Qualified",
-  showroom_demo: "Showroom Demo",
-  quote_sent: "Quote Sent",
-  negotiation: "Negotiation",
+  warm: "Warm",
+  hot: "Hot",
   won: "Won",
-  lost: "Lost",
+  not_won: "Not Won",
 };
 
 /** Stages that count as still-open pipeline. */
-export const CLOSED_STAGES: string[] = ["won", "lost", "not_qualified", "ghost"];
+export const CLOSED_STAGES: string[] = ["won", "not_won"];
 export const isOpenStage = (stage: string) => !CLOSED_STAGES.includes(stage);
-
-export const LEAD_TEMPS = ["hot", "warm", "cold"] as const;
-export const TEMP_BADGE: Record<string, string> = {
-  hot: "border-destructive/30 bg-destructive/10 text-destructive",
-  warm: "border-warning/30 bg-warning/10 text-warning",
-  cold: "border-primary/30 bg-primary/10 text-primary",
-};
 
 export const LEAD_SOURCES = [
   "walk_in",
@@ -51,6 +26,7 @@ export const LEAD_SOURCES = [
   "field_visit",
   "other",
 ] as const;
+
 
 export const label = (v?: string | null) =>
   !v ? "—" : v.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
