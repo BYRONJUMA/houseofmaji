@@ -6,8 +6,16 @@ import { CrmShell, CrmCard, StatCard, Badge } from "@/components/crm-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
+import { useSettings, settingNumber, useMachineTypeOptions } from "@/hooks/use-crm-extra";
 import { formatDate } from "@/lib/format";
 import {
   serviceInterval,
@@ -45,6 +53,8 @@ function dueBadge(next: string | null) {
 
 function ServicesPage() {
   const { data: services = [] } = useServices();
+  const { data: settings } = useSettings();
+  const defaultInterval = settingNumber(settings, "default_service_interval_months");
   const { data: team = [] } = useTeam();
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<ServiceRecord | null>(null);
@@ -61,7 +71,7 @@ function ServicesPage() {
   const logVisit = (s: ServiceRecord) => {
     const today = new Date();
     const next = new Date(today);
-    next.setMonth(next.getMonth() + serviceInterval(s.machine_type));
+    next.setMonth(next.getMonth() + serviceInterval(s.machine_type, defaultInterval));
     mutate.mutate(
       {
         type: "update",
@@ -208,6 +218,9 @@ function ServiceDialog({
 }) {
   const { profile } = useAuth();
   const mutate = useCrmMutation("services", ["crm-services"]);
+  const { data: settings } = useSettings();
+  const defaultInterval = settingNumber(settings, "default_service_interval_months");
+  const machineTypes = useMachineTypeOptions();
   const [f, setF] = useState({
     client_name: record?.client_name ?? "",
     contact: record?.contact ?? "",
@@ -225,7 +238,7 @@ function ServiceDialog({
     let next = f.next_due_date;
     if (!next && f.last_service_date) {
       const d = new Date(f.last_service_date);
-      d.setMonth(d.getMonth() + serviceInterval(f.machine_type));
+      d.setMonth(d.getMonth() + serviceInterval(f.machine_type, defaultInterval));
       next = isoDate(d);
     }
     const values = {
@@ -262,7 +275,22 @@ function ServiceDialog({
           </div>
           <div className="space-y-1.5">
             <Label>Machine type</Label>
-            <Input value={f.machine_type} onChange={(e) => set("machine_type", e.target.value)} />
+            <Select
+              value={f.machine_type || "none"}
+              onValueChange={(v) => set("machine_type", v === "none" ? "" : v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select machine" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Unspecified</SelectItem>
+                {machineTypes.map((m) => (
+                  <SelectItem key={m} value={m}>
+                    {m}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-1.5">
             <Label>Last service date</Label>

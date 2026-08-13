@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { CrmShell, CrmCard, StatCard, MiniTile, Bar, Badge } from "@/components/crm-shell";
 import { formatKES, formatDate } from "@/lib/format";
+import { useSettings, settingNumber } from "@/hooks/use-crm-extra";
 import {
   LEAD_STAGES,
   LEAD_STAGE_LABEL,
@@ -15,7 +16,6 @@ import {
   daysBetween,
   label,
   num,
-  LOW_STOCK_THRESHOLD,
 } from "@/lib/crm";
 import {
   useLeads,
@@ -118,7 +118,9 @@ function CrmDashboard() {
   const overdueService = services.filter(
     (s) => s.next_due_date && new Date(s.next_due_date) < now,
   );
-  const lowStock = inventory.filter((i) => num(i.in_stock) < LOW_STOCK_THRESHOLD);
+  const { data: settings } = useSettings();
+  const lowStockThreshold = settingNumber(settings, "low_stock_threshold");
+  const lowStock = inventory.filter((i) => num(i.in_stock) < lowStockThreshold);
   const stockValue = inventory.reduce((s, i) => s + num(i.in_stock) * num(i.selling_price), 0);
   const ongoing = projects.filter((p) => p.status === "ongoing");
   const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");

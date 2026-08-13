@@ -21,12 +21,17 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedUserIdRouteImport } from './routes/_authenticated/user.$id'
 import { Route as AuthenticatedFulfillmentIdRouteImport } from './routes/_authenticated/fulfillment.$id'
+import { Route as AuthenticatedCrmWhatsappRouteImport } from './routes/_authenticated/crm.whatsapp'
+import { Route as AuthenticatedCrmVisitsRouteImport } from './routes/_authenticated/crm.visits'
+import { Route as AuthenticatedCrmSettingsRouteImport } from './routes/_authenticated/crm.settings'
 import { Route as AuthenticatedCrmServicesRouteImport } from './routes/_authenticated/crm.services'
 import { Route as AuthenticatedCrmSchoolsRouteImport } from './routes/_authenticated/crm.schools'
 import { Route as AuthenticatedCrmSalesRouteImport } from './routes/_authenticated/crm.sales'
 import { Route as AuthenticatedCrmProjectsRouteImport } from './routes/_authenticated/crm.projects'
+import { Route as AuthenticatedCrmMachinesRouteImport } from './routes/_authenticated/crm.machines'
 import { Route as AuthenticatedCrmLeadsRouteImport } from './routes/_authenticated/crm.leads'
 import { Route as AuthenticatedCrmInventoryRouteImport } from './routes/_authenticated/crm.inventory'
+import { Route as AuthenticatedCrmCallsRouteImport } from './routes/_authenticated/crm.calls'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -89,6 +94,23 @@ const AuthenticatedFulfillmentIdRoute =
     path: '/fulfillment/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCrmWhatsappRoute =
+  AuthenticatedCrmWhatsappRouteImport.update({
+    id: '/whatsapp',
+    path: '/whatsapp',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
+const AuthenticatedCrmVisitsRoute = AuthenticatedCrmVisitsRouteImport.update({
+  id: '/visits',
+  path: '/visits',
+  getParentRoute: () => AuthenticatedCrmRoute,
+} as any)
+const AuthenticatedCrmSettingsRoute =
+  AuthenticatedCrmSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmServicesRoute =
   AuthenticatedCrmServicesRouteImport.update({
     id: '/services',
@@ -111,6 +133,12 @@ const AuthenticatedCrmProjectsRoute =
     path: '/projects',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedCrmMachinesRoute =
+  AuthenticatedCrmMachinesRouteImport.update({
+    id: '/machines',
+    path: '/machines',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmLeadsRoute = AuthenticatedCrmLeadsRouteImport.update({
   id: '/leads',
   path: '/leads',
@@ -122,6 +150,11 @@ const AuthenticatedCrmInventoryRoute =
     path: '/inventory',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedCrmCallsRoute = AuthenticatedCrmCallsRouteImport.update({
+  id: '/calls',
+  path: '/calls',
+  getParentRoute: () => AuthenticatedCrmRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -132,12 +165,17 @@ export interface FileRoutesByFullPath {
   '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
+  '/crm/calls': typeof AuthenticatedCrmCallsRoute
   '/crm/inventory': typeof AuthenticatedCrmInventoryRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
+  '/crm/machines': typeof AuthenticatedCrmMachinesRoute
   '/crm/projects': typeof AuthenticatedCrmProjectsRoute
   '/crm/sales': typeof AuthenticatedCrmSalesRoute
   '/crm/schools': typeof AuthenticatedCrmSchoolsRoute
   '/crm/services': typeof AuthenticatedCrmServicesRoute
+  '/crm/settings': typeof AuthenticatedCrmSettingsRoute
+  '/crm/visits': typeof AuthenticatedCrmVisitsRoute
+  '/crm/whatsapp': typeof AuthenticatedCrmWhatsappRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
   '/user/$id': typeof AuthenticatedUserIdRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
@@ -150,12 +188,17 @@ export interface FileRoutesByTo {
   '/commissions': typeof AuthenticatedCommissionsRoute
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
+  '/crm/calls': typeof AuthenticatedCrmCallsRoute
   '/crm/inventory': typeof AuthenticatedCrmInventoryRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
+  '/crm/machines': typeof AuthenticatedCrmMachinesRoute
   '/crm/projects': typeof AuthenticatedCrmProjectsRoute
   '/crm/sales': typeof AuthenticatedCrmSalesRoute
   '/crm/schools': typeof AuthenticatedCrmSchoolsRoute
   '/crm/services': typeof AuthenticatedCrmServicesRoute
+  '/crm/settings': typeof AuthenticatedCrmSettingsRoute
+  '/crm/visits': typeof AuthenticatedCrmVisitsRoute
+  '/crm/whatsapp': typeof AuthenticatedCrmWhatsappRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
   '/user/$id': typeof AuthenticatedUserIdRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
@@ -171,12 +214,17 @@ export interface FileRoutesById {
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/_authenticated/engineer': typeof AuthenticatedEngineerRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
+  '/_authenticated/crm/calls': typeof AuthenticatedCrmCallsRoute
   '/_authenticated/crm/inventory': typeof AuthenticatedCrmInventoryRoute
   '/_authenticated/crm/leads': typeof AuthenticatedCrmLeadsRoute
+  '/_authenticated/crm/machines': typeof AuthenticatedCrmMachinesRoute
   '/_authenticated/crm/projects': typeof AuthenticatedCrmProjectsRoute
   '/_authenticated/crm/sales': typeof AuthenticatedCrmSalesRoute
   '/_authenticated/crm/schools': typeof AuthenticatedCrmSchoolsRoute
   '/_authenticated/crm/services': typeof AuthenticatedCrmServicesRoute
+  '/_authenticated/crm/settings': typeof AuthenticatedCrmSettingsRoute
+  '/_authenticated/crm/visits': typeof AuthenticatedCrmVisitsRoute
+  '/_authenticated/crm/whatsapp': typeof AuthenticatedCrmWhatsappRoute
   '/_authenticated/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
   '/_authenticated/user/$id': typeof AuthenticatedUserIdRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
@@ -192,12 +240,17 @@ export interface FileRouteTypes {
     | '/crm'
     | '/engineer'
     | '/sales'
+    | '/crm/calls'
     | '/crm/inventory'
     | '/crm/leads'
+    | '/crm/machines'
     | '/crm/projects'
     | '/crm/sales'
     | '/crm/schools'
     | '/crm/services'
+    | '/crm/settings'
+    | '/crm/visits'
+    | '/crm/whatsapp'
     | '/fulfillment/$id'
     | '/user/$id'
     | '/crm/'
@@ -210,12 +263,17 @@ export interface FileRouteTypes {
     | '/commissions'
     | '/engineer'
     | '/sales'
+    | '/crm/calls'
     | '/crm/inventory'
     | '/crm/leads'
+    | '/crm/machines'
     | '/crm/projects'
     | '/crm/sales'
     | '/crm/schools'
     | '/crm/services'
+    | '/crm/settings'
+    | '/crm/visits'
+    | '/crm/whatsapp'
     | '/fulfillment/$id'
     | '/user/$id'
     | '/crm'
@@ -230,12 +288,17 @@ export interface FileRouteTypes {
     | '/_authenticated/crm'
     | '/_authenticated/engineer'
     | '/_authenticated/sales'
+    | '/_authenticated/crm/calls'
     | '/_authenticated/crm/inventory'
     | '/_authenticated/crm/leads'
+    | '/_authenticated/crm/machines'
     | '/_authenticated/crm/projects'
     | '/_authenticated/crm/sales'
     | '/_authenticated/crm/schools'
     | '/_authenticated/crm/services'
+    | '/_authenticated/crm/settings'
+    | '/_authenticated/crm/visits'
+    | '/_authenticated/crm/whatsapp'
     | '/_authenticated/fulfillment/$id'
     | '/_authenticated/user/$id'
     | '/_authenticated/crm/'
@@ -333,6 +396,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFulfillmentIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/crm/whatsapp': {
+      id: '/_authenticated/crm/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/crm/whatsapp'
+      preLoaderRoute: typeof AuthenticatedCrmWhatsappRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/crm/visits': {
+      id: '/_authenticated/crm/visits'
+      path: '/visits'
+      fullPath: '/crm/visits'
+      preLoaderRoute: typeof AuthenticatedCrmVisitsRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/crm/settings': {
+      id: '/_authenticated/crm/settings'
+      path: '/settings'
+      fullPath: '/crm/settings'
+      preLoaderRoute: typeof AuthenticatedCrmSettingsRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/services': {
       id: '/_authenticated/crm/services'
       path: '/services'
@@ -361,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmProjectsRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/machines': {
+      id: '/_authenticated/crm/machines'
+      path: '/machines'
+      fullPath: '/crm/machines'
+      preLoaderRoute: typeof AuthenticatedCrmMachinesRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/leads': {
       id: '/_authenticated/crm/leads'
       path: '/leads'
@@ -375,26 +466,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmInventoryRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/calls': {
+      id: '/_authenticated/crm/calls'
+      path: '/calls'
+      fullPath: '/crm/calls'
+      preLoaderRoute: typeof AuthenticatedCrmCallsRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
   }
 }
 
 interface AuthenticatedCrmRouteChildren {
+  AuthenticatedCrmCallsRoute: typeof AuthenticatedCrmCallsRoute
   AuthenticatedCrmInventoryRoute: typeof AuthenticatedCrmInventoryRoute
   AuthenticatedCrmLeadsRoute: typeof AuthenticatedCrmLeadsRoute
+  AuthenticatedCrmMachinesRoute: typeof AuthenticatedCrmMachinesRoute
   AuthenticatedCrmProjectsRoute: typeof AuthenticatedCrmProjectsRoute
   AuthenticatedCrmSalesRoute: typeof AuthenticatedCrmSalesRoute
   AuthenticatedCrmSchoolsRoute: typeof AuthenticatedCrmSchoolsRoute
   AuthenticatedCrmServicesRoute: typeof AuthenticatedCrmServicesRoute
+  AuthenticatedCrmSettingsRoute: typeof AuthenticatedCrmSettingsRoute
+  AuthenticatedCrmVisitsRoute: typeof AuthenticatedCrmVisitsRoute
+  AuthenticatedCrmWhatsappRoute: typeof AuthenticatedCrmWhatsappRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
 }
 
 const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
+  AuthenticatedCrmCallsRoute: AuthenticatedCrmCallsRoute,
   AuthenticatedCrmInventoryRoute: AuthenticatedCrmInventoryRoute,
   AuthenticatedCrmLeadsRoute: AuthenticatedCrmLeadsRoute,
+  AuthenticatedCrmMachinesRoute: AuthenticatedCrmMachinesRoute,
   AuthenticatedCrmProjectsRoute: AuthenticatedCrmProjectsRoute,
   AuthenticatedCrmSalesRoute: AuthenticatedCrmSalesRoute,
   AuthenticatedCrmSchoolsRoute: AuthenticatedCrmSchoolsRoute,
   AuthenticatedCrmServicesRoute: AuthenticatedCrmServicesRoute,
+  AuthenticatedCrmSettingsRoute: AuthenticatedCrmSettingsRoute,
+  AuthenticatedCrmVisitsRoute: AuthenticatedCrmVisitsRoute,
+  AuthenticatedCrmWhatsappRoute: AuthenticatedCrmWhatsappRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
 }
 

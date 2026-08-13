@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { useMachineTypeOptions } from "@/hooks/use-crm-extra";
+import { UploadCallRecording } from "@/components/call-recording-upload";
 import { formatKES, formatDate } from "@/lib/format";
 import {
   LEAD_STAGES,
@@ -559,6 +562,9 @@ function LeadDetail({
         <DialogHeader>
           <DialogTitle>{lead.name || lead.phone}</DialogTitle>
         </DialogHeader>
+        <div className="flex flex-wrap gap-2">
+          <UploadCallRecording dealId={lead.id} />
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1 text-sm">
             <p>
@@ -694,50 +700,37 @@ function LeadDetail({
   );
 }
 
-function NewLeadDialog({
-  onClose,
-  team,
-}: {
-  onClose: () => void;
-  team: { id: string; full_name: string; role: string }[];
-}) {
-  const { profile } = useAuth();
+function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
   const create = useCrmMutation("leads", ["crm-leads"]);
+  const machineTypes = useMachineTypeOptions();
   const [f, setF] = useState({
     name: "",
     phone: "",
-    machine_interest: "",
     location: "",
-    source: "phone",
-    stage: "new",
-    deal_value: "",
-    rep_id: profile?.id ?? "none",
+    machine_interest: "none",
+    source: "walk_in",
   });
+  const [dupe, setDupe] = useState<Lead | null>(null);
+  const [checking, setChecking] = useState(false);
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
 
-  const submit = () => {
-    if (!f.phone.trim() && !f.name.trim()) {
-      toast.error("Add at least a name or phone number");
-      return;
-    }
+  const insert = () => {
     create.mutate(
       {
         type: "insert",
         values: {
           name: f.name.trim(),
           phone: f.phone.trim(),
-          machine_interest: f.machine_interest.trim() || null,
           location: f.location.trim() || null,
+          machine_interest: f.machine_interest === "none" ? null : f.machine_interest,
           source: f.source,
-          stage: f.stage,
-          deal_value: f.deal_value ? Number(f.deal_value) : null,
-          rep_id: f.rep_id === "none" ? null : f.rep_id,
+          stage: "new",
+          rep_id: null,
         },
       },
       {
         onSuccess: () => {
-          toast.success("Lead added");
+          toast.success("Lead captured at stage New, unassigned");
           onClose();
         },
         onError: (e: unknown) => toast.error((e as Error).message),
@@ -745,12 +738,47 @@ function NewLeadDialog({
     );
   };
 
+  const submit = async () => {
+    if (!f.phone.trim() && !f.name.trim()) {
+      toast.error("Add at least a name or phone number");
+      return;
+    }
+    if (!f.phone.trim()) {
+      insert();
+      return;
+    }
+    setChecking(true);
+    try {
+      const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+      const { data, error } = await supabase
+        .from("leads")
+        .select("*")
+        .eq("phone", f.phone.trim())
+        .gte("created_at", since)
+        .limit(1);
+      if (error) throw error;
+      const existing = (data ?? [])[0] as Lead | undefined;
+      if (existing) {
+        setDupe(existing);
+        return;
+      }
+      insert();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setChecking(false);
+    }
+  };
+
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
         <DialogHeader>
           <DialogTitle>New lead</DialogTitle>
         </DialogHeader>
+        <p className="text-xs text-muted-foreground">
+          Quick intake — the lead is created at stage New and left unassigned for triage.
+        </p>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label>Name</Label>
@@ -758,13 +786,12 @@ function NewLeadDialog({
           </div>
           <div className="space-y-1.5">
             <Label>Phone</Label>
-            <Input value={f.phone} onChange={(e) => set("phone", e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Machine interest</Label>
             <Input
-              value={f.machine_interest}
-              onChange={(e) => set("machine_interest", e.target.value)}
+              value={f.phone}
+              onChange={(e) => {
+                setDupe(null);
+                set("phone", e.target.value);
+              }}
             />
           </div>
           <div className="space-y-1.5">
@@ -772,6 +799,22 @@ function NewLeadDialog({
             <Input value={f.location} onChange={(e) => set("location", e.target.value)} />
           </div>
           <div className="space-y-1.5">
+            <Label>Machine interest</Label>
+            <Select value={f.machine_interest} onValueChange={(v) => set("machine_interest", v)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select machine" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Not sure yet</SelectItem>
+                {machineTypes.map((m) => (
+                  <SelectItem key={m} value={m}>
+                    {m}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5 sm:col-span-2">
             <Label>Source</Label>
             <Select value={f.source} onValueChange={(v) => set("source", v)}>
               <SelectTrigger>
@@ -786,49 +829,31 @@ function NewLeadDialog({
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-1.5">
-            <Label>Stage</Label>
-            <Select value={f.stage} onValueChange={(v) => set("stage", v)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {LEAD_STAGES.map((st) => (
-                  <SelectItem key={st} value={st}>
-                    {LEAD_STAGE_LABEL[st]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Deal value (KES)</Label>
-            <Input
-              type="number"
-              value={f.deal_value}
-              onChange={(e) => set("deal_value", e.target.value)}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Assigned rep</Label>
-            <Select value={f.rep_id} onValueChange={(v) => set("rep_id", v)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Unassigned</SelectItem>
-                {reps.map((r) => (
-                  <SelectItem key={r.id} value={r.id}>
-                    {r.full_name || "Unnamed"}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
         </div>
-        <Button onClick={submit} disabled={create.isPending}>
-          Add lead
-        </Button>
+
+        {dupe && (
+          <div className="rounded-xl border border-warning/40 bg-warning/10 p-3 text-sm">
+            <p className="font-semibold text-warning">Possible duplicate</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {dupe.name || dupe.phone} was already captured on {formatDate(dupe.created_at)} with
+              this phone number (within the last 48 hours).
+            </p>
+            <div className="mt-2 flex gap-2">
+              <Button size="sm" variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button size="sm" onClick={insert} disabled={create.isPending}>
+                Create anyway
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {!dupe && (
+          <Button onClick={() => void submit()} disabled={create.isPending || checking}>
+            {checking ? "Checking for duplicates…" : "Add lead"}
+          </Button>
+        )}
       </DialogContent>
     </Dialog>
   );

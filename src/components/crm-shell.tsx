@@ -15,9 +15,16 @@ const CRM_NAV = [
   { to: "/crm/sales", label: "Sales" },
   { to: "/crm/inventory", label: "Inventory" },
   { to: "/crm/services", label: "Services" },
+  { to: "/crm/visits", label: "Site Visits" },
   { to: "/crm/projects", label: "Projects" },
   { to: "/crm/schools", label: "Schools" },
+  { to: "/crm/calls", label: "Call Reviews" },
+  { to: "/crm/whatsapp", label: "WhatsApp" },
 ] as const;
+
+const MANAGER_NAV = [{ to: "/crm/machines", label: "Taxonomy" }] as const;
+const ADMIN_NAV = [{ to: "/crm/settings", label: "Settings" }] as const;
+
 
 export function CrmShell({
   title,
@@ -36,6 +43,12 @@ export function CrmShell({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+
+  const nav = [
+    ...CRM_NAV,
+    ...(profile?.role === "admin" || profile?.role === "sales_manager" ? MANAGER_NAV : []),
+    ...(profile?.role === "admin" ? ADMIN_NAV : []),
+  ];
 
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
@@ -61,7 +74,7 @@ export function CrmShell({
           </Link>
 
           <nav className="ml-4 hidden items-center gap-1 lg:flex">
-            {CRM_NAV.map((i) => (
+            {nav.map((i) => (
               <Link
                 key={i.to}
                 to={i.to}
@@ -109,7 +122,7 @@ export function CrmShell({
         {open && (
           <div className="border-t border-border bg-card px-4 py-3 lg:hidden">
             <div className="flex flex-col gap-1">
-              {CRM_NAV.map((i) => (
+              {nav.map((i) => (
                 <Link
                   key={i.to}
                   to={i.to}
