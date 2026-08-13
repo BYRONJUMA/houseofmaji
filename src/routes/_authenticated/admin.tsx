@@ -238,7 +238,8 @@ function AdminPage() {
                     <td className="px-4 py-3 text-right font-semibold">
                       {formatKES(f.agreed_price)}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+
                       <AdminOrderActions fulfillment={f} people={profiles} />
                     </td>
                   </tr>

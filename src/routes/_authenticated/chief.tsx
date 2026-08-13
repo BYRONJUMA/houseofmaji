@@ -128,18 +128,31 @@ function ChiefPage() {
   }).length;
 
   const metrics: Metric[] = [
-    { label: "Orders in pipeline", value: String(fulfillments.length - installedAll.length) },
+    {
+      label: "Orders in pipeline",
+      value: String(fulfillments.length - installedAll.length),
+      link: { to: "/chief", search: {} },
+    },
     {
       label: "Awaiting payment threshold",
       value: String(blocked),
       hint: "Blocked on the 50% / 80% gates",
+      link: { to: "/chief", search: {} },
     },
     { label: "Completed this month", value: String(completedThisMonth), stage: "installed" },
     {
+      label: "Unpaid commissions",
+      value: String(fulfillments.length ? "View" : "View"),
+      hint: "Open the payouts list",
+      link: { to: "/commissions", search: { paid: "unpaid" } },
+    },
+    {
       label: "Avg. received → installed",
       value: avgCycle ? formatDuration(avgCycle) : "—",
+      stage: "installed",
     },
   ];
+
 
   return (
     <AppShell title="Chief Engineer" subtitle="All fulfillments across the pipeline">
