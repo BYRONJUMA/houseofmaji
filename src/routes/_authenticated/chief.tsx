@@ -24,11 +24,10 @@ import {
   PAYMENT_GATE_MESSAGE,
   type Stage,
 } from "@/lib/stages";
-import { useAllPayments, paidPercent } from "@/hooks/use-payments";
+import { useAllPayments, paidPercent, totalPaid } from "@/hooks/use-payments";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
 import { formatDuration } from "@/lib/format";
-import { useCommissions } from "@/hooks/use-commissions";
 
 export const Route = createFileRoute("/_authenticated/chief")({
   validateSearch: stageSearchSchema,
@@ -42,6 +41,13 @@ export const Route = createFileRoute("/_authenticated/chief")({
   }),
   component: ChiefPage,
 });
+
+const ROLE_LABEL: Record<string, string> = {
+  sales_rep: "Sales Rep",
+  chief_engineer: "Chief Engineer",
+  engineer: "Engineer",
+  admin: "Admin",
+};
 
 export function useFulfillments() {
   return useQuery({
@@ -79,7 +85,14 @@ function ChiefPage() {
   const { data: fulfillments = [], isLoading } = useFulfillments();
   const { data: profiles = [] } = useProfiles();
   const { data: payments = [] } = useAllPayments();
-  const { data: allCommissions = [] } = useCommissions({ userId: profile?.id, all: true });
+  const { data: commissions = [] } = useQuery({
+    queryKey: ["commissions"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("commissions").select("*");
+      if (error) throw error;
+      return data;
+    },
+  });
   // the chief engineer can also assign the job to themselves
   const engineers = profiles.filter(
     (p) => p.role === "engineer" || (profile?.id && p.id === profile.id),
@@ -104,20 +117,74 @@ function ChiefPage() {
     return acc;
   }, {});
 
-  const now = new Date();
-  const installedAll = fulfillments.filter((f) => f.current_stage === "installed");
-  const completedThisMonth = installedAll.filter((f) => {
-    const d = new Date(f.updated_at);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-  }).length;
+  const active = fulfillments.filter((f) => f.current_stage !== "installed");
+  const installed = fulfillments.filter((f) => f.current_stage === "installed");
   const avgCycle =
-    installedAll.length > 0
-      ? installedAll.reduce(
-          (acc, f) =>
-            acc + (new Date(f.updated_at).getTime() - new Date(f.created_at).getTime()) / 1000,
+    installed.length > 0
+      ? installed.reduce(
+          (s, f) =>
+            s + (new Date(f.updated_at).getTime() - new Date(f.created_at).getTime()) / 1000,
           0,
-        ) / installedAll.length
+        ) / installed.length
       : 0;
+
+  const totalCommission = commissions.reduce((s, c) => s + Number(c.amount), 0);
+  const paidCommission = commissions
+    .filter((c) => c.paid)
+    .reduce((s, c) => s + Number(c.amount), 0);
+  const revenue = fulfillments.reduce((s, f) => s + Number(f.agreed_price), 0);
+  const collected = totalPaid(payments);
+
+  const perRole = profiles.reduce<Record<string, number>>((acc, p) => {
+    acc[p.role] = (acc[p.role] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const stats: Metric[] = [
+    {
+      label: "Total orders",
+      value: String(fulfillments.length),
+      hint: `${active.length} active`,
+      link: { to: "/chief", search: {} },
+    },
+    {
+      label: "Total revenue",
+      value: formatKES(revenue),
+      hint: "Sum of agreed prices",
+      link: { to: "/chief", search: {} },
+    },
+    {
+      label: "Revenue collected",
+      value: formatKES(collected),
+      hint: revenue > 0 ? `${((collected / revenue) * 100).toFixed(0)}% of agreed value` : undefined,
+      link: { to: "/chief", search: {} },
+    },
+    {
+      label: "Commissions paid",
+      value: formatKES(paidCommission),
+      link: { to: "/commissions", search: { paid: "paid" } },
+    },
+    {
+      label: "Commissions unpaid",
+      value: formatKES(totalCommission - paidCommission),
+      link: { to: "/commissions", search: { paid: "unpaid" } },
+    },
+    {
+      label: "Team members",
+      value: String(profiles.length),
+      hint: Object.entries(perRole)
+        .map(([r, n]) => `${n} ${ROLE_LABEL[r] ?? r}`)
+        .join(" · "),
+      link: { to: "/chief", search: {} },
+    },
+    { label: "Orders installed", value: String(installed.length), stage: "installed" },
+    {
+      label: "Avg. cycle time",
+      value: avgCycle ? formatDuration(avgCycle) : "—",
+      stage: "installed",
+    },
+  ];
+
   const blocked = fulfillments.filter((f) => {
     const next: Stage | null =
       f.current_stage === "received"
@@ -129,38 +196,10 @@ function ChiefPage() {
     return paidPercent(paidByFulfillment[f.id] ?? 0, f.agreed_price) < (PAYMENT_GATE[next] ?? 0);
   }).length;
 
-  const metrics: Metric[] = [
-    {
-      label: "Orders in pipeline",
-      value: String(fulfillments.length - installedAll.length),
-      link: { to: "/chief", search: {} },
-    },
-    {
-      label: "Awaiting payment threshold",
-      value: String(blocked),
-      hint: "Blocked on the 50% / 80% gates",
-      link: { to: "/chief", search: {} },
-    },
-    { label: "Completed this month", value: String(completedThisMonth), stage: "installed" },
-    {
-      label: "Unpaid commissions",
-      value: formatKES(
-        allCommissions.filter((c) => !c.paid).reduce((s, c) => s + Number(c.amount), 0),
-      ),
-      hint: "Open the payouts list",
-      link: { to: "/commissions", search: { paid: "unpaid" } },
-    },
-    {
-      label: "Avg. received → installed",
-      value: avgCycle ? formatDuration(avgCycle) : "—",
-      stage: "installed",
-    },
-  ];
-
 
   return (
     <AppShell title="Chief Engineer" subtitle="All fulfillments across the pipeline">
-      <MetricTiles metrics={metrics} homePath="/chief" />
+      <MetricTiles metrics={stats} homePath="/chief" />
 
       <div className="mt-4">
         <StageBreakdown items={fulfillments} homePath="/chief" />
