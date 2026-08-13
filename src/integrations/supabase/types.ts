@@ -413,6 +413,89 @@ export type Database = {
           },
         ]
       }
+      machine_capacities: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          label: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          label: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          label?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      machine_categories: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      machine_types: {
+        Row: {
+          active: boolean
+          category_id: string | null
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machine_types_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "machine_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       monthly_targets: {
         Row: {
           created_at: string
@@ -609,6 +692,45 @@ export type Database = {
           },
         ]
       }
+      recordings: {
+        Row: {
+          audio_file_url: string
+          created_at: string
+          deal_id: string | null
+          id: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          audio_file_url: string
+          created_at?: string
+          deal_id?: string | null
+          id?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          audio_file_url?: string
+          created_at?: string
+          deal_id?: string | null
+          id?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recordings_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recordings_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       schools: {
         Row: {
           area: string | null
@@ -709,6 +831,147 @@ export type Database = {
           },
         ]
       }
+      settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: string | null
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: string | null
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_visit_photos: {
+        Row: {
+          caption: string | null
+          id: string
+          photo_url: string
+          site_visit_id: string
+          uploaded_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          caption?: string | null
+          id?: string
+          photo_url: string
+          site_visit_id: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          caption?: string | null
+          id?: string
+          photo_url?: string
+          site_visit_id?: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_visit_photos_site_visit_id_fkey"
+            columns: ["site_visit_id"]
+            isOneToOne: false
+            referencedRelation: "site_visits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "site_visit_photos_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_visits: {
+        Row: {
+          checklist: Json
+          client_name: string
+          created_at: string
+          created_by: string | null
+          deal_id: string | null
+          engineer_id: string | null
+          id: string
+          location: string | null
+          notes: string | null
+          status: string
+          updated_at: string
+          visit_date: string
+          visit_type: string
+        }
+        Insert: {
+          checklist?: Json
+          client_name: string
+          created_at?: string
+          created_by?: string | null
+          deal_id?: string | null
+          engineer_id?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          visit_date?: string
+          visit_type?: string
+        }
+        Update: {
+          checklist?: Json
+          client_name?: string
+          created_at?: string
+          created_by?: string | null
+          deal_id?: string | null
+          engineer_id?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          visit_date?: string
+          visit_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_visits_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "site_visits_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "site_visits_engineer_id_fkey"
+            columns: ["engineer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stage_events: {
         Row: {
           actor_id: string | null
@@ -753,6 +1016,139 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      transcripts: {
+        Row: {
+          applied_at: string | null
+          coaching_notes: string | null
+          created_at: string
+          id: string
+          recording_id: string
+          score: number | null
+          transcript_text: string | null
+        }
+        Insert: {
+          applied_at?: string | null
+          coaching_notes?: string | null
+          created_at?: string
+          id?: string
+          recording_id: string
+          score?: number | null
+          transcript_text?: string | null
+        }
+        Update: {
+          applied_at?: string | null
+          coaching_notes?: string | null
+          created_at?: string
+          id?: string
+          recording_id?: string
+          score?: number | null
+          transcript_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transcripts_recording_id_fkey"
+            columns: ["recording_id"]
+            isOneToOne: false
+            referencedRelation: "recordings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_recipients: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          phone: string
+          region: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          phone: string
+          region?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          phone?: string
+          region?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      whatsapp_sequence_steps: {
+        Row: {
+          created_at: string
+          delay_hours: number
+          id: string
+          position: number
+          sequence_id: string
+          template_text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          delay_hours?: number
+          id?: string
+          position?: number
+          sequence_id: string
+          template_text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          delay_hours?: number
+          id?: string
+          position?: number
+          sequence_id?: string
+          template_text?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_sequence_steps_sequence_id_fkey"
+            columns: ["sequence_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_sequences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_sequences: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
