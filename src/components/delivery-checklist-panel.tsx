@@ -119,33 +119,11 @@ export function DeliveryChecklistPanel({
       <div className="surface-card space-y-4 p-6">
         <h2 className="text-lg font-semibold">Delivery Checklist & Handover Form</h2>
         <p className="text-sm text-muted-foreground">
-          Available once delivery begins — this fulfillment is still at an earlier stage.
+          Available once assembly begins — this fulfillment is still at an earlier stage.
         </p>
         <Button variant="outline" size="sm" onClick={downloadBlank}>
           <Download className="mr-2 h-4 w-4" /> Download Blank Checklist (PDF)
         </Button>
-      </div>
-    );
-  }
-
-  if (!isLoading && checklists.length === 0) {
-    return (
-      <div className="surface-card space-y-4 p-6">
-        <h2 className="text-lg font-semibold">Delivery Checklist & Handover Form</h2>
-        <p className="text-sm text-muted-foreground">
-          No machines recorded yet for this sale. Add a machine to start its checklist — the
-          delivery number and serial number are generated automatically.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {canEdit && (
-            <Button size="sm" onClick={addNewMachine} disabled={addMachine.isPending}>
-              <Plus className="mr-2 h-4 w-4" /> Add Machine
-            </Button>
-          )}
-          <Button variant="outline" size="sm" onClick={downloadBlank}>
-            <Download className="mr-2 h-4 w-4" /> Blank (PDF)
-          </Button>
-        </div>
       </div>
     );
   }
@@ -158,16 +136,11 @@ export function DeliveryChecklistPanel({
             <h2 className="text-lg font-semibold">Delivery Checklist & Handover Form</h2>
             <p className="text-sm text-muted-foreground">
               {canEdit
-                ? "Changes save automatically as you fill them in."
+                ? "Fill sections in as you work — changes save automatically."
                 : "Read-only — engineers and chief engineers can fill this in."}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {canEdit && (
-              <Button size="sm" onClick={addNewMachine} disabled={addMachine.isPending}>
-                <Plus className="mr-2 h-4 w-4" /> Add Machine
-              </Button>
-            )}
             <Button variant="outline" size="sm" onClick={downloadBlank}>
               <Download className="mr-2 h-4 w-4" /> Blank (PDF)
             </Button>
@@ -176,26 +149,6 @@ export function DeliveryChecklistPanel({
             </Button>
           </div>
         </div>
-
-        {checklists.length > 1 && (
-          <div className="flex flex-wrap gap-2">
-            {checklists.map((c, i) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => setActiveId(c.id)}
-                className={cn(
-                  "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-                  c.id === checklist?.id
-                    ? "border-primary bg-primary/12 text-primary"
-                    : "border-border text-muted-foreground hover:border-primary/50",
-                )}
-              >
-                Machine {i + 1} · {c.machine_serial_no ?? "—"}
-              </button>
-            ))}
-          </div>
-        )}
 
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -222,27 +175,22 @@ export function DeliveryChecklistPanel({
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <ReadOnly label="Delivery No. (auto)" value={checklist?.delivery_no ?? "—"} />
-            <ReadOnly label="Machine serial no. (auto)" value={checklist?.machine_serial_no ?? "—"} />
-            <Field
-              label="Date delivered"
-              type="date"
-              value={checklist?.date_delivered ?? ""}
-              disabled={!canEdit}
-              onCommit={(v) => patch({ date_delivered: v || null })}
+            <ReadOnly
+              label="Machine serial no. (auto)"
+              value={checklist?.machine_serial_no ?? "—"}
             />
-            <Field
-              label="Capacity (LPH)"
-              type="number"
-              value={checklist?.capacity_lph != null ? String(checklist.capacity_lph) : ""}
-              disabled={!canEdit}
-              onCommit={(v) => patch({ capacity_lph: v ? Number(v) : null })}
+            <ReadOnly
+              label="Date delivered (auto)"
+              value={checklist?.date_delivered ? formatDate(checklist.date_delivered) : "—"}
             />
+            <ReadOnly label="Capacity (LPH)" value={capacity || "—"} />
             <ReadOnly label="Client" value={fulfillment.client_name} />
             <ReadOnly label="Project site" value={fulfillment.location} />
             <ReadOnly label="Client contact" value={fulfillment.client_contact ?? "—"} />
             <ReadOnly label="Delivered by" value={meta.deliveredBy || "—"} />
           </div>
         )}
+
 
       </div>
 
