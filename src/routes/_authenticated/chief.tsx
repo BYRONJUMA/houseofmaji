@@ -28,6 +28,7 @@ import { useAllPayments, paidPercent } from "@/hooks/use-payments";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
 import { formatDuration } from "@/lib/format";
+import { useCommissions } from "@/hooks/use-commissions";
 
 export const Route = createFileRoute("/_authenticated/chief")({
   validateSearch: stageSearchSchema,
@@ -78,6 +79,7 @@ function ChiefPage() {
   const { data: fulfillments = [], isLoading } = useFulfillments();
   const { data: profiles = [] } = useProfiles();
   const { data: payments = [] } = useAllPayments();
+  const { data: allCommissions = [] } = useCommissions({ userId: profile?.id, all: true });
   // the chief engineer can also assign the job to themselves
   const engineers = profiles.filter(
     (p) => p.role === "engineer" || (profile?.id && p.id === profile.id),
@@ -142,7 +144,9 @@ function ChiefPage() {
     { label: "Completed this month", value: String(completedThisMonth), stage: "installed" },
     {
       label: "Unpaid commissions",
-      value: String(fulfillments.length ? "View" : "View"),
+      value: formatKES(
+        allCommissions.filter((c) => !c.paid).reduce((s, c) => s + Number(c.amount), 0),
+      ),
       hint: "Open the payouts list",
       link: { to: "/commissions", search: { paid: "unpaid" } },
     },
