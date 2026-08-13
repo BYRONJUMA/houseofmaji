@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Coins } from "lucide-react";
+import { Coins, CheckCheck } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { AppShell, EmptyState } from "@/components/app-shell";
 import { formatKES, formatDate } from "@/lib/format";
@@ -11,13 +11,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { COMMISSION_TYPE_LABEL, useCommissions, useTogglePaid } from "@/hooks/use-commissions";
+import {
+  COMMISSION_TYPE_LABEL,
+  monthKey,
+  monthLabel,
+  useCommissions,
+  useMarkAllPaid,
+  useTogglePaid,
+} from "@/hooks/use-commissions";
 import { DownloadReportButton } from "@/components/commission-report";
 import { ROLE_LABEL } from "@/lib/stages";
 
+type CommissionSearch = { paid?: "paid" | "unpaid"; month?: string };
+
 export const Route = createFileRoute("/_authenticated/commissions")({
+  validateSearch: (search: Record<string, unknown>): CommissionSearch => ({
+    paid: search.paid === "paid" || search.paid === "unpaid" ? search.paid : undefined,
+    month: typeof search.month === "string" && search.month ? search.month : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Commissions — House of Maji Machines" },
@@ -31,15 +54,22 @@ export const Route = createFileRoute("/_authenticated/commissions")({
 
 function CommissionsPage() {
   const { profile } = useAuth();
+  const navigate = useNavigate();
+  const search = Route.useSearch();
   const isAdmin = profile?.role === "admin";
   const isChief = profile?.role === "chief_engineer";
   const seesAll = isAdmin || isChief;
 
   const canTogglePaid = isAdmin || isChief;
   const togglePaid = useTogglePaid();
+  const markAllPaid = useMarkAllPaid();
+  const [confirmBulk, setConfirmBulk] = useState(false);
 
   const [person, setPerson] = useState("all");
-  const [paidFilter, setPaidFilter] = useState("all");
+  const paidFilter = search.paid ?? "all";
+  const month = search.month ?? "all";
+  const setSearch = (next: CommissionSearch) =>
+    navigate({ to: "/commissions", search: { ...search, ...next }, replace: true });
 
   const { data: all = [], isLoading } = useCommissions({ userId: profile?.id, all: seesAll });
 
@@ -49,13 +79,20 @@ function CommissionsPage() {
     return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1]));
   }, [all]);
 
+  const months = useMemo(
+    () => [...new Set(all.map((r) => monthKey(r.computed_at)))].sort().reverse(),
+    [all],
+  );
+
   const rows = all.filter(
     (r) =>
       (person === "all" || r.user_id === person) &&
-      (paidFilter === "all" || (paidFilter === "paid" ? r.paid : !r.paid)),
+      (paidFilter === "all" || (paidFilter === "paid" ? r.paid : !r.paid)) &&
+      (month === "all" || monthKey(r.computed_at) === month),
   );
 
   const total = rows.reduce((s, r) => s + Number(r.amount), 0);
+  const unpaidVisible = rows.filter((r) => !r.paid);
 
   return (
     <AppShell
@@ -101,7 +138,28 @@ function CommissionsPage() {
               </SelectContent>
             </Select>
           )}
-          <Select value={paidFilter} onValueChange={setPaidFilter}>
+          <Select
+            value={month}
+            onValueChange={(v) => setSearch({ month: v === "all" ? undefined : v })}
+          >
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Month" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All months</SelectItem>
+              {months.map((m) => (
+                <SelectItem key={m} value={m}>
+                  {monthLabel(m)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={paidFilter}
+            onValueChange={(v) =>
+              setSearch({ paid: v === "all" ? undefined : (v as "paid" | "unpaid") })
+            }
+          >
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
@@ -111,8 +169,53 @@ function CommissionsPage() {
               <SelectItem value="unpaid">Unpaid</SelectItem>
             </SelectContent>
           </Select>
+          {canTogglePaid && (
+            <Button
+              variant="outline"
+              disabled={unpaidVisible.length === 0 || markAllPaid.isPending}
+              onClick={() => setConfirmBulk(true)}
+            >
+              <CheckCheck className="h-4 w-4" /> Mark All Paid
+            </Button>
+          )}
         </div>
       </div>
+
+      <AlertDialog open={confirmBulk} onOpenChange={setConfirmBulk}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Mark {unpaidVisible.length} commission{unpaidVisible.length === 1 ? "" : "s"} as paid?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This applies to every unpaid record currently in view (
+              {formatKES(unpaidVisible.reduce((s, r) => s + Number(r.amount), 0))}) and stamps each
+              one as paid right now.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                markAllPaid.mutate(
+                  unpaidVisible.map((r) => r.id),
+                  {
+                    onSuccess: (n) => {
+                      toast.success(`${n} commission${n === 1 ? "" : "s"} marked paid`);
+                      setConfirmBulk(false);
+                    },
+                    onError: (err: unknown) =>
+                      toast.error((err as Error).message ?? "Could not update"),
+                  },
+                );
+              }}
+            >
+              Mark paid
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {isLoading ? (
         <div className="surface-card p-6 text-sm text-muted-foreground">Loading…</div>
@@ -139,7 +242,13 @@ function CommissionsPage() {
             </thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.id} className="border-b border-border last:border-0">
+                <tr
+                  key={r.id}
+                  onClick={() =>
+                    navigate({ to: "/fulfillment/$id", params: { id: r.fulfillment_id } })
+                  }
+                  className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
+                >
                   {seesAll && (
                     <td className="px-4 py-3 font-medium">{r.profiles?.full_name ?? "—"}</td>
                   )}
@@ -161,17 +270,18 @@ function CommissionsPage() {
                         size="sm"
                         variant={r.paid ? "default" : "outline"}
                         disabled={togglePaid.isPending}
-                        onClick={() =>
+                        onClick={(e) => {
+                          e.stopPropagation();
                           togglePaid.mutate(
                             { id: r.id, paid: !r.paid },
                             {
-                              onError: (e: unknown) =>
-                                toast.error((e as Error).message ?? "Could not update"),
+                              onError: (err: unknown) =>
+                                toast.error((err as Error).message ?? "Could not update"),
                               onSuccess: () =>
                                 toast.success(r.paid ? "Marked unpaid" : "Marked paid"),
                             },
-                          )
-                        }
+                          );
+                        }}
                       >
                         {r.paid ? "Paid" : "Mark paid"}
                       </Button>
