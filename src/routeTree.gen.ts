@@ -21,6 +21,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedUserIdRouteImport } from './routes/_authenticated/user.$id'
 import { Route as AuthenticatedFulfillmentIdRouteImport } from './routes/_authenticated/fulfillment.$id'
+import { Route as AuthenticatedCrmWhatsappRouteImport } from './routes/_authenticated/crm.whatsapp'
 import { Route as AuthenticatedCrmVisitsRouteImport } from './routes/_authenticated/crm.visits'
 import { Route as AuthenticatedCrmSettingsRouteImport } from './routes/_authenticated/crm.settings'
 import { Route as AuthenticatedCrmServicesRouteImport } from './routes/_authenticated/crm.services'
@@ -92,6 +93,12 @@ const AuthenticatedFulfillmentIdRoute =
     id: '/fulfillment/$id',
     path: '/fulfillment/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCrmWhatsappRoute =
+  AuthenticatedCrmWhatsappRouteImport.update({
+    id: '/whatsapp',
+    path: '/whatsapp',
+    getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
 const AuthenticatedCrmVisitsRoute = AuthenticatedCrmVisitsRouteImport.update({
   id: '/visits',
@@ -168,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/crm/services': typeof AuthenticatedCrmServicesRoute
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/crm/visits': typeof AuthenticatedCrmVisitsRoute
+  '/crm/whatsapp': typeof AuthenticatedCrmWhatsappRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
   '/user/$id': typeof AuthenticatedUserIdRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
@@ -190,6 +198,7 @@ export interface FileRoutesByTo {
   '/crm/services': typeof AuthenticatedCrmServicesRoute
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/crm/visits': typeof AuthenticatedCrmVisitsRoute
+  '/crm/whatsapp': typeof AuthenticatedCrmWhatsappRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
   '/user/$id': typeof AuthenticatedUserIdRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
@@ -215,6 +224,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/services': typeof AuthenticatedCrmServicesRoute
   '/_authenticated/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/_authenticated/crm/visits': typeof AuthenticatedCrmVisitsRoute
+  '/_authenticated/crm/whatsapp': typeof AuthenticatedCrmWhatsappRoute
   '/_authenticated/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
   '/_authenticated/user/$id': typeof AuthenticatedUserIdRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
@@ -240,6 +250,7 @@ export interface FileRouteTypes {
     | '/crm/services'
     | '/crm/settings'
     | '/crm/visits'
+    | '/crm/whatsapp'
     | '/fulfillment/$id'
     | '/user/$id'
     | '/crm/'
@@ -262,6 +273,7 @@ export interface FileRouteTypes {
     | '/crm/services'
     | '/crm/settings'
     | '/crm/visits'
+    | '/crm/whatsapp'
     | '/fulfillment/$id'
     | '/user/$id'
     | '/crm'
@@ -286,6 +298,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/services'
     | '/_authenticated/crm/settings'
     | '/_authenticated/crm/visits'
+    | '/_authenticated/crm/whatsapp'
     | '/_authenticated/fulfillment/$id'
     | '/_authenticated/user/$id'
     | '/_authenticated/crm/'
@@ -383,6 +396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFulfillmentIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/crm/whatsapp': {
+      id: '/_authenticated/crm/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/crm/whatsapp'
+      preLoaderRoute: typeof AuthenticatedCrmWhatsappRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/visits': {
       id: '/_authenticated/crm/visits'
       path: '/visits'
@@ -467,6 +487,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmServicesRoute: typeof AuthenticatedCrmServicesRoute
   AuthenticatedCrmSettingsRoute: typeof AuthenticatedCrmSettingsRoute
   AuthenticatedCrmVisitsRoute: typeof AuthenticatedCrmVisitsRoute
+  AuthenticatedCrmWhatsappRoute: typeof AuthenticatedCrmWhatsappRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
 }
 
@@ -481,6 +502,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmServicesRoute: AuthenticatedCrmServicesRoute,
   AuthenticatedCrmSettingsRoute: AuthenticatedCrmSettingsRoute,
   AuthenticatedCrmVisitsRoute: AuthenticatedCrmVisitsRoute,
+  AuthenticatedCrmWhatsappRoute: AuthenticatedCrmWhatsappRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
 }
 

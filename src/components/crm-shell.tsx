@@ -15,9 +15,16 @@ const CRM_NAV = [
   { to: "/crm/sales", label: "Sales" },
   { to: "/crm/inventory", label: "Inventory" },
   { to: "/crm/services", label: "Services" },
+  { to: "/crm/visits", label: "Site Visits" },
   { to: "/crm/projects", label: "Projects" },
   { to: "/crm/schools", label: "Schools" },
+  { to: "/crm/calls", label: "Call Reviews" },
+  { to: "/crm/whatsapp", label: "WhatsApp" },
 ] as const;
+
+const MANAGER_NAV = [{ to: "/crm/machines", label: "Machines" }] as const;
+const ADMIN_NAV = [{ to: "/crm/settings", label: "Settings" }] as const;
+
 
 export function CrmShell({
   title,
