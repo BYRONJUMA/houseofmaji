@@ -24,11 +24,10 @@ import {
   PAYMENT_GATE_MESSAGE,
   type Stage,
 } from "@/lib/stages";
-import { useAllPayments, paidPercent } from "@/hooks/use-payments";
+import { useAllPayments, paidPercent, totalPaid } from "@/hooks/use-payments";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
 import { formatDuration } from "@/lib/format";
-import { useCommissions } from "@/hooks/use-commissions";
 
 export const Route = createFileRoute("/_authenticated/chief")({
   validateSearch: stageSearchSchema,
