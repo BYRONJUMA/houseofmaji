@@ -129,15 +129,19 @@ export function AppShell({
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h1 className="page-title">{title}</h1>
-            {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
+        <div className="mb-6">
+          {showBack && <BackButton className="mb-1" />}
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 className="page-title">{title}</h1>
+              {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
+            </div>
+            {actions}
           </div>
-          {actions}
         </div>
         {children}
       </main>
+
     </div>
   );
 }
