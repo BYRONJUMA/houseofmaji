@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { CrmShell, CrmCard, StatCard, MiniTile, Bar, Badge } from "@/components/crm-shell";
 import { formatKES, formatDate } from "@/lib/format";
+import { useSettings, settingNumber } from "@/hooks/use-crm-extra";
 import {
   LEAD_STAGES,
   LEAD_STAGE_LABEL,
