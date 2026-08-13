@@ -94,25 +94,50 @@ function AdminPage() {
   }, {});
 
   const stats: Metric[] = [
-    { label: "Total orders", value: String(fulfillments.length), hint: `${active.length} active` },
-    { label: "Total revenue", value: formatKES(revenue), hint: "Sum of agreed prices" },
+    {
+      label: "Total orders",
+      value: String(fulfillments.length),
+      hint: `${active.length} active`,
+      link: { to: "/admin", search: {} },
+    },
+    {
+      label: "Total revenue",
+      value: formatKES(revenue),
+      hint: "Sum of agreed prices",
+      link: { to: "/admin", search: {} },
+    },
     {
       label: "Revenue collected",
       value: formatKES(collected),
       hint: revenue > 0 ? `${((collected / revenue) * 100).toFixed(0)}% of agreed value` : undefined,
+      link: { to: "/admin", search: {} },
     },
-    { label: "Commissions paid", value: formatKES(paidCommission) },
-    { label: "Commissions unpaid", value: formatKES(totalCommission - paidCommission) },
+    {
+      label: "Commissions paid",
+      value: formatKES(paidCommission),
+      link: { to: "/commissions", search: { paid: "paid" } },
+    },
+    {
+      label: "Commissions unpaid",
+      value: formatKES(totalCommission - paidCommission),
+      link: { to: "/commissions", search: { paid: "unpaid" } },
+    },
     {
       label: "Team members",
       value: String(profiles.length),
       hint: Object.entries(perRole)
         .map(([r, n]) => `${n} ${ROLE_LABEL[r] ?? r}`)
         .join(" · "),
+      link: { to: "/admin", search: {} },
     },
     { label: "Orders installed", value: String(installed.length), stage: "installed" },
-    { label: "Avg. cycle time", value: avgCycle ? formatDuration(avgCycle) : "—" },
+    {
+      label: "Avg. cycle time",
+      value: avgCycle ? formatDuration(avgCycle) : "—",
+      stage: "installed",
+    },
   ];
+
 
   return (
     <AppShell title="Admin Panel" subtitle="Everything happening across the business">
