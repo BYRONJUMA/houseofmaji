@@ -130,7 +130,7 @@ export type Database = {
           {
             foreignKeyName: "delivery_checklists_fulfillment_id_fkey"
             columns: ["fulfillment_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "fulfillments"
             referencedColumns: ["id"]
           },
@@ -149,6 +149,7 @@ export type Database = {
           agreed_delivery_date: string
           agreed_price: number
           assembly_engineer_id: string | null
+          capacity_lph: number | null
           chief_engineer_id: string | null
           client_contact: string | null
           client_name: string
@@ -169,6 +170,7 @@ export type Database = {
           agreed_delivery_date: string
           agreed_price: number
           assembly_engineer_id?: string | null
+          capacity_lph?: number | null
           chief_engineer_id?: string | null
           client_contact?: string | null
           client_name: string
@@ -189,6 +191,7 @@ export type Database = {
           agreed_delivery_date?: string
           agreed_price?: number
           assembly_engineer_id?: string | null
+          capacity_lph?: number | null
           chief_engineer_id?: string | null
           client_contact?: string | null
           client_name?: string

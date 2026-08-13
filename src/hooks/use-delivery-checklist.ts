@@ -43,26 +43,12 @@ export function useDeliveryChecklists(fulfillmentId: string) {
   });
 }
 
-/** Creates a new machine checklist — delivery no. and serial no. are generated server-side. */
-export function useAddChecklist(fulfillmentId: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async () => {
-      const { data: auth } = await supabase.auth.getUser();
-      const { data, error } = await supabase
-        .from("delivery_checklists")
-        .insert({
-          fulfillment_id: fulfillmentId,
-          started_by: auth.user?.id ?? null,
-        } as never)
-        .select("*")
-        .single();
-      if (error) throw error;
-      return data as unknown as DeliveryChecklist;
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: listKey(fulfillmentId) }),
-  });
+/** The single checklist for one fulfillment (auto-created server-side). */
+export function useDeliveryChecklist(fulfillmentId: string) {
+  const q = useDeliveryChecklists(fulfillmentId);
+  return { ...q, data: q.data?.[0] ?? null };
 }
+
 
 export type ChecklistPatch = Partial<
   Omit<

@@ -39,6 +39,7 @@ export type AdminFulfillment = {
   client_contact: string | null;
   location: string;
   machine_type: string;
+  capacity_lph: number | string | null;
   agreed_price: number;
   agreed_delivery_date: string;
   assembly_engineer_id: string | null;
@@ -79,6 +80,7 @@ export function AdminOrderActions({
           client_contact: form.client_contact,
           location: form.location,
           machine_type: form.machine_type,
+          capacity_lph: form.capacity_lph === "" || form.capacity_lph === null ? null : Number(form.capacity_lph),
           agreed_price: Number(form.agreed_price),
           agreed_delivery_date: form.agreed_delivery_date,
           assembly_engineer_id: form.assembly_engineer_id,
@@ -161,6 +163,12 @@ export function AdminOrderActions({
               label="Machine type"
               value={form.machine_type}
               onChange={(v) => setForm({ ...form, machine_type: v })}
+            />
+            <TextField
+              label="Capacity (LPH)"
+              type="number"
+              value={form.capacity_lph == null ? "" : String(form.capacity_lph)}
+              onChange={(v) => setForm({ ...form, capacity_lph: v === "" ? null : Number(v) })}
             />
             <TextField
               label="Agreed price (KES)"

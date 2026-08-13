@@ -81,27 +81,27 @@ function DetailPage() {
   }
 
   const names = Object.fromEntries((data!.profiles ?? []).map((p) => [p.id, p.full_name]));
-  const checklistReady = ["delivery", "installed"].includes(f.current_stage);
-  const machines = checklists ?? [];
-  const signedOff = machines.filter((c) => !!c.engineer_signoff_at).length;
-  const showSignoffProgress = checklistReady && machines.length > 0;
+  const checklistReady = ["assembling", "delivery", "installed"].includes(f.current_stage);
+  const checklist = (checklists ?? [])[0] ?? null;
+  const signedOff = !!checklist?.engineer_signoff_at;
+  const showSignoffProgress = ["delivery", "installed"].includes(f.current_stage) && !!checklist;
 
   return (
     <AppShell title={f.client_name} subtitle={`${f.machine_type} · ${f.location}`}>
       {showSignoffProgress && (
         <div
           className={`mb-6 rounded-lg border px-4 py-3 text-sm ${
-            signedOff === machines.length
+            signedOff
               ? "border-stage-installed/30 bg-stage-installed/12 text-stage-installed"
               : "border-border bg-secondary text-foreground"
           }`}
         >
           <span className="font-semibold">
-            {signedOff} of {machines.length} machine{machines.length === 1 ? "" : "s"} signed off
+            {signedOff ? "Machine signed off" : "Awaiting engineer sign-off"}
           </span>{" "}
-          {signedOff === machines.length
+          {signedOff
             ? "— engineer sign-off complete, order marked installed."
-            : "— the order is marked installed automatically once every machine has the engineer’s “Delivered & Installed By” sign-off."}
+            : "— the order is marked installed automatically once the engineer completes the “Delivered & Installed By” sign-off on the checklist."}
         </div>
       )}
       <Tabs defaultValue="overview" className="space-y-6">
@@ -111,6 +111,7 @@ function DetailPage() {
           <TabsTrigger value="checklist">
             Delivery Checklist{!checklistReady && " (locked)"}
           </TabsTrigger>
+
           <TabsTrigger value="history">Machine History</TabsTrigger>
         </TabsList>
 
@@ -125,6 +126,11 @@ function DetailPage() {
               <Row label="Client" value={f.client_name} />
               <Row label="Client contact" value={f.client_contact ?? "—"} />
               <Row label="Location" value={f.location} />
+              <Row
+                label="Capacity (LPH)"
+                value={f.capacity_lph != null ? String(f.capacity_lph) : "—"}
+              />
+
               <Row label="Agreed price" value={formatKES(f.agreed_price)} />
               <Row label="Delivery date" value={formatDate(f.agreed_delivery_date)} />
               <Row label="Created" value={formatDate(f.created_at)} />

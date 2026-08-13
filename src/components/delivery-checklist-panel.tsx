@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Download, Loader2, Check, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Download, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { SignaturePad } from "@/components/signature-pad";
 import { useAuth } from "@/hooks/use-auth";
 import {
-  useDeliveryChecklists,
-  useAddChecklist,
+  useDeliveryChecklist,
   useSaveChecklist,
   type ChecklistPatch,
 } from "@/hooks/use-delivery-checklist";
@@ -31,10 +30,12 @@ type Fulfillment = {
   location: string;
   client_contact: string | null;
   machine_type: string;
+  capacity_lph?: number | string | null;
   current_stage: string;
   assembly_engineer_id: string | null;
   installation_engineer_id: string | null;
 };
+
 
 export function DeliveryChecklistPanel({
   fulfillment,
@@ -44,15 +45,19 @@ export function DeliveryChecklistPanel({
   names: Record<string, string>;
 }) {
   const { profile } = useAuth();
-  const { data: checklists = [], isLoading } = useDeliveryChecklists(fulfillment.id);
-  const addMachine = useAddChecklist(fulfillment.id);
+  const { data: checklist, isLoading } = useDeliveryChecklist(fulfillment.id);
   const save = useSaveChecklist(fulfillment.id);
 
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const checklist = checklists.find((c) => c.id === activeId) ?? checklists[0] ?? null;
+  const canEdit =
+    profile?.role === "engineer" || profile?.role === "chief_engineer" || profile?.role === "admin";
+  const available = ["assembling", "delivery", "installed"].includes(fulfillment.current_stage);
+  const capacity =
+    fulfillment.capacity_lph != null
+      ? String(fulfillment.capacity_lph)
+      : checklist?.capacity_lph != null
+        ? String(checklist.capacity_lph)
+        : "";
 
-  const canEdit = profile?.role === "engineer" || profile?.role === "chief_engineer" || profile?.role === "admin";
-  const available = ["delivery", "installed"].includes(fulfillment.current_stage);
 
   const sections = (checklist?.sections ?? {}) as ChecklistSections;
   const filled = filledRowCount(sections);
@@ -65,7 +70,7 @@ export function DeliveryChecklistPanel({
     projectSite: fulfillment.location,
     clientContact: fulfillment.client_contact ?? "",
     machineType: fulfillment.machine_type,
-    capacityLph: checklist?.capacity_lph != null ? String(checklist.capacity_lph) : "",
+    capacityLph: capacity,
     machineSerialNo: checklist?.machine_serial_no ?? "",
     deliveredBy: (engineerId && names[engineerId]) || "",
   };
@@ -78,14 +83,6 @@ export function DeliveryChecklistPanel({
     );
   };
 
-  const addNewMachine = () =>
-    addMachine.mutate(undefined, {
-      onSuccess: (row) => {
-        setActiveId(row.id);
-        toast.success(`Machine ${row.machine_serial_no} added (${row.delivery_no})`);
-      },
-      onError: (e: unknown) => toast.error((e as Error).message ?? "Could not add the machine"),
-    });
 
   const setCell = (sectionKey: string, rowKey: string, cell: Partial<ChecklistCell>) => {
     const next: ChecklistSections = {
@@ -122,33 +119,11 @@ export function DeliveryChecklistPanel({
       <div className="surface-card space-y-4 p-6">
         <h2 className="text-lg font-semibold">Delivery Checklist & Handover Form</h2>
         <p className="text-sm text-muted-foreground">
-          Available once delivery begins — this fulfillment is still at an earlier stage.
+          Available once assembly begins — this fulfillment is still at an earlier stage.
         </p>
         <Button variant="outline" size="sm" onClick={downloadBlank}>
           <Download className="mr-2 h-4 w-4" /> Download Blank Checklist (PDF)
         </Button>
-      </div>
-    );
-  }
-
-  if (!isLoading && checklists.length === 0) {
-    return (
-      <div className="surface-card space-y-4 p-6">
-        <h2 className="text-lg font-semibold">Delivery Checklist & Handover Form</h2>
-        <p className="text-sm text-muted-foreground">
-          No machines recorded yet for this sale. Add a machine to start its checklist — the
-          delivery number and serial number are generated automatically.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {canEdit && (
-            <Button size="sm" onClick={addNewMachine} disabled={addMachine.isPending}>
-              <Plus className="mr-2 h-4 w-4" /> Add Machine
-            </Button>
-          )}
-          <Button variant="outline" size="sm" onClick={downloadBlank}>
-            <Download className="mr-2 h-4 w-4" /> Blank (PDF)
-          </Button>
-        </div>
       </div>
     );
   }
@@ -161,16 +136,11 @@ export function DeliveryChecklistPanel({
             <h2 className="text-lg font-semibold">Delivery Checklist & Handover Form</h2>
             <p className="text-sm text-muted-foreground">
               {canEdit
-                ? "Changes save automatically as you fill them in."
+                ? "Fill sections in as you work — changes save automatically."
                 : "Read-only — engineers and chief engineers can fill this in."}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {canEdit && (
-              <Button size="sm" onClick={addNewMachine} disabled={addMachine.isPending}>
-                <Plus className="mr-2 h-4 w-4" /> Add Machine
-              </Button>
-            )}
             <Button variant="outline" size="sm" onClick={downloadBlank}>
               <Download className="mr-2 h-4 w-4" /> Blank (PDF)
             </Button>
@@ -179,26 +149,6 @@ export function DeliveryChecklistPanel({
             </Button>
           </div>
         </div>
-
-        {checklists.length > 1 && (
-          <div className="flex flex-wrap gap-2">
-            {checklists.map((c, i) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => setActiveId(c.id)}
-                className={cn(
-                  "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-                  c.id === checklist?.id
-                    ? "border-primary bg-primary/12 text-primary"
-                    : "border-border text-muted-foreground hover:border-primary/50",
-                )}
-              >
-                Machine {i + 1} · {c.machine_serial_no ?? "—"}
-              </button>
-            ))}
-          </div>
-        )}
 
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -225,27 +175,22 @@ export function DeliveryChecklistPanel({
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <ReadOnly label="Delivery No. (auto)" value={checklist?.delivery_no ?? "—"} />
-            <ReadOnly label="Machine serial no. (auto)" value={checklist?.machine_serial_no ?? "—"} />
-            <Field
-              label="Date delivered"
-              type="date"
-              value={checklist?.date_delivered ?? ""}
-              disabled={!canEdit}
-              onCommit={(v) => patch({ date_delivered: v || null })}
+            <ReadOnly
+              label="Machine serial no. (auto)"
+              value={checklist?.machine_serial_no ?? "—"}
             />
-            <Field
-              label="Capacity (LPH)"
-              type="number"
-              value={checklist?.capacity_lph != null ? String(checklist.capacity_lph) : ""}
-              disabled={!canEdit}
-              onCommit={(v) => patch({ capacity_lph: v ? Number(v) : null })}
+            <ReadOnly
+              label="Date delivered (auto)"
+              value={checklist?.date_delivered ? formatDate(checklist.date_delivered) : "—"}
             />
+            <ReadOnly label="Capacity (LPH)" value={capacity || "—"} />
             <ReadOnly label="Client" value={fulfillment.client_name} />
             <ReadOnly label="Project site" value={fulfillment.location} />
             <ReadOnly label="Client contact" value={fulfillment.client_contact ?? "—"} />
             <ReadOnly label="Delivered by" value={meta.deliveredBy || "—"} />
           </div>
         )}
+
 
       </div>
 
@@ -437,37 +382,6 @@ function SignOff({
   );
 }
 
-function Field({
-  label,
-  value,
-  onCommit,
-  disabled,
-  type = "text",
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onCommit: (v: string) => void;
-  disabled?: boolean;
-  type?: string;
-  placeholder?: string;
-}) {
-  const id = useMemo(() => `f-${label.replace(/\W+/g, "-").toLowerCase()}`, [label]);
-  return (
-    <div className="space-y-1.5">
-      <Label htmlFor={id}>{label}</Label>
-      <Input
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        defaultValue={value}
-        disabled={disabled}
-        key={value}
-        onBlur={(e) => e.target.value !== value && onCommit(e.target.value)}
-      />
-    </div>
-  );
-}
 
 function ReadOnly({ label, value }: { label: string; value: string }) {
   return (
