@@ -23,17 +23,20 @@ export function AppShell({
   subtitle,
   actions,
   children,
+  showBack,
 }: {
   title: string;
   subtitle?: string;
   actions?: ReactNode;
   children: ReactNode;
+  showBack?: boolean;
 }) {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const items = navFor(profile?.role);
+
 
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
