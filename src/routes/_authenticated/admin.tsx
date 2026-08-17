@@ -226,9 +226,6 @@ function AdminPage() {
           )}
         </div>
 
-          </table>
-        </div>
-      </section>
     </AppShell>
   );
 }
