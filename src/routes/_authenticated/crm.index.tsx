@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { CrmShell, CrmCard, StatCard, MiniTile, Bar, Badge } from "@/components/crm-shell";
 import { formatKES, formatDate } from "@/lib/format";
-import { useSettings, settingNumber } from "@/hooks/use-crm-extra";
 import {
   LEAD_STAGES,
   LEAD_STAGE_LABEL,
@@ -20,9 +19,7 @@ import {
 import {
   useLeads,
   useInvoices,
-  useInventory,
   useServices,
-  useProjects,
   useSchools,
   useTargets,
   useTeam,
@@ -41,7 +38,7 @@ export const Route = createFileRoute("/_authenticated/crm/")({
       { property: "og:title", content: "CRM Command Center — Machines" },
       {
         property: "og:description",
-        content: "Pipeline, revenue, inventory and service health in one view.",
+        content: "Pipeline, revenue and service health in one view.",
       },
     ],
   }),
@@ -51,9 +48,7 @@ export const Route = createFileRoute("/_authenticated/crm/")({
 function CrmDashboard() {
   const { data: leads = [] } = useLeads();
   const { data: invoices = [] } = useInvoices();
-  const { data: inventory = [] } = useInventory();
   const { data: services = [] } = useServices();
-  const { data: projects = [] } = useProjects();
   const { data: schools = [] } = useSchools();
   const { data: targets = [] } = useTargets();
   const { data: team = [] } = useTeam();
@@ -118,11 +113,6 @@ function CrmDashboard() {
   const overdueService = services.filter(
     (s) => s.next_due_date && new Date(s.next_due_date) < now,
   );
-  const { data: settings } = useSettings();
-  const lowStockThreshold = settingNumber(settings, "low_stock_threshold");
-  const lowStock = inventory.filter((i) => num(i.in_stock) < lowStockThreshold);
-  const stockValue = inventory.reduce((s, i) => s + num(i.in_stock) * num(i.selling_price), 0);
-  const ongoing = projects.filter((p) => p.status === "ongoing");
   const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
 
   const repRows = reps
@@ -197,19 +187,6 @@ function CrmDashboard() {
             sub={`${overdueService.length} overdue`}
             tone={overdueService.length ? "warn" : "good"}
             to="/crm/services"
-          />
-          <MiniTile
-            label="Low stock items"
-            value={String(lowStock.length)}
-            tone={lowStock.length ? "warn" : "good"}
-            to="/crm/inventory"
-          />
-          <MiniTile label="Stock value" value={formatKES(stockValue)} to="/crm/inventory" />
-          <MiniTile
-            label="Ongoing projects"
-            value={String(ongoing.length)}
-            sub={`${projects.length} total`}
-            to="/crm/projects"
           />
           <MiniTile
             label="Schools tracked"

@@ -30,7 +30,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useMachineTypeOptions } from "@/hooks/use-crm-extra";
-import { UploadCallRecording } from "@/components/call-recording-upload";
 import { formatKES, formatDate } from "@/lib/format";
 import {
   LEAD_STAGES,
@@ -598,7 +597,6 @@ function LeadDetail({
           <DialogTitle>{lead.name || lead.phone}</DialogTitle>
         </DialogHeader>
         <div className="flex flex-wrap items-center gap-2">
-          <UploadCallRecording dealId={lead.id} />
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button size="sm" variant="destructive" disabled={remove.isPending}>
