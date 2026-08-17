@@ -12,8 +12,13 @@ import { BackButton } from "@/components/back-button";
 function navFor(role?: string) {
   const items: { to: string; label: string }[] = [];
   if (!role) return items;
+  // Sales Head has no Machines-section access; Services is the only carve-out.
+  if (!hasMachinesAccess(role)) {
+    items.push({ to: "/crm", label: "CRM" });
+    items.push({ to: "/services", label: "Services" });
+    return items;
+  }
   items.push({ to: ROLE_HOME[role] ?? "/", label: "Dashboard" });
-  if (role === "sales_head") items.push({ to: "/orders", label: "Orders" });
   items.push({ to: "/commissions", label: "Commissions" });
   items.push({ to: "/services", label: "Services" });
   if (isCrmMember(role)) items.push({ to: "/crm", label: "CRM" });
