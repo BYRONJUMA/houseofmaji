@@ -81,7 +81,11 @@ export function serviceInterval(
 }
 
 export const isCrmManager = (role?: string | null) => role === "admin" || role === "sales_head";
+/** Roles that can open the CRM section (chief engineer has read-only context access). */
 export const isCrmMember = (role?: string | null) =>
+  role === "admin" || role === "sales_head" || role === "sales_rep" || role === "chief_engineer";
+/** Roles allowed to create/edit CRM sales-side records. */
+export const canWriteCrm = (role?: string | null) =>
   role === "admin" || role === "sales_head" || role === "sales_rep";
 
 /* ------------------------------ dates ------------------------------ */
