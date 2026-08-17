@@ -145,12 +145,10 @@ function DetailPage() {
             <div className="surface-card space-y-3 p-5 text-sm">
               <h2 className="text-lg font-semibold">Details</h2>
               <Row label="Client" value={f.client_name} />
-              <Row label="Client contact" value={f.client_contact ?? "—"} />
+              <Row label="Client contact" value={f.client_contact} />
               <Row label="Location" value={f.location} />
-              <Row
-                label="Capacity (LPH)"
-                value={f.capacity_lph != null ? String(f.capacity_lph) : "—"}
-              />
+              <Row label="Machine type" value={f.machine_type} />
+              <Row label="Capacity (LPH)" value={capacity} />
 
               <Row label="Agreed price" value={formatKES(f.agreed_price)} />
               <Row label="Delivery date" value={formatDate(f.agreed_delivery_date)} />
