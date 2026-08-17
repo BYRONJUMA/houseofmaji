@@ -25,6 +25,7 @@ import {
   type Stage,
 } from "@/lib/stages";
 import { useAllPayments, paidPercent, totalPaid } from "@/hooks/use-payments";
+import { OrderCard } from "@/components/order-card";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { type Metric } from "@/components/metric-tiles";
 import { UnifiedSummary } from "@/components/unified-summary";
@@ -263,58 +264,28 @@ function ChiefPage() {
                     const blocked = nextStage !== null && pct < gate;
 
                     return (
-                      <article
+                      <OrderCard
                         key={f.id}
-                        role="link"
-                        tabIndex={0}
-                        onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            navigate({ to: "/fulfillment/$id", params: { id: f.id } });
-                          }
-                        }}
-                        className="surface-card cursor-pointer space-y-3 p-4 transition-all hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        fulfillment={f}
+                        paid={paidByFulfillment[f.id] ?? 0}
+                        compact
+                        meta={
+                          <div className="space-y-1 text-xs text-muted-foreground">
+                            {f.assembly_engineer_id && (
+                              <p>Assembly: {names[f.assembly_engineer_id]}</p>
+                            )}
+                            {f.installation_engineer_id && (
+                              <p>Install: {names[f.installation_engineer_id]}</p>
+                            )}
+                            {blocked && nextStage && (
+                              <p className="rounded-lg bg-destructive/10 px-2.5 py-2 text-xs font-medium text-destructive">
+                                {PAYMENT_GATE_MESSAGE[nextStage]}
+                              </p>
+                            )}
+                          </div>
+                        }
                       >
-                        <div>
-                          <p className="font-semibold leading-tight">{f.client_name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {f.machine_type} · {f.location}
-                          </p>
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          <p className="font-semibold text-foreground">
-                            {formatKES(f.agreed_price)}
-                          </p>
-                          <p>Due {formatDate(f.agreed_delivery_date)}</p>
-                          {f.assembly_engineer_id && (
-                            <p className="mt-1">Assembly: {names[f.assembly_engineer_id]}</p>
-                          )}
-                          {f.installation_engineer_id && (
-                            <p>Install: {names[f.installation_engineer_id]}</p>
-                          )}
-                        </div>
 
-                        <div>
-                          <div className="flex items-center justify-between text-xs font-semibold">
-                            <span>{pct.toFixed(0)}% paid</span>
-                            <span className="text-muted-foreground">
-                              {formatKES(paidByFulfillment[f.id] ?? 0)}
-                            </span>
-                          </div>
-                          <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-secondary">
-                            <div
-                              className={`h-full rounded-full transition-all ${blocked ? "bg-destructive" : "bg-primary"}`}
-                              style={{ width: `${Math.min(100, Math.max(0, pct))}%` }}
-                            />
-                          </div>
-                        </div>
-
-                        {blocked && nextStage && (
-                          <p className="rounded-lg bg-destructive/10 px-2.5 py-2 text-xs font-medium text-destructive">
-                            {PAYMENT_GATE_MESSAGE[nextStage]}
-                          </p>
-                        )}
 
                         {canAct && stage === "received" && (
                           <Button
@@ -502,7 +473,7 @@ function ChiefPage() {
                             </Button>
                           </div>
                         )}
-                      </article>
+                      </OrderCard>
                     );
                   })
                 )}

@@ -8,6 +8,7 @@ import { AdminUserActions } from "@/components/admin-user-actions";
 import { useAuth } from "@/hooks/use-auth";
 import { formatKES, formatDate, formatDuration } from "@/lib/format";
 import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
+import { OrderCard } from "@/components/order-card";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { type Metric } from "@/components/metric-tiles";
 import { UnifiedSummary } from "@/components/unified-summary";
@@ -77,7 +78,12 @@ function AdminPage() {
 
   const { data: payments = [] } = useAllPayments();
 
+  const paidByFulfillment = payments.reduce<Record<string, number>>((acc, p) => {
+    acc[p.fulfillment_id] = (acc[p.fulfillment_id] ?? 0) + Number(p.amount);
+    return acc;
+  }, {});
   const names = Object.fromEntries(profiles.map((p) => [p.id, p.full_name]));
+
   const active = fulfillments.filter((f) => f.current_stage !== "installed");
   const totalCommission = commissions.reduce((s, c) => s + Number(c.amount), 0);
   const paidCommission = commissions
@@ -206,52 +212,27 @@ function AdminPage() {
         <h2 className="text-lg font-semibold">
           {stage ? `Fulfillments — ${STAGE_LABEL[stage]}` : "All fulfillments"}
         </h2>
-        <div className="surface-card overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">Client</th>
-                <th className="px-4 py-3">Machine</th>
-                <th className="px-4 py-3">Sales rep</th>
-                <th className="px-4 py-3">Stage</th>
-                <th className="px-4 py-3 text-right">Price</th>
-                <th className="px-4 py-3 text-right">Manage</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(stage ? fulfillments.filter((f) => f.current_stage === stage) : fulfillments).map(
-                (f) => (
-                  <tr
-                    key={f.id}
-                    onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
-                    className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
-                  >
-                    <td className="px-4 py-3 font-medium">{f.client_name}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{f.machine_type}</td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {(f.sales_rep_id && names[f.sales_rep_id]) ?? "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${STAGE_SOFT[f.current_stage as Stage]}`}
-                      >
-                        {STAGE_LABEL[f.current_stage as Stage]}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right font-semibold">
-                      {formatKES(f.agreed_price)}
-                    </td>
-                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-
-                      <AdminOrderActions fulfillment={f} people={profiles} />
-                    </td>
-                  </tr>
-                ),
-              )}
-            </tbody>
-          </table>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {(stage ? fulfillments.filter((f) => f.current_stage === stage) : fulfillments).map(
+            (f) => (
+              <OrderCard
+                key={f.id}
+                fulfillment={f}
+                paid={paidByFulfillment[f.id] ?? 0}
+                meta={
+                  <p className="text-xs text-muted-foreground">
+                    Sales rep: {(f.sales_rep_id && names[f.sales_rep_id]) || "—"}
+                  </p>
+                }
+              >
+                <AdminOrderActions fulfillment={f} people={profiles} />
+              </OrderCard>
+            ),
+          )}
         </div>
       </section>
+
+
     </AppShell>
   );
 }
