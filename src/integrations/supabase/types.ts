@@ -143,6 +143,54 @@ export type Database = {
           },
         ]
       }
+      fulfillment_edits: {
+        Row: {
+          actor_id: string | null
+          changed_at: string
+          created_at: string
+          field_label: string
+          fulfillment_id: string
+          id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          changed_at?: string
+          created_at?: string
+          field_label: string
+          fulfillment_id: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          changed_at?: string
+          created_at?: string
+          field_label?: string
+          fulfillment_id?: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fulfillment_edits_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillment_edits_fulfillment_id_fkey"
+            columns: ["fulfillment_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fulfillments: {
         Row: {
           additional_notes: string | null
@@ -1155,6 +1203,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_edit_fulfillment_details: {
+        Args: { _sales_rep_id: string; _uid: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
