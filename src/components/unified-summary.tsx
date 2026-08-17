@@ -53,7 +53,7 @@ export function UnifiedSummary({ title = "Business summary" }: { title?: string 
   const machinesHome = ROLE_HOME[profile?.role ?? ""] ?? "/";
 
   const { data: fulfillments = [] } = useQuery({
-    queryKey: ["fulfillments"],
+    queryKey: ["summary-fulfillments"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("fulfillments")
@@ -65,7 +65,7 @@ export function UnifiedSummary({ title = "Business summary" }: { title?: string 
   });
 
   const { data: commissions = [] } = useQuery({
-    queryKey: ["commissions"],
+    queryKey: ["summary-commissions"],
     queryFn: async () => {
       const { data, error } = await supabase.from("commissions").select("amount, paid");
       if (error) throw error;
