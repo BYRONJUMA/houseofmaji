@@ -17,6 +17,7 @@ import { useCommissions } from "@/hooks/use-commissions";
 import { MyCommissionsCard } from "@/components/commission-report";
 import { MetricTiles, type Metric } from "@/components/metric-tiles";
 import { useAllPayments, paidPercent } from "@/hooks/use-payments";
+import { useMachinesGuard } from "@/hooks/use-machines-access";
 
 export const Route = createFileRoute("/_authenticated/sales")({
   validateSearch: stageSearchSchema,
@@ -44,6 +45,7 @@ const EMPTY = {
 };
 
 function SalesPage() {
+  const machinesGuard = useMachinesGuard();
   const { profile } = useAuth();
   const { stage } = Route.useSearch() as { stage?: Stage };
   const qc = useQueryClient();

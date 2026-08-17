@@ -10,6 +10,7 @@ import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
 import { useAllPayments, totalPaid } from "@/hooks/use-payments";
+import { useMachinesGuard } from "@/hooks/use-machines-access";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   validateSearch: stageSearchSchema,
@@ -32,6 +33,7 @@ const ROLE_LABEL: Record<string, string> = {
 };
 
 function AdminPage() {
+  const machinesGuard = useMachinesGuard();
   const { stage } = Route.useSearch() as { stage?: Stage };
   const navigate = useNavigate();
   const { profile } = useAuth();
