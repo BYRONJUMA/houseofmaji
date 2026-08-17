@@ -1,7 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Camera, Plus } from "lucide-react";
+import { Camera, Plus, Trash2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { CrmShell, CrmCard, MiniTile, Bar, Badge } from "@/components/crm-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -362,15 +373,40 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
   const { profile } = useAuth();
   const { data: team = [] } = useTeam();
   const update = useCrmMutation("site_visits", ["crm-site-visits"]);
+  const remove = useCrmMutation("site_visits", ["crm-site-visits", "crm-visit-photos"]);
   const addPhoto = useCrmMutation("site_visit_photos", ["crm-visit-photos"]);
   const { data: photos = [] } = useVisitPhotos(visit.id);
   const [uploading, setUploading] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [caption, setCaption] = useState("");
   const items: ChecklistItem[] = Array.isArray(visit.checklist) ? visit.checklist : [];
   const canFile =
     visit.assigned_engineer_id === profile?.id ||
     profile?.role === "chief_engineer" ||
     profile?.role === "admin";
+  const canDelete =
+    visit.created_by === profile?.id ||
+    visit.assigned_engineer_id === profile?.id ||
+    profile?.role === "chief_engineer" ||
+    profile?.role === "admin";
+
+  const deleteVisit = async () => {
+    try {
+      const paths = photos.map((p) => p.photo_url).filter(Boolean);
+      if (paths.length > 0) await supabase.storage.from(PHOTO_BUCKET).remove(paths);
+      await new Promise<void>((resolve, reject) =>
+        remove.mutate(
+          { type: "delete", id: visit.id },
+          { onSuccess: () => resolve(), onError: (e) => reject(e as Error) },
+        ),
+      );
+      toast.success("Site visit deleted");
+      setConfirmDelete(false);
+      onClose();
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
 
   const patch = (values: Record<string, unknown>) =>
     update.mutate(
@@ -380,6 +416,7 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
 
   const setItem = (key: string, next: Partial<ChecklistItem>) =>
     patch({ checklist: items.map((i) => (i.item_key === key ? { ...i, ...next } : i)) });
+
 
   const onFile = async (file?: File | null) => {
     if (!file) return;
@@ -532,8 +569,41 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
             <p className="text-xs text-muted-foreground">No photos attached yet.</p>
           )}
         </div>
+
+        {canDelete && (
+          <div className="flex justify-end border-t border-border pt-3">
+            <Button variant="destructive" onClick={() => setConfirmDelete(true)}>
+              <Trash2 className="h-4 w-4" /> Delete visit
+            </Button>
+          </div>
+        )}
+
+        <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete this site visit?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete this site visit, its checklist, and any attached photos
+                — are you sure?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  void deleteVisit();
+                }}
+                disabled={remove.isPending}
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </DialogContent>
     </Dialog>
+
   );
 }
 
