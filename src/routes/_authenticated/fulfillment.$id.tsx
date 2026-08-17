@@ -102,6 +102,14 @@ function DetailPage() {
   const signedOff = !!checklist?.engineer_signoff_at;
   const showSignoffProgress = ["delivery", "installed"].includes(f.current_stage) && !!checklist;
 
+  // Capacity was added to fulfillments after some orders were created, so fall back to the
+  // delivery checklist value and finally to a "…250LPH" style figure inside the machine type.
+  const capacity =
+    f.capacity_lph ??
+    checklist?.capacity_lph ??
+    f.machine_type?.match(/(\d[\d,.]*)\s*lph/i)?.[1]?.replace(/,/g, "") ??
+    null;
+
   return (
     <AppShell title={f.client_name} subtitle={`${f.machine_type} · ${f.location}`} showBack>
       <div className="mb-6 flex justify-end">
@@ -145,12 +153,10 @@ function DetailPage() {
             <div className="surface-card space-y-3 p-5 text-sm">
               <h2 className="text-lg font-semibold">Details</h2>
               <Row label="Client" value={f.client_name} />
-              <Row label="Client contact" value={f.client_contact ?? "—"} />
+              <Row label="Client contact" value={f.client_contact} />
               <Row label="Location" value={f.location} />
-              <Row
-                label="Capacity (LPH)"
-                value={f.capacity_lph != null ? String(f.capacity_lph) : "—"}
-              />
+              <Row label="Machine type" value={f.machine_type} />
+              <Row label="Capacity (LPH)" value={capacity} />
 
               <Row label="Agreed price" value={formatKES(f.agreed_price)} />
               <Row label="Delivery date" value={formatDate(f.agreed_delivery_date)} />
@@ -205,11 +211,13 @@ function DetailPage() {
 
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value }: { label: string; value: string | number | null | undefined }) {
+  const text =
+    value === null || value === undefined || String(value).trim() === "" ? "—" : String(value);
   return (
     <div className="flex justify-between gap-4 border-b border-border pb-2 last:border-0">
       <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium">{value}</span>
+      <span className="font-medium">{text}</span>
     </div>
   );
 }
