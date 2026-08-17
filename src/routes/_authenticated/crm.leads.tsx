@@ -38,6 +38,7 @@ import {
   LEAD_SOURCES,
   isOpenStage,
   isCrmManager,
+  canWriteCrm,
   daysBetween,
   label,
   num,
@@ -80,6 +81,7 @@ function withinRange(created: string, range: Range) {
 function LeadsPage() {
   const { profile } = useAuth();
   const manager = isCrmManager(profile?.role);
+  const canWrite = canWriteCrm(profile?.role);
   const { data: leads = [] } = useLeads();
   const { data: team = [] } = useTeam();
   const mutate = useCrmMutation("leads", ["crm-leads"]);
@@ -145,9 +147,11 @@ function LeadsPage() {
       title="Leads"
       subtitle={`Every rep's pipeline — drag a card to move a stage. ${open.length} open.`}
       actions={
-        <Button size="sm" onClick={() => setCreating(true)}>
-          <Plus className="h-4 w-4" /> New lead
-        </Button>
+        canWrite ? (
+          <Button size="sm" onClick={() => setCreating(true)}>
+            <Plus className="h-4 w-4" /> New lead
+          </Button>
+        ) : null
       }
     >
       <div className="space-y-4">
@@ -231,10 +235,18 @@ function LeadsPage() {
         </div>
 
         {view === "kanban" && (
-          <KanbanBoard leads={filtered} team={team} onMove={move} onOpen={setOpenLead} />
+          <KanbanBoard
+            leads={filtered}
+            team={team}
+            onMove={move}
+            onOpen={setOpenLead}
+            manager={manager}
+          />
         )}
         {view === "triage" && <TriageView leads={filtered} team={team} onOpen={setOpenLead} />}
-        {view === "list" && <ListView leads={filtered} team={team} onOpen={setOpenLead} />}
+        {view === "list" && (
+          <ListView leads={filtered} team={team} onOpen={setOpenLead} manager={manager} />
+        )}
 
         {/* glance */}
         <CrmCard title="Pipeline at a glance">
@@ -296,6 +308,7 @@ function LeadsPage() {
           lead={leads.find((l) => l.id === openLead.id) ?? openLead}
           team={team}
           manager={manager}
+          canWrite={canWrite}
           onClose={() => setOpenLead(null)}
         />
       )}
@@ -346,17 +359,67 @@ function LeadCard({
   );
 }
 
+function ReassignSelect({
+  lead,
+  reps,
+  compact,
+}: {
+  lead: Lead;
+  reps: { id: string; full_name: string }[];
+  compact?: boolean;
+}) {
+  const mutate = useCrmMutation("leads", ["crm-leads"]);
+  return (
+    <Select
+      value={lead.rep_id ?? "none"}
+      onValueChange={(v) =>
+        mutate.mutate(
+          { type: "update", id: lead.id, values: { rep_id: v === "none" ? null : v } },
+          {
+            onSuccess: () =>
+              toast.success(
+                v === "none"
+                  ? "Lead unassigned"
+                  : `Reassigned to ${reps.find((r) => r.id === v)?.full_name ?? "rep"}`,
+              ),
+            onError: (e: unknown) => toast.error((e as Error).message),
+          },
+        )
+      }
+    >
+      <SelectTrigger
+        className={compact ? "h-7 w-full text-xs" : "h-8 w-[10rem] text-xs"}
+        aria-label={`Reassign ${lead.name || lead.phone}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <SelectValue placeholder="Reassign" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="none">Unassigned</SelectItem>
+        {reps.map((r) => (
+          <SelectItem key={r.id} value={r.id}>
+            {r.full_name || "Unnamed"}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 function KanbanBoard({
   leads,
   team,
   onMove,
   onOpen,
+  manager,
 }: {
   leads: Lead[];
   team: { id: string; full_name: string; role: string }[];
   onMove: (l: Lead, stage: string) => void;
   onOpen: (l: Lead) => void;
+  manager?: boolean;
 }) {
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
   const [over, setOver] = useState<string | null>(null);
   return (
     <div className="flex gap-3 overflow-x-auto pb-2">
@@ -387,7 +450,10 @@ function KanbanBoard({
             </div>
             <div className="flex max-h-[32rem] flex-col gap-2 overflow-y-auto">
               {items.map((l) => (
-                <LeadCard key={l.id} lead={l} team={team} onOpen={onOpen} draggable />
+                <div key={l.id} className="space-y-1">
+                  <LeadCard lead={l} team={team} onOpen={onOpen} draggable />
+                  {manager && <ReassignSelect lead={l} reps={reps} compact />}
+                </div>
               ))}
               {items.length === 0 && (
                 <p className="px-1 py-4 text-center text-xs text-muted-foreground">Empty</p>
@@ -449,11 +515,14 @@ function ListView({
   leads,
   team,
   onOpen,
+  manager,
 }: {
   leads: Lead[];
   team: { id: string; full_name: string; role: string }[];
   onOpen: (l: Lead) => void;
+  manager?: boolean;
 }) {
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
   return (
     <div className="surface-card overflow-x-auto">
       <table className="w-full text-sm">
@@ -468,6 +537,7 @@ function ListView({
             <th className="px-3 py-2">Rep</th>
             <th className="px-3 py-2 text-right">Deal value</th>
             <th className="px-3 py-2">Follow-up</th>
+            {manager && <th className="px-3 py-2">Reassign</th>}
           </tr>
         </thead>
         <tbody>
@@ -496,12 +566,17 @@ function ListView({
                 <td className={`px-3 py-2 ${overdue ? "font-semibold text-destructive" : ""}`}>
                   {l.follow_up_due_at ? formatDate(l.follow_up_due_at) : "—"}
                 </td>
+                {manager && (
+                  <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                    <ReassignSelect lead={l} reps={reps} />
+                  </td>
+                )}
               </tr>
             );
           })}
           {leads.length === 0 && (
             <tr>
-              <td colSpan={9} className="px-3 py-8 text-center text-muted-foreground">
+              <td colSpan={manager ? 10 : 9} className="px-3 py-8 text-center text-muted-foreground">
                 No leads match these filters.
               </td>
             </tr>
