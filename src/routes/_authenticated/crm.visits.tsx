@@ -558,8 +558,41 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
             <p className="text-xs text-muted-foreground">No photos attached yet.</p>
           )}
         </div>
+
+        {canDelete && (
+          <div className="flex justify-end border-t border-border pt-3">
+            <Button variant="destructive" onClick={() => setConfirmDelete(true)}>
+              <Trash2 className="h-4 w-4" /> Delete visit
+            </Button>
+          </div>
+        )}
+
+        <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete this site visit?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete this site visit, its checklist, and any attached photos
+                — are you sure?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  void deleteVisit();
+                }}
+                disabled={remove.isPending}
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </DialogContent>
     </Dialog>
+
   );
 }
 
