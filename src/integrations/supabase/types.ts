@@ -837,6 +837,7 @@ export type Database = {
           client_name: string
           contact: string | null
           created_at: string
+          fulfillment_id: string | null
           id: string
           last_service_date: string | null
           machine_type: string | null
@@ -849,6 +850,7 @@ export type Database = {
           client_name?: string
           contact?: string | null
           created_at?: string
+          fulfillment_id?: string | null
           id?: string
           last_service_date?: string | null
           machine_type?: string | null
@@ -861,6 +863,7 @@ export type Database = {
           client_name?: string
           contact?: string | null
           created_at?: string
+          fulfillment_id?: string | null
           id?: string
           last_service_date?: string | null
           machine_type?: string | null
@@ -870,6 +873,13 @@ export type Database = {
           visit_count?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "services_fulfillment_id_fkey"
+            columns: ["fulfillment_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "services_recorded_by_fkey"
             columns: ["recorded_by"]
@@ -952,6 +962,9 @@ export type Database = {
       }
       site_visits: {
         Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          assigned_engineer_id: string | null
           checklist: Json
           client_name: string
           created_at: string
@@ -967,6 +980,9 @@ export type Database = {
           visit_type: string
         }
         Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          assigned_engineer_id?: string | null
           checklist?: Json
           client_name: string
           created_at?: string
@@ -982,6 +998,9 @@ export type Database = {
           visit_type?: string
         }
         Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          assigned_engineer_id?: string | null
           checklist?: Json
           client_name?: string
           created_at?: string
@@ -997,6 +1016,20 @@ export type Database = {
           visit_type?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "site_visits_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "site_visits_assigned_engineer_id_fkey"
+            columns: ["assigned_engineer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "site_visits_created_by_fkey"
             columns: ["created_by"]

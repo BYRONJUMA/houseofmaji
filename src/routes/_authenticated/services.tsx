@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
-import { CrmShell, CrmCard, StatCard, Badge } from "@/components/crm-shell";
+import { supabase } from "@/integrations/supabase/client";
+import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,21 +29,50 @@ import {
   BADGE_NEUTRAL,
 } from "@/lib/crm";
 import { useServices, useTeam, useCrmMutation, nameOf, type ServiceRecord } from "@/hooks/use-crm";
+import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/crm/services")({
+export const Route = createFileRoute("/_authenticated/services")({
   head: () => ({
     meta: [
-      { title: "Service Visits — Machines CRM" },
+      { title: "Service Visits — Machines" },
       {
         name: "description",
-        content: "Service schedule per client: last visit, next due date and overdue alerts.",
+        content:
+          "Maintenance schedule for installed machines: last visit, next due date and overdue alerts.",
       },
-      { property: "og:title", content: "Service Visits — Machines CRM" },
+      { property: "og:title", content: "Service Visits — Machines" },
       { property: "og:description", content: "Never miss a scheduled machine service again." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ServicesPage,
 });
+
+const CAN_EDIT = ["admin", "chief_engineer", "engineer"];
+
+function Badge({ className, children }: { className?: string; children: React.ReactNode }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold",
+        className,
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+function Tile({ label, value, hint }: { label: string; value: string; hint?: string }) {
+  return (
+    <div className="surface-card p-4">
+      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mt-1 text-2xl font-bold tabular-nums">{value}</p>
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+    </div>
+  );
+}
 
 function dueBadge(next: string | null) {
   if (!next) return { cls: BADGE_NEUTRAL, text: "Not scheduled" };
@@ -51,7 +82,23 @@ function dueBadge(next: string | null) {
   return { cls: BADGE_GOOD, text: `due in ${days}d` };
 }
 
+export function useServiceFulfillments() {
+  return useQuery({
+    queryKey: ["service-fulfillments"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("fulfillments")
+        .select("id, client_name, client_contact, machine_type, location, capacity_lph")
+        .order("client_name");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
 function ServicesPage() {
+  const { profile } = useAuth();
+  const canEdit = CAN_EDIT.includes(profile?.role ?? "");
   const { data: services = [] } = useServices();
   const { data: settings } = useSettings();
   const defaultInterval = settingNumber(settings, "default_service_interval_months");
@@ -60,7 +107,9 @@ function ServicesPage() {
   const [editing, setEditing] = useState<ServiceRecord | null>(null);
   const mutate = useCrmMutation("services", ["crm-services"]);
 
-  const overdue = services.filter((s) => s.next_due_date && daysBetween(new Date(), s.next_due_date) < 0);
+  const overdue = services.filter(
+    (s) => s.next_due_date && daysBetween(new Date(), s.next_due_date) < 0,
+  );
   const dueSoon = services.filter((s) => {
     if (!s.next_due_date) return false;
     const d = daysBetween(new Date(), s.next_due_date);
@@ -90,25 +139,32 @@ function ServicesPage() {
   };
 
   return (
-    <CrmShell
+    <AppShell
       title="Services"
-      subtitle={`${services.length} clients on the service schedule · ${overdue.length} overdue.`}
+      subtitle={
+        canEdit
+          ? `${services.length} machines on the service schedule · ${overdue.length} overdue.`
+          : `Read-only service history for your clients' machines.`
+      }
       actions={
-        <Button size="sm" onClick={() => setCreating(true)}>
-          <Plus className="h-4 w-4" /> Add client
-        </Button>
+        canEdit ? (
+          <Button size="sm" onClick={() => setCreating(true)}>
+            <Plus className="h-4 w-4" /> Log service
+          </Button>
+        ) : undefined
       }
     >
       <div className="space-y-5">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard label="Clients on schedule" value={String(services.length)} />
-          <StatCard label="Overdue" value={String(overdue.length)} hint="past next due date" />
-          <StatCard label="Due in 30 days" value={String(dueSoon.length)} />
-          <StatCard label="Not scheduled" value={String(unscheduled.length)} />
+          <Tile label="Machines on schedule" value={String(services.length)} />
+          <Tile label="Overdue" value={String(overdue.length)} hint="past next due date" />
+          <Tile label="Due in 30 days" value={String(dueSoon.length)} />
+          <Tile label="Not scheduled" value={String(unscheduled.length)} />
         </div>
 
-        {(overdue.length > 0 || dueSoon.length > 0) && (
-          <CrmCard title="Visit queue">
+        {canEdit && (overdue.length > 0 || dueSoon.length > 0) && (
+          <section className="surface-card p-4 sm:p-5">
+            <h2 className="mb-4 text-base font-semibold">Visit queue</h2>
             <div className="space-y-2">
               {[...overdue, ...dueSoon].map((s) => {
                 const b = dueBadge(s.next_due_date);
@@ -134,7 +190,7 @@ function ServicesPage() {
                 );
               })}
             </div>
-          </CrmCard>
+          </section>
         )}
 
         <div className="surface-card overflow-x-auto">
@@ -144,11 +200,12 @@ function ServicesPage() {
                 <th className="px-3 py-2">Client</th>
                 <th className="px-3 py-2">Contact</th>
                 <th className="px-3 py-2">Machine</th>
+                <th className="px-3 py-2">Linked order</th>
                 <th className="px-3 py-2">Last service</th>
                 <th className="px-3 py-2">Next due</th>
                 <th className="px-3 py-2 text-right">Visits</th>
                 <th className="px-3 py-2">Recorded by</th>
-                <th className="px-3 py-2" />
+                {canEdit && <th className="px-3 py-2" />}
               </tr>
             </thead>
             <tbody>
@@ -157,37 +214,43 @@ function ServicesPage() {
                 return (
                   <tr
                     key={s.id}
-                    onClick={() => setEditing(s)}
-                    className="cursor-pointer border-t border-border transition-colors hover:bg-secondary/50"
+                    onClick={() => canEdit && setEditing(s)}
+                    className={cn(
+                      "border-t border-border transition-colors",
+                      canEdit && "cursor-pointer hover:bg-secondary/50",
+                    )}
                   >
                     <td className="px-3 py-2 font-medium">{s.client_name}</td>
                     <td className="px-3 py-2">{s.contact || "—"}</td>
                     <td className="px-3 py-2">{s.machine_type || "—"}</td>
+                    <td className="px-3 py-2">{s.fulfillment_id ? "Linked" : "Manual"}</td>
                     <td className="px-3 py-2">{formatDate(s.last_service_date)}</td>
                     <td className="px-3 py-2">
                       <Badge className={b.cls}>{b.text}</Badge>
                     </td>
                     <td className="px-3 py-2 text-right tabular-nums">{s.visit_count ?? 0}</td>
                     <td className="px-3 py-2">{nameOf(team, s.recorded_by)}</td>
-                    <td className="px-3 py-2 text-right">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          logVisit(s);
-                        }}
-                      >
-                        Log visit
-                      </Button>
-                    </td>
+                    {canEdit && (
+                      <td className="px-3 py-2 text-right">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            logVisit(s);
+                          }}
+                        >
+                          Log visit
+                        </Button>
+                      </td>
+                    )}
                   </tr>
                 );
               })}
               {services.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-3 py-8 text-center text-muted-foreground">
-                    No service clients yet.
+                  <td colSpan={9} className="px-3 py-8 text-center text-muted-foreground">
+                    No service records yet.
                   </td>
                 </tr>
               )}
@@ -196,7 +259,7 @@ function ServicesPage() {
         </div>
       </div>
 
-      {(creating || editing) && (
+      {canEdit && (creating || editing) && (
         <ServiceDialog
           record={editing}
           onClose={() => {
@@ -205,7 +268,7 @@ function ServicesPage() {
           }}
         />
       )}
-    </CrmShell>
+    </AppShell>
   );
 }
 
@@ -221,7 +284,10 @@ function ServiceDialog({
   const { data: settings } = useSettings();
   const defaultInterval = settingNumber(settings, "default_service_interval_months");
   const machineTypes = useMachineTypeOptions();
+  const { data: fulfillments = [] } = useServiceFulfillments();
+  const [search, setSearch] = useState("");
   const [f, setF] = useState({
+    fulfillment_id: record?.fulfillment_id ?? "none",
     client_name: record?.client_name ?? "",
     contact: record?.contact ?? "",
     machine_type: record?.machine_type ?? "",
@@ -229,6 +295,33 @@ function ServiceDialog({
     next_due_date: record?.next_due_date ?? "",
   });
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
+
+  const matches = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    const list = q
+      ? fulfillments.filter(
+          (x) =>
+            x.client_name.toLowerCase().includes(q) ||
+            (x.machine_type ?? "").toLowerCase().includes(q),
+        )
+      : fulfillments;
+    return list.slice(0, 50);
+  }, [fulfillments, search]);
+
+  const pickFulfillment = (id: string) => {
+    if (id === "none") {
+      set("fulfillment_id", "none");
+      return;
+    }
+    const m = fulfillments.find((x) => x.id === id);
+    setF((p) => ({
+      ...p,
+      fulfillment_id: id,
+      client_name: m?.client_name ?? p.client_name,
+      contact: m?.client_contact ?? p.contact,
+      machine_type: m?.machine_type ?? p.machine_type,
+    }));
+  };
 
   const submit = () => {
     if (!f.client_name.trim()) {
@@ -242,6 +335,7 @@ function ServiceDialog({
       next = isoDate(d);
     }
     const values = {
+      fulfillment_id: f.fulfillment_id === "none" ? null : f.fulfillment_id,
       client_name: f.client_name.trim(),
       contact: f.contact.trim() || null,
       machine_type: f.machine_type.trim() || null,
@@ -251,7 +345,7 @@ function ServiceDialog({
     };
     mutate.mutate(record ? { type: "update", id: record.id, values } : { type: "insert", values }, {
       onSuccess: () => {
-        toast.success(record ? "Record updated" : "Client added");
+        toast.success(record ? "Record updated" : "Service record added");
         onClose();
       },
       onError: (e: unknown) => toast.error((e as Error).message),
@@ -260,11 +354,39 @@ function ServiceDialog({
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{record ? "Edit service record" : "Add service client"}</DialogTitle>
+          <DialogTitle>{record ? "Edit service record" : "Log a service machine"}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-3 sm:grid-cols-2">
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label>Search machine orders</Label>
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by client or machine type"
+            />
+          </div>
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label>Linked machine order</Label>
+            <Select value={f.fulfillment_id} onValueChange={pickFulfillment}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select order" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Not linked (manual entry)</SelectItem>
+                {matches.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>
+                    {m.client_name} · {m.machine_type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Linking pulls client name, contact and machine type from the order. Leave unlinked for
+              older machines.
+            </p>
+          </div>
           <div className="space-y-1.5 sm:col-span-2">
             <Label>Client name</Label>
             <Input value={f.client_name} onChange={(e) => set("client_name", e.target.value)} />
@@ -289,6 +411,9 @@ function ServiceDialog({
                     {m}
                   </SelectItem>
                 ))}
+                {f.machine_type && !machineTypes.includes(f.machine_type) && (
+                  <SelectItem value={f.machine_type}>{f.machine_type}</SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -310,7 +435,7 @@ function ServiceDialog({
           </div>
         </div>
         <Button onClick={submit} disabled={mutate.isPending}>
-          {record ? "Save changes" : "Add client"}
+          {record ? "Save changes" : "Add service record"}
         </Button>
       </DialogContent>
     </Dialog>

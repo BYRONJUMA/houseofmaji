@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePayments } from "@/hooks/use-payments";
 import { useDeliveryChecklists } from "@/hooks/use-delivery-checklist";
 import { formatKES, formatDate } from "@/lib/format";
+import { ServiceHistory } from "@/components/service-history";
 
 
 export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
@@ -186,6 +187,8 @@ function DetailPage() {
         </TabsContent>
 
         <TabsContent value="history">
+          <ServiceHistory fulfillmentId={f.id} names={names} />
+          <div className="mt-6" />
           <MachineHistory
             events={data!.events}
             payments={payments ?? []}

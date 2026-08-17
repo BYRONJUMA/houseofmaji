@@ -18,7 +18,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate } from "@/lib/format";
-import { isCrmManager, label, BADGE_GOOD, BADGE_WARN } from "@/lib/crm";
+import { isCrmManager, label, BADGE_GOOD, BADGE_WARN, BADGE_NEUTRAL } from "@/lib/crm";
 import { useLeads, useTeam, useCrmMutation, nameOf } from "@/hooks/use-crm";
 import {
   useSiteVisits,
@@ -54,7 +54,8 @@ export const Route = createFileRoute("/_authenticated/crm/visits")({
   component: VisitsPage,
 });
 
-const statusBadge = (s: string) => (s === "completed" ? BADGE_GOOD : BADGE_WARN);
+const statusBadge = (s: string) =>
+  s === "completed" ? BADGE_GOOD : s === "pending_assignment" ? BADGE_NEUTRAL : BADGE_WARN;
 
 function VisitsPage() {
   const { profile } = useAuth();
@@ -75,12 +76,13 @@ function VisitsPage() {
         (v) =>
           (type === "all" || v.visit_type === type) &&
           (status === "all" || v.status === status) &&
-          (engineer === "all" || v.engineer_id === engineer),
+          (engineer === "all" || (v.assigned_engineer_id ?? v.engineer_id) === engineer),
       ),
     [visits, type, status, engineer],
   );
 
   const completed = visits.filter((v) => v.status === "completed").length;
+  const pending = visits.filter((v) => v.status === "pending_assignment").length;
 
   return (
     <CrmShell
@@ -156,7 +158,7 @@ function VisitsPage() {
                 </p>
                 <p className="mt-1 text-xs">{v.location || "No location"}</p>
                 <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{nameOf(team, v.engineer_id)}</span>
+                  <span>{nameOf(team, v.assigned_engineer_id ?? v.engineer_id)}</span>
                   {items.length > 0 && (
                     <span className="font-semibold text-foreground">
                       {done}/{items.length} checked
@@ -180,9 +182,10 @@ function VisitsPage() {
               <MiniTile label="Completed" value={String(completed)} tone="good" />
               <MiniTile
                 label="Scheduled"
-                value={String(visits.length - completed)}
+                value={String(visits.length - completed - pending)}
                 tone="warn"
               />
+              <MiniTile label="Pending assignment" value={String(pending)} />
             </div>
             <div className="mt-5 grid gap-6 lg:grid-cols-2">
               <div className="space-y-2">
@@ -206,7 +209,7 @@ function VisitsPage() {
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold">By engineer</h3>
                 {engineers.map((e) => {
-                  const c = visits.filter((v) => v.engineer_id === e.id).length;
+                  const c = visits.filter((v) => (v.assigned_engineer_id ?? v.engineer_id) === e.id).length;
                   return (
                     <Bar
                       key={e.id}
@@ -214,7 +217,7 @@ function VisitsPage() {
                       value={c}
                       max={Math.max(
                         1,
-                        ...engineers.map((x) => visits.filter((v) => v.engineer_id === x.id).length),
+                        ...engineers.map((x) => visits.filter((v) => (v.assigned_engineer_id ?? v.engineer_id) === x.id).length),
                       )}
                       sub={String(c)}
                     />
@@ -242,19 +245,15 @@ function VisitsPage() {
 
 function NewVisitDialog({ onClose }: { onClose: () => void }) {
   const { profile } = useAuth();
-  const { data: team = [] } = useTeam();
   const { data: leads = [] } = useLeads();
   const create = useCrmMutation("site_visits", ["crm-site-visits"]);
-  const engineers = team.filter((t) => t.role === "engineer" || t.role === "chief_engineer");
   const [f, setF] = useState({
     client_name: "",
     location: "",
     visit_type: "installation",
-    engineer_id: profile?.id ?? "none",
     visit_date: new Date().toISOString().slice(0, 10),
     deal_id: "none",
     notes: "",
-    status: "scheduled",
   });
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
 
@@ -270,17 +269,16 @@ function NewVisitDialog({ onClose }: { onClose: () => void }) {
           client_name: f.client_name.trim(),
           location: f.location.trim() || null,
           visit_type: f.visit_type,
-          engineer_id: f.engineer_id === "none" ? null : f.engineer_id,
           visit_date: f.visit_date,
           deal_id: f.deal_id === "none" ? null : f.deal_id,
           notes: f.notes.trim() || null,
-          status: f.status,
+          status: "pending_assignment",
           created_by: profile?.id ?? null,
         },
       },
       {
         onSuccess: () => {
-          toast.success("Visit report created");
+          toast.success("Visit requested — chief engineer will assign an engineer");
           onClose();
         },
         onError: (e: unknown) => toast.error((e as Error).message),
@@ -321,37 +319,6 @@ function NewVisitDialog({ onClose }: { onClose: () => void }) {
                 {VISIT_TYPES.map((t) => (
                   <SelectItem key={t} value={t}>
                     {label(t)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Status</Label>
-            <Select value={f.status} onValueChange={(v) => set("status", v)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {VISIT_STATUSES.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {label(s)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Engineer</Label>
-            <Select value={f.engineer_id} onValueChange={(v) => set("engineer_id", v)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Unassigned</SelectItem>
-                {engineers.map((e) => (
-                  <SelectItem key={e.id} value={e.id}>
-                    {e.full_name || "Unnamed"}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -400,6 +367,10 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
   const [uploading, setUploading] = useState(false);
   const [caption, setCaption] = useState("");
   const items: ChecklistItem[] = Array.isArray(visit.checklist) ? visit.checklist : [];
+  const canFile =
+    visit.assigned_engineer_id === profile?.id ||
+    profile?.role === "chief_engineer" ||
+    profile?.role === "admin";
 
   const patch = (values: Record<string, unknown>) =>
     update.mutate(
@@ -457,13 +428,23 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
               <span className="text-muted-foreground">Location:</span> {visit.location || "—"}
             </p>
             <p>
-              <span className="text-muted-foreground">Engineer:</span>{" "}
-              {nameOf(team, visit.engineer_id)}
+              <span className="text-muted-foreground">Assigned engineer:</span>{" "}
+              {nameOf(team, visit.assigned_engineer_id ?? visit.engineer_id)}
             </p>
+            {visit.assigned_at && (
+              <p>
+                <span className="text-muted-foreground">Assigned by:</span>{" "}
+                {nameOf(team, visit.assigned_by)} · {formatDate(visit.assigned_at)}
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label>Status</Label>
-            <Select value={visit.status} onValueChange={(v) => patch({ status: v })}>
+            <Select
+              value={visit.status}
+              disabled={!canFile}
+              onValueChange={(v) => patch({ status: v })}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -476,6 +457,12 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
               </SelectContent>
             </Select>
             <Badge className={statusBadge(visit.status)}>{label(visit.status)}</Badge>
+            {!canFile && (
+              <p className="text-xs text-muted-foreground">
+                Read-only — only the assigned engineer, a chief engineer or an admin can file this
+                report.
+              </p>
+            )}
           </div>
         </div>
 
@@ -491,6 +478,7 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
               <label className="flex items-start gap-2 text-sm">
                 <Checkbox
                   checked={i.checked}
+                  disabled={!canFile}
                   onCheckedChange={(c) => setItem(i.item_key, { checked: !!c })}
                   className="mt-0.5"
                 />
@@ -498,6 +486,7 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
               </label>
               <Input
                 defaultValue={i.notes ?? ""}
+                disabled={!canFile}
                 placeholder="Item note (optional)"
                 className="mt-2 h-8 text-xs"
                 onBlur={(e) => setItem(i.item_key, { notes: e.target.value || null })}
@@ -511,6 +500,7 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
           <Textarea
             defaultValue={visit.notes ?? ""}
             rows={3}
+            disabled={!canFile}
             onBlur={(e) => patch({ notes: e.target.value || null })}
           />
         </div>

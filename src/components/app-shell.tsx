@@ -16,6 +16,7 @@ function navFor(role?: string) {
   if (!role) return items;
   items.push({ to: ROLE_HOME[role] ?? "/", label: "Dashboard" });
   items.push({ to: "/commissions", label: "Commissions" });
+  items.push({ to: "/services", label: "Services" });
   if (isCrmMember(role)) items.push({ to: "/crm", label: "CRM" });
   return items;
 }
