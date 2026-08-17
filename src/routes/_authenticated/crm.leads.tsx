@@ -119,9 +119,8 @@ function LeadsPage() {
   const pipelineValue = open.reduce((s, l) => s + num(l.deal_value), 0);
   const wonValue = won.reduce((s, l) => s + num(l.deal_value), 0);
   const notWon = filtered.filter((l) => l.stage === "not_won");
-  const conversion = won.length + notWon.length
-    ? Math.round((won.length / (won.length + notWon.length)) * 100)
-    : 0;
+  const conversion =
+    won.length + notWon.length ? Math.round((won.length / (won.length + notWon.length)) * 100) : 0;
   const avgAge = open.length
     ? Math.round(open.reduce((s, l) => s + daysBetween(l.created_at), 0) / open.length)
     : 0;
@@ -272,7 +271,10 @@ function LeadsPage() {
                     key={s}
                     label={LEAD_STAGE_LABEL[s]!}
                     value={c}
-                    max={Math.max(1, ...LEAD_STAGES.map((x) => filtered.filter((l) => l.stage === x).length))}
+                    max={Math.max(
+                      1,
+                      ...LEAD_STAGES.map((x) => filtered.filter((l) => l.stage === x).length),
+                    )}
                     sub={String(c)}
                   />
                 );
@@ -287,7 +289,10 @@ function LeadsPage() {
                     key={r.id}
                     label={r.full_name || "Unnamed"}
                     value={c}
-                    max={Math.max(1, ...reps.map((x) => open.filter((l) => l.rep_id === x.id).length))}
+                    max={Math.max(
+                      1,
+                      ...reps.map((x) => open.filter((l) => l.rep_id === x.id).length),
+                    )}
                     sub={String(c)}
                   />
                 );
@@ -533,7 +538,7 @@ function ListView({
             <th className="px-3 py-2">Machine</th>
             <th className="px-3 py-2">Location</th>
             <th className="px-3 py-2">Source</th>
-              <th className="px-3 py-2">Stage</th>
+            <th className="px-3 py-2">Stage</th>
             <th className="px-3 py-2">Rep</th>
             <th className="px-3 py-2 text-right">Deal value</th>
             <th className="px-3 py-2">Follow-up</th>
@@ -576,7 +581,10 @@ function ListView({
           })}
           {leads.length === 0 && (
             <tr>
-              <td colSpan={manager ? 10 : 9} className="px-3 py-8 text-center text-muted-foreground">
+              <td
+                colSpan={manager ? 10 : 9}
+                className="px-3 py-8 text-center text-muted-foreground"
+              >
                 No leads match these filters.
               </td>
             </tr>
@@ -611,14 +619,9 @@ function LeadDetail({
   const qc = useQueryClient();
   const remove = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase
-        .from("leads")
-        .delete()
-        .eq("id", lead.id)
-        .select("id");
+      const { data, error } = await supabase.from("leads").delete().eq("id", lead.id).select("id");
       if (error) throw error;
-      if (!data || data.length === 0)
-        throw new Error("You can only delete leads assigned to you");
+      if (!data || data.length === 0) throw new Error("You can only delete leads assigned to you");
       return true;
     },
     onSuccess: () => {
@@ -675,25 +678,25 @@ function LeadDetail({
         </DialogHeader>
         <div className="flex flex-wrap items-center gap-2">
           {canWrite && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button size="sm" variant="destructive" disabled={remove.isPending}>
-                <Trash2 className="mr-1.5 h-4 w-4" /> Delete
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete this lead?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will permanently delete this lead and its activity history — are you sure?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={deleteLead}>Delete lead</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button size="sm" variant="destructive" disabled={remove.isPending}>
+                  <Trash2 className="mr-1.5 h-4 w-4" /> Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete this lead?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete this lead and its activity history — are you sure?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={deleteLead}>Delete lead</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -702,8 +705,7 @@ function LeadDetail({
               <span className="text-muted-foreground">Phone:</span> {lead.phone || "—"}
             </p>
             <p>
-              <span className="text-muted-foreground">Machine:</span>{" "}
-              {lead.machine_interest || "—"}
+              <span className="text-muted-foreground">Machine:</span> {lead.machine_interest || "—"}
             </p>
             <p>
               <span className="text-muted-foreground">Location:</span> {lead.location || "—"}
@@ -720,91 +722,91 @@ function LeadDetail({
             </p>
           </div>
           {canWrite && (
-          <div className="space-y-3">
-            <div className="space-y-1.5">
-              <Label>Stage</Label>
-              <Select value={lead.stage} onValueChange={(v) => patch({ stage: v })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {LEAD_STAGES.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {LEAD_STAGE_LABEL[s]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Deal value (KES)</Label>
-              <Input
-                type="number"
-                defaultValue={lead.deal_value ?? ""}
-                onBlur={(e) =>
-                  patch({ deal_value: e.target.value === "" ? null : Number(e.target.value) })
-                }
-              />
-            </div>
-            {manager && (
+            <div className="space-y-3">
               <div className="space-y-1.5">
-                <Label>Assigned rep</Label>
-                <Select
-                  value={lead.rep_id ?? "none"}
-                  onValueChange={(v) => patch({ rep_id: v === "none" ? null : v })}
-                >
+                <Label>Stage</Label>
+                <Select value={lead.stage} onValueChange={(v) => patch({ stage: v })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">Unassigned</SelectItem>
-                    {reps.map((r) => (
-                      <SelectItem key={r.id} value={r.id}>
-                        {r.full_name || "Unnamed"}
+                    {LEAD_STAGES.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {LEAD_STAGE_LABEL[s]}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-            )}
-          </div>
+              <div className="space-y-1.5">
+                <Label>Deal value (KES)</Label>
+                <Input
+                  type="number"
+                  defaultValue={lead.deal_value ?? ""}
+                  onBlur={(e) =>
+                    patch({ deal_value: e.target.value === "" ? null : Number(e.target.value) })
+                  }
+                />
+              </div>
+              {manager && (
+                <div className="space-y-1.5">
+                  <Label>Assigned rep</Label>
+                  <Select
+                    value={lead.rep_id ?? "none"}
+                    onValueChange={(v) => patch({ rep_id: v === "none" ? null : v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Unassigned</SelectItem>
+                      {reps.map((r) => (
+                        <SelectItem key={r.id} value={r.id}>
+                          {r.full_name || "Unnamed"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
         {canWrite && (
-        <div className="mt-2 space-y-3 rounded-xl border border-border p-3">
-          <h3 className="text-sm font-semibold">Log follow-up</h3>
-          <div className="grid gap-2 sm:grid-cols-3">
-            <div className="space-y-1.5">
-              <Label>Reached?</Label>
-              <Select value={reached} onValueChange={setReached}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="yes">Reached</SelectItem>
-                  <SelectItem value="no">Not reached</SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="mt-2 space-y-3 rounded-xl border border-border p-3">
+            <h3 className="text-sm font-semibold">Log follow-up</h3>
+            <div className="grid gap-2 sm:grid-cols-3">
+              <div className="space-y-1.5">
+                <Label>Reached?</Label>
+                <Select value={reached} onValueChange={setReached}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="yes">Reached</SelectItem>
+                    <SelectItem value="no">Not reached</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Next follow-up in (days)</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={nextDays}
+                  onChange={(e) => setNextDays(e.target.value)}
+                />
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label>Next follow-up in (days)</Label>
-              <Input
-                type="number"
-                min={0}
-                value={nextDays}
-                onChange={(e) => setNextDays(e.target.value)}
-              />
+              <Label>Outcome note</Label>
+              <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} />
             </div>
+            <Button size="sm" onClick={submit} disabled={logActivity.isPending}>
+              Log follow-up
+            </Button>
           </div>
-          <div className="space-y-1.5">
-            <Label>Outcome note</Label>
-            <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} />
-          </div>
-          <Button size="sm" onClick={submit} disabled={logActivity.isPending}>
-            Log follow-up
-          </Button>
-        </div>
         )}
 
         <div className="space-y-2">

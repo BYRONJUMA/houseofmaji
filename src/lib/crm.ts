@@ -27,7 +27,6 @@ export const LEAD_SOURCES = [
   "other",
 ] as const;
 
-
 export const label = (v?: string | null) =>
   !v ? "—" : v.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
@@ -46,7 +45,6 @@ export const LEAD_STAGE_BADGE: Record<string, string> = {
   won: BADGE_GOOD,
   not_won: BADGE_NEUTRAL,
 };
-
 
 export const SCHOOL_STATUS_BADGE: Record<string, string> = {
   prospect: BADGE_NEUTRAL,

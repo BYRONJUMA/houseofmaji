@@ -9,8 +9,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { NotificationBell } from "@/components/notification-bell";
 import { BackButton } from "@/components/back-button";
 
-
-
 function navFor(role?: string) {
   const items: { to: string; label: string }[] = [];
   if (!role) return items;
@@ -40,7 +38,6 @@ export function AppShell({
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const items = navFor(profile?.role);
-
 
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
@@ -99,7 +96,6 @@ export function AppShell({
               <Menu className="h-4 w-4" />
             </Button>
           </div>
-
         </div>
 
         {open && (
@@ -145,7 +141,6 @@ export function AppShell({
         </div>
         {children}
       </main>
-
     </div>
   );
 }

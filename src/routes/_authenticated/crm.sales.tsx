@@ -226,7 +226,10 @@ function SalesPage() {
             </thead>
             <tbody>
               {rows.map((i) => (
-                <tr key={i.id} className="border-t border-border transition-colors hover:bg-secondary/50">
+                <tr
+                  key={i.id}
+                  className="border-t border-border transition-colors hover:bg-secondary/50"
+                >
                   <td className="px-3 py-2 font-medium">{i.invoice_no}</td>
                   <td className="px-3 py-2">{formatDate(i.date)}</td>
                   <td className="px-3 py-2">{i.client_name}</td>
@@ -247,7 +250,10 @@ function SalesPage() {
               ))}
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={canWrite ? 8 : 7} className="px-3 py-8 text-center text-muted-foreground">
+                  <td
+                    colSpan={canWrite ? 8 : 7}
+                    className="px-3 py-8 text-center text-muted-foreground"
+                  >
                     No invoices for {monthLabel(from)}.
                   </td>
                 </tr>
@@ -270,8 +276,7 @@ function DeleteInvoiceButton({ id, invoiceNo }: { id: string; invoiceNo: string 
     mutationFn: async () => {
       const { data, error } = await supabase.from("invoices").delete().eq("id", id).select("id");
       if (error) throw error;
-      if (!data || data.length === 0)
-        throw new Error("You can only delete invoices you created");
+      if (!data || data.length === 0) throw new Error("You can only delete invoices you created");
       return true;
     },
     onSuccess: () => {
@@ -393,11 +398,7 @@ function InvoiceDialog({
           </div>
           <div className="space-y-1.5">
             <Label>Amount (KES)</Label>
-            <Input
-              type="number"
-              value={f.amount}
-              onChange={(e) => set("amount", e.target.value)}
-            />
+            <Input type="number" value={f.amount} onChange={(e) => set("amount", e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <Label>Balance (KES)</Label>
@@ -466,11 +467,7 @@ function TargetDialog({ onClose, month }: { onClose: () => void; month: string }
         <div className="space-y-3">
           <div className="space-y-1.5">
             <Label>Revenue target (KES)</Label>
-            <Input
-              type="number"
-              value={revenue}
-              onChange={(e) => setRevenue(e.target.value)}
-            />
+            <Input type="number" value={revenue} onChange={(e) => setRevenue(e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <Label>Deals target</Label>

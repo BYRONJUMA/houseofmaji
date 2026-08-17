@@ -57,7 +57,10 @@ function OrdersPage() {
   );
 
   return (
-    <AppShell title="Orders" subtitle="Every machine order and where it currently sits — read only.">
+    <AppShell
+      title="Orders"
+      subtitle="Every machine order and where it currently sits — read only."
+    >
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2">
           {(["all", ...STAGES] as (Stage | "all")[]).map((s) => (
@@ -77,7 +80,11 @@ function OrdersPage() {
         </div>
 
         {rows.length === 0 ? (
-          <EmptyState icon={Boxes} title="No orders here" message="Nothing matches this stage yet." />
+          <EmptyState
+            icon={Boxes}
+            title="No orders here"
+            message="Nothing matches this stage yet."
+          />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {rows.map((o) => (
@@ -104,7 +111,10 @@ function OrdersPage() {
                 </div>
                 <div className="mt-3 grid gap-1 text-xs text-muted-foreground sm:grid-cols-2">
                   <span>
-                    Value <span className="font-semibold text-foreground">{formatKES(o.agreed_price)}</span>
+                    Value{" "}
+                    <span className="font-semibold text-foreground">
+                      {formatKES(o.agreed_price)}
+                    </span>
                   </span>
                   <span>Due {formatDate(o.agreed_delivery_date)}</span>
                   <span>Sales: {nameOf(o.sales_rep_id)}</span>
