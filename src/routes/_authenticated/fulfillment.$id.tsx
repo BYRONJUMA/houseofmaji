@@ -7,6 +7,7 @@ import { StageProgress } from "@/components/stage-progress";
 import { PaymentsPanel } from "@/components/payments-panel";
 import { DeliveryChecklistPanel } from "@/components/delivery-checklist-panel";
 import { MachineHistory } from "@/components/machine-history";
+import { EditOrderDetails } from "@/components/edit-order-details";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePayments } from "@/hooks/use-payments";
 import { useDeliveryChecklists } from "@/hooks/use-delivery-checklist";
