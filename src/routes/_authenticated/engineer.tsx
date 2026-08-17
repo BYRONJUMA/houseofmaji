@@ -12,7 +12,8 @@ import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { useCommissions } from "@/hooks/use-commissions";
 import { MyCommissionsCard } from "@/components/commission-report";
-import { MetricTiles, type Metric } from "@/components/metric-tiles";
+import { type Metric } from "@/components/metric-tiles";
+import { UnifiedSummary } from "@/components/unified-summary";
 import { useMachinesGuard } from "@/hooks/use-machines-access";
 
 export const Route = createFileRoute("/_authenticated/engineer")({
@@ -102,7 +103,7 @@ function EngineerPage() {
 
   return (
     <AppShell title="My Jobs" subtitle="Machines assigned to you">
-      <MetricTiles metrics={metrics} homePath="/engineer" />
+      <UnifiedSummary />
 
       <div className="mb-8 mt-8">
         <StageTiles items={jobs} homePath="/engineer" activeStage={stage} />

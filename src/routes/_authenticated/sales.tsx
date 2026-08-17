@@ -15,7 +15,8 @@ import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { useCommissions } from "@/hooks/use-commissions";
 import { MyCommissionsCard } from "@/components/commission-report";
-import { MetricTiles, type Metric } from "@/components/metric-tiles";
+import { type Metric } from "@/components/metric-tiles";
+import { UnifiedSummary } from "@/components/unified-summary";
 import { useAllPayments, paidPercent } from "@/hooks/use-payments";
 import { useMachinesGuard } from "@/hooks/use-machines-access";
 
@@ -154,7 +155,7 @@ function SalesPage() {
 
   return (
     <AppShell title="Sales Handover" subtitle="Submit a new machine sale to the workshop">
-      <MetricTiles metrics={metrics} homePath="/sales" />
+      <UnifiedSummary />
 
       <div className="mb-8 mt-8">
         <StageTiles items={list} homePath="/sales" activeStage={stage} />
