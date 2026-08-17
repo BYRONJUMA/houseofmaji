@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
@@ -10,7 +11,7 @@ import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
 import { useAllPayments, totalPaid } from "@/hooks/use-payments";
-import { useMachinesGuard } from "@/hooks/use-machines-access";
+
 
 export const Route = createFileRoute("/_authenticated/admin")({
   validateSearch: stageSearchSchema,
@@ -33,10 +34,13 @@ const ROLE_LABEL: Record<string, string> = {
 };
 
 function AdminPage() {
-  useMachinesGuard();
   const { stage } = Route.useSearch() as { stage?: Stage };
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { profile, loading } = useAuth();
+  const notAdmin = !loading && !!profile && profile.role !== "admin";
+  useEffect(() => {
+    if (notAdmin) navigate({ to: "/", replace: true });
+  }, [notAdmin, navigate]);
   const { data: fulfillments = [] } = useQuery({
     queryKey: ["fulfillments"],
     queryFn: async () => {
