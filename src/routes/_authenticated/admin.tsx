@@ -207,49 +207,25 @@ function AdminPage() {
         <h2 className="text-lg font-semibold">
           {stage ? `Fulfillments — ${STAGE_LABEL[stage]}` : "All fulfillments"}
         </h2>
-        <div className="surface-card overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">Client</th>
-                <th className="px-4 py-3">Machine</th>
-                <th className="px-4 py-3">Sales rep</th>
-                <th className="px-4 py-3">Stage</th>
-                <th className="px-4 py-3 text-right">Price</th>
-                <th className="px-4 py-3 text-right">Manage</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(stage ? fulfillments.filter((f) => f.current_stage === stage) : fulfillments).map(
-                (f) => (
-                  <tr
-                    key={f.id}
-                    onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
-                    className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
-                  >
-                    <td className="px-4 py-3 font-medium">{f.client_name}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{f.machine_type}</td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {(f.sales_rep_id && names[f.sales_rep_id]) ?? "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${STAGE_SOFT[f.current_stage as Stage]}`}
-                      >
-                        {STAGE_LABEL[f.current_stage as Stage]}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right font-semibold">
-                      {formatKES(f.agreed_price)}
-                    </td>
-                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {(stage ? fulfillments.filter((f) => f.current_stage === stage) : fulfillments).map(
+            (f) => (
+              <OrderCard
+                key={f.id}
+                fulfillment={f}
+                paid={paidByFulfillment[f.id] ?? 0}
+                meta={
+                  <p className="text-xs text-muted-foreground">
+                    Sales rep: {(f.sales_rep_id && names[f.sales_rep_id]) || "—"}
+                  </p>
+                }
+              >
+                <AdminOrderActions fulfillment={f} people={profiles} />
+              </OrderCard>
+            ),
+          )}
+        </div>
 
-                      <AdminOrderActions fulfillment={f} people={profiles} />
-                    </td>
-                  </tr>
-                ),
-              )}
-            </tbody>
           </table>
         </div>
       </section>
