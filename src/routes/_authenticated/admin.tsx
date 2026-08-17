@@ -78,7 +78,12 @@ function AdminPage() {
 
   const { data: payments = [] } = useAllPayments();
 
+  const paidByFulfillment = payments.reduce<Record<string, number>>((acc, p) => {
+    acc[p.fulfillment_id] = (acc[p.fulfillment_id] ?? 0) + Number(p.amount);
+    return acc;
+  }, {});
   const names = Object.fromEntries(profiles.map((p) => [p.id, p.full_name]));
+
   const active = fulfillments.filter((f) => f.current_stage !== "installed");
   const totalCommission = commissions.reduce((s, c) => s + Number(c.amount), 0);
   const paidCommission = commissions
