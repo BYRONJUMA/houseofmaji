@@ -56,6 +56,9 @@ export type ServiceRecord = {
   next_due_date: string | null;
   visit_count: number;
   recorded_by: string | null;
+  assigned_engineer_id: string | null;
+  assigned_by: string | null;
+  assigned_at: string | null;
 };
 
 export type Project = {
