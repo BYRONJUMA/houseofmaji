@@ -531,6 +531,20 @@ function LeadDetail({
   const [note, setNote] = useState("");
   const [nextDays, setNextDays] = useState("3");
   const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const remove = useCrmMutation("leads", ["crm-leads", "crm-lead-activities"]);
+
+  const deleteLead = () =>
+    remove.mutate(
+      { type: "delete", id: lead.id },
+      {
+        onSuccess: () => {
+          toast.success("Lead deleted");
+          onClose();
+        },
+        onError: () =>
+          toast.error("You can only delete leads assigned to you"),
+      },
+    );
 
   const submit = () => {
     if (!profile) return;
