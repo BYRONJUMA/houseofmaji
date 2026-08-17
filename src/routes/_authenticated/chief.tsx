@@ -29,7 +29,7 @@ import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
 import { SiteVisitsAwaitingAssignment } from "@/components/site-visit-assignment";
 import { formatDuration } from "@/lib/format";
-import { useMachinesGuard } from "@/hooks/use-machines-access";
+import { canManageMachines } from "@/hooks/use-machines-access";
 
 export const Route = createFileRoute("/_authenticated/chief")({
   validateSearch: stageSearchSchema,
@@ -80,8 +80,8 @@ export function useProfiles() {
 }
 
 function ChiefPage() {
-  useMachinesGuard();
   const { profile } = useAuth();
+  const canAct = canManageMachines(profile?.role);
   const { stage: stageFilter } = Route.useSearch() as { stage?: Stage };
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -201,7 +201,14 @@ function ChiefPage() {
 
 
   return (
-    <AppShell title="Chief Engineer" subtitle="All fulfillments across the pipeline">
+    <AppShell
+      title={canAct ? "Chief Engineer" : "Machines Pipeline"}
+      subtitle={
+        canAct
+          ? "All fulfillments across the pipeline"
+          : "Read-only view of all fulfillments across the pipeline"
+      }
+    >
       <MetricTiles metrics={stats} homePath="/chief" />
 
       <div className="mt-4">
@@ -209,7 +216,7 @@ function ChiefPage() {
       </div>
 
       <div className="mt-8">
-        <SiteVisitsAwaitingAssignment />
+        {canAct && <SiteVisitsAwaitingAssignment />}
       </div>
 
       <div className="mb-8 mt-8">
@@ -311,7 +318,7 @@ function ChiefPage() {
                           </p>
                         )}
 
-                        {stage === "received" && (
+                        {canAct && stage === "received" && (
                           <Button
                             size="sm"
                             className="w-full"
@@ -332,7 +339,7 @@ function ChiefPage() {
                           </Button>
                         )}
 
-                        {stage === "waiting_for_frame" && (
+                        {canAct && stage === "waiting_for_frame" && (
                           <Button
                             size="sm"
                             className="w-full"
@@ -352,7 +359,7 @@ function ChiefPage() {
                           </Button>
                         )}
 
-                        {stage === "material_procurement" && (
+                        {canAct && stage === "material_procurement" && (
                           <div
                             className="space-y-2"
                             onClick={(e) => e.stopPropagation()}
@@ -420,7 +427,7 @@ function ChiefPage() {
                           </div>
                         )}
 
-                        {(stage === "assigned" ||
+                        {canAct && (stage === "assigned" ||
                           stage === "assembling" ||
                           stage === "delivery") && (
                           <div
