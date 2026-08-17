@@ -27,6 +27,7 @@ import {
 import { useAllPayments, paidPercent, totalPaid } from "@/hooks/use-payments";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
+import { SiteVisitsAwaitingAssignment } from "@/components/site-visit-assignment";
 import { formatDuration } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/chief")({
@@ -203,6 +204,10 @@ function ChiefPage() {
 
       <div className="mt-4">
         <StageBreakdown items={fulfillments} homePath="/chief" />
+      </div>
+
+      <div className="mt-8">
+        <SiteVisitsAwaitingAssignment />
       </div>
 
       <div className="mb-8 mt-8">
