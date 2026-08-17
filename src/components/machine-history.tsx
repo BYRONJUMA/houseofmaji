@@ -6,6 +6,7 @@ import {
   CreditCard,
   Flag,
   PenLine,
+  Pencil,
   PackageCheck,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -41,15 +42,26 @@ function stamp(value: string) {
   });
 }
 
+export type FulfillmentEditRow = {
+  id: string;
+  actor_id: string | null;
+  field_label: string;
+  old_value: string | null;
+  new_value: string | null;
+  changed_at: string;
+};
+
 export function MachineHistory({
   events,
   payments,
   checklists,
+  edits = [],
   names,
 }: {
   events: StageEventRow[];
   payments: Payment[];
   checklists: DeliveryChecklist[];
+  edits?: FulfillmentEditRow[];
   names: Record<string, string>;
 }) {
   const who = (id: string | null | undefined) => (id && names[id]) || "System";
@@ -136,6 +148,16 @@ export function MachineHistory({
         who: checklist.chief_signoff_name ?? "Chief engineer",
       });
     }
+  }
+
+  for (const edit of edits) {
+    entries.push({
+      at: edit.changed_at,
+      icon: <Pencil className="h-4 w-4" />,
+      title: `Order details edited — ${edit.field_label}`,
+      who: who(edit.actor_id),
+      detail: `${edit.old_value ?? "—"} → ${edit.new_value ?? "—"}`,
+    });
   }
 
   entries.sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime());
