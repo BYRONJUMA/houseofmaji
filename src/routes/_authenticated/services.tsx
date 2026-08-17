@@ -202,7 +202,6 @@ function ServicesPage() {
                 <th className="px-3 py-2">Linked order</th>
                 <th className="px-3 py-2">Last service</th>
                 <th className="px-3 py-2">Next due</th>
-                <th className="px-3 py-2 text-right">Visits</th>
                 <th className="px-3 py-2">Recorded by</th>
                 <th className="px-3 py-2">Assigned to</th>
                 <th className="px-3 py-2" />
@@ -228,7 +227,6 @@ function ServicesPage() {
                     <td className="px-3 py-2">
                       <Badge className={b.cls}>{b.text}</Badge>
                     </td>
-                    <td className="px-3 py-2 text-right tabular-nums">{s.visit_count ?? 0}</td>
                     <td className="px-3 py-2">{nameOf(team, s.recorded_by)}</td>
                     <td className="px-3 py-2">
                       {s.assigned_engineer_id ? (
@@ -252,7 +250,7 @@ function ServicesPage() {
               })}
               {services.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="px-3 py-8 text-center text-muted-foreground">
+                  <td colSpan={9} className="px-3 py-8 text-center text-muted-foreground">
                     No service records yet.
                   </td>
                 </tr>
