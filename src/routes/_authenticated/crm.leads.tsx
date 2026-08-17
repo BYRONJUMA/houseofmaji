@@ -93,7 +93,7 @@ function LeadsPage() {
   const [openLead, setOpenLead] = useState<Lead | null>(null);
   const [creating, setCreating] = useState(false);
 
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -530,7 +530,7 @@ function LeadDetail({
   const [reached, setReached] = useState("yes");
   const [note, setNote] = useState("");
   const [nextDays, setNextDays] = useState("3");
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
   const qc = useQueryClient();
   const remove = useMutation({
     mutationFn: async () => {

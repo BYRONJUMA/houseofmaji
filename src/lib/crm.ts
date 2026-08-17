@@ -80,9 +80,9 @@ export function serviceInterval(
   return SERVICE_INTERVAL_MONTHS[machineType] ?? fallback;
 }
 
-export const isCrmManager = (role?: string | null) => role === "admin" || role === "sales_manager";
+export const isCrmManager = (role?: string | null) => role === "admin" || role === "sales_head";
 export const isCrmMember = (role?: string | null) =>
-  role === "admin" || role === "sales_manager" || role === "sales_rep";
+  role === "admin" || role === "sales_head" || role === "sales_rep";
 
 /* ------------------------------ dates ------------------------------ */
 

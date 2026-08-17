@@ -84,7 +84,7 @@ function SalesPage() {
   const target = targets.find((t) => isoDate(monthStart(t.month)) === isoDate(from));
   const revenueTarget = num(target?.revenue_target);
   const dealsTarget = num(target?.deals_target);
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
 
   const perRep = reps
     .map((r) => ({
@@ -260,7 +260,7 @@ function InvoiceDialog({
     rep_id: profile?.id ?? "none",
   });
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
 
   const submit = () => {
     if (!f.invoice_no.trim() || !f.client_name.trim() || !f.amount) {

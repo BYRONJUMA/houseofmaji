@@ -283,7 +283,7 @@ function SchoolDialog({
     rep_id: school?.rep_id ?? profile?.id ?? "none",
   });
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
 
   const submit = () => {
     if (!f.school_name.trim()) {
