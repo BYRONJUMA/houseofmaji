@@ -1,7 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { CrmShell, CrmCard, MiniTile, Bar, Badge } from "@/components/crm-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -520,6 +532,29 @@ function LeadDetail({
   const [note, setNote] = useState("");
   const [nextDays, setNextDays] = useState("3");
   const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const qc = useQueryClient();
+  const remove = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase
+        .from("leads")
+        .delete()
+        .eq("id", lead.id)
+        .select("id");
+      if (error) throw error;
+      if (!data || data.length === 0)
+        throw new Error("You can only delete leads assigned to you");
+      return true;
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["crm-leads"] });
+      void qc.invalidateQueries({ queryKey: ["crm-lead-activities"] });
+      toast.success("Lead deleted");
+      onClose();
+    },
+    onError: (e: unknown) => toast.error((e as Error).message),
+  });
+
+  const deleteLead = () => remove.mutate();
 
   const submit = () => {
     if (!profile) return;
@@ -562,8 +597,27 @@ function LeadDetail({
         <DialogHeader>
           <DialogTitle>{lead.name || lead.phone}</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <UploadCallRecording dealId={lead.id} />
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button size="sm" variant="destructive" disabled={remove.isPending}>
+                <Trash2 className="mr-1.5 h-4 w-4" /> Delete
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete this lead?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete this lead and its activity history — are you sure?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={deleteLead}>Delete lead</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1 text-sm">
