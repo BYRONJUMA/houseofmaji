@@ -225,6 +225,8 @@ function AdminPage() {
             ),
           )}
         </div>
+      </section>
+
 
     </AppShell>
   );
