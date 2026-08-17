@@ -211,11 +211,13 @@ function DetailPage() {
 
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value }: { label: string; value: string | number | null | undefined }) {
+  const text =
+    value === null || value === undefined || String(value).trim() === "" ? "—" : String(value);
   return (
     <div className="flex justify-between gap-4 border-b border-border pb-2 last:border-0">
       <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium">{value}</span>
+      <span className="font-medium">{text}</span>
     </div>
   );
 }
