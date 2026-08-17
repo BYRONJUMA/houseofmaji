@@ -674,6 +674,7 @@ function LeadDetail({
           <DialogTitle>{lead.name || lead.phone}</DialogTitle>
         </DialogHeader>
         <div className="flex flex-wrap items-center gap-2">
+          {canWrite && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button size="sm" variant="destructive" disabled={remove.isPending}>
@@ -693,6 +694,7 @@ function LeadDetail({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          )}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1 text-sm">
