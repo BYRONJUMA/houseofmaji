@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { useSettings, settingNumber, useMachineTypeOptions } from "@/hooks/use-crm-extra";
 import { formatDate } from "@/lib/format";
@@ -126,27 +137,6 @@ function ServicesPage() {
   });
   const unscheduled = services.filter((s) => !s.next_due_date);
 
-  const logVisit = (s: ServiceRecord) => {
-    const today = new Date();
-    const next = new Date(today);
-    next.setMonth(next.getMonth() + serviceInterval(s.machine_type, defaultInterval));
-    mutate.mutate(
-      {
-        type: "update",
-        id: s.id,
-        values: {
-          last_service_date: isoDate(today),
-          next_due_date: isoDate(next),
-          visit_count: (s.visit_count ?? 0) + 1,
-        },
-      },
-      {
-        onSuccess: () => toast.success(`Visit logged for ${s.client_name}`),
-        onError: (e: unknown) => toast.error((e as Error).message),
-      },
-    );
-  };
-
   return (
     <AppShell
       title="Services"
@@ -194,11 +184,6 @@ function ServicesPage() {
                       <span className="text-xs text-muted-foreground">
                         {nameOf(team, s.assigned_engineer_id)}
                       </span>
-                      {canEditAny(s) && (
-                        <Button size="sm" variant="outline" onClick={() => logVisit(s)}>
-                          Log visit
-                        </Button>
-                      )}
                     </div>
                   </div>
                 );
@@ -259,11 +244,7 @@ function ServicesPage() {
                         onKeyDown={(e) => e.stopPropagation()}
                       >
                         {canAssign && <AssignEngineer record={s} />}
-                        {canEditAny(s) && (
-                          <Button size="sm" variant="outline" onClick={() => logVisit(s)}>
-                            Log visit
-                          </Button>
-                        )}
+                        {canEditAny(s) && <DeleteService record={s} />}
                       </div>
                     </td>
                   </tr>
@@ -461,6 +442,44 @@ function ServiceDialog({
         </Button>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function DeleteService({ record }: { record: ServiceRecord }) {
+  const mutate = useCrmMutation("services", ["crm-services"]);
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button size="sm" variant="outline" className="text-destructive">
+          <Trash2 className="h-4 w-4" />
+          <span className="sr-only">Delete service record</span>
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete service record?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This will permanently delete this service record — are you sure?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() =>
+              mutate.mutate(
+                { type: "delete", id: record.id },
+                {
+                  onSuccess: () => toast.success("Service record deleted"),
+                  onError: (e: unknown) => toast.error((e as Error).message),
+                },
+              )
+            }
+          >
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 

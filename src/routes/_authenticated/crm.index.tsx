@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { CrmShell, CrmCard, StatCard, MiniTile, Bar, Badge } from "@/components/crm-shell";
+import { UnifiedSummary } from "@/components/unified-summary";
 import { formatKES, formatDate } from "@/lib/format";
 import {
   LEAD_STAGES,
