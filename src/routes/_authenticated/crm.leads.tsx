@@ -531,20 +531,29 @@ function LeadDetail({
   const [note, setNote] = useState("");
   const [nextDays, setNextDays] = useState("3");
   const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
-  const remove = useCrmMutation("leads", ["crm-leads", "crm-lead-activities"]);
+  const qc = useQueryClient();
+  const remove = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase
+        .from("leads")
+        .delete()
+        .eq("id", lead.id)
+        .select("id");
+      if (error) throw error;
+      if (!data || data.length === 0)
+        throw new Error("You can only delete leads assigned to you");
+      return true;
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["crm-leads"] });
+      void qc.invalidateQueries({ queryKey: ["crm-lead-activities"] });
+      toast.success("Lead deleted");
+      onClose();
+    },
+    onError: (e: unknown) => toast.error((e as Error).message),
+  });
 
-  const deleteLead = () =>
-    remove.mutate(
-      { type: "delete", id: lead.id },
-      {
-        onSuccess: () => {
-          toast.success("Lead deleted");
-          onClose();
-        },
-        onError: () =>
-          toast.error("You can only delete leads assigned to you"),
-      },
-    );
+  const deleteLead = () => remove.mutate();
 
   const submit = () => {
     if (!profile) return;
