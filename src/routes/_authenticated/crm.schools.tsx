@@ -20,6 +20,7 @@ import {
   SCHOOL_STATUSES,
   SCHOOL_STATUS_BADGE,
   isCrmManager,
+  canWriteCrm,
   isoDate,
   daysBetween,
   label,
@@ -44,6 +45,7 @@ export const Route = createFileRoute("/_authenticated/crm/schools")({
 function SchoolsPage() {
   const { profile } = useAuth();
   const manager = isCrmManager(profile?.role);
+  const canWrite = canWriteCrm(profile?.role);
   const { data: schools = [] } = useSchools();
   const { data: team = [] } = useTeam();
   const mutate = useCrmMutation("schools", ["crm-schools"]);
@@ -94,9 +96,11 @@ function SchoolsPage() {
       title="Schools"
       subtitle={`${schools.length} schools tracked · ${overdue.length} follow-ups overdue.`}
       actions={
-        <Button size="sm" onClick={() => setCreating(true)}>
-          <Plus className="h-4 w-4" /> Add school
-        </Button>
+        canWrite ? (
+          <Button size="sm" onClick={() => setCreating(true)}>
+            <Plus className="h-4 w-4" /> Add school
+          </Button>
+        ) : null
       }
     >
       <div className="space-y-5">
