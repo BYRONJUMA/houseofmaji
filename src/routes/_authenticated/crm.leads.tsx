@@ -562,8 +562,27 @@ function LeadDetail({
         <DialogHeader>
           <DialogTitle>{lead.name || lead.phone}</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <UploadCallRecording dealId={lead.id} />
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button size="sm" variant="destructive" disabled={remove.isPending}>
+                <Trash2 className="mr-1.5 h-4 w-4" /> Delete
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete this lead?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete this lead and its activity history — are you sure?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={deleteLead}>Delete lead</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1 text-sm">
