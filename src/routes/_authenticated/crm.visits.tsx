@@ -367,6 +367,10 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
   const [uploading, setUploading] = useState(false);
   const [caption, setCaption] = useState("");
   const items: ChecklistItem[] = Array.isArray(visit.checklist) ? visit.checklist : [];
+  const canFile =
+    visit.assigned_engineer_id === profile?.id ||
+    profile?.role === "chief_engineer" ||
+    profile?.role === "admin";
 
   const patch = (values: Record<string, unknown>) =>
     update.mutate(
@@ -424,13 +428,23 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
               <span className="text-muted-foreground">Location:</span> {visit.location || "—"}
             </p>
             <p>
-              <span className="text-muted-foreground">Engineer:</span>{" "}
-              {nameOf(team, visit.engineer_id)}
+              <span className="text-muted-foreground">Assigned engineer:</span>{" "}
+              {nameOf(team, visit.assigned_engineer_id ?? visit.engineer_id)}
             </p>
+            {visit.assigned_at && (
+              <p>
+                <span className="text-muted-foreground">Assigned by:</span>{" "}
+                {nameOf(team, visit.assigned_by)} · {formatDate(visit.assigned_at)}
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label>Status</Label>
-            <Select value={visit.status} onValueChange={(v) => patch({ status: v })}>
+            <Select
+              value={visit.status}
+              disabled={!canFile}
+              onValueChange={(v) => patch({ status: v })}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -443,6 +457,12 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
               </SelectContent>
             </Select>
             <Badge className={statusBadge(visit.status)}>{label(visit.status)}</Badge>
+            {!canFile && (
+              <p className="text-xs text-muted-foreground">
+                Read-only — only the assigned engineer, a chief engineer or an admin can file this
+                report.
+              </p>
+            )}
           </div>
         </div>
 
@@ -458,6 +478,7 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
               <label className="flex items-start gap-2 text-sm">
                 <Checkbox
                   checked={i.checked}
+                  disabled={!canFile}
                   onCheckedChange={(c) => setItem(i.item_key, { checked: !!c })}
                   className="mt-0.5"
                 />
@@ -465,6 +486,7 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
               </label>
               <Input
                 defaultValue={i.notes ?? ""}
+                disabled={!canFile}
                 placeholder="Item note (optional)"
                 className="mt-2 h-8 text-xs"
                 onBlur={(e) => setItem(i.item_key, { notes: e.target.value || null })}
@@ -478,6 +500,7 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
           <Textarea
             defaultValue={visit.notes ?? ""}
             rows={3}
+            disabled={!canFile}
             onBlur={(e) => patch({ notes: e.target.value || null })}
           />
         </div>
