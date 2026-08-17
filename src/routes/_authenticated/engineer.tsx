@@ -171,7 +171,7 @@ function EngineerPage() {
                     Waiting for the sales rep to mark this delivered.
                   </p>
                 )}
-              </article>
+              </OrderCard>
             );
           })}
         </div>
