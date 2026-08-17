@@ -32,7 +32,7 @@ function DetailPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["fulfillment", id],
     queryFn: async () => {
-      const [f, events, profiles] = await Promise.all([
+      const [f, events, profiles, edits] = await Promise.all([
         supabase.from("fulfillments").select("*").eq("id", id).maybeSingle(),
         supabase
           .from("stage_events")
@@ -40,11 +40,22 @@ function DetailPage() {
           .eq("fulfillment_id", id)
           .order("entered_at", { ascending: true }),
         supabase.from("profiles").select("id, full_name"),
+        supabase
+          .from("fulfillment_edits")
+          .select("id, actor_id, field_label, old_value, new_value, changed_at")
+          .eq("fulfillment_id", id)
+          .order("changed_at", { ascending: true }),
       ]);
       if (f.error) throw f.error;
       if (events.error) throw events.error;
       if (profiles.error) throw profiles.error;
-      return { fulfillment: f.data, events: events.data, profiles: profiles.data };
+      if (edits.error) throw edits.error;
+      return {
+        fulfillment: f.data,
+        events: events.data,
+        profiles: profiles.data,
+        edits: edits.data,
+      };
     },
   });
 
