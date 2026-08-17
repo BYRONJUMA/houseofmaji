@@ -113,7 +113,7 @@ function CrmDashboard() {
   const overdueService = services.filter(
     (s) => s.next_due_date && new Date(s.next_due_date) < now,
   );
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
 
   const repRows = reps
     .map((r) => {

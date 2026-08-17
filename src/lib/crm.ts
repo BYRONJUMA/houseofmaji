@@ -27,7 +27,6 @@ export const LEAD_SOURCES = [
   "other",
 ] as const;
 
-
 export const label = (v?: string | null) =>
   !v ? "—" : v.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
@@ -46,7 +45,6 @@ export const LEAD_STAGE_BADGE: Record<string, string> = {
   won: BADGE_GOOD,
   not_won: BADGE_NEUTRAL,
 };
-
 
 export const SCHOOL_STATUS_BADGE: Record<string, string> = {
   prospect: BADGE_NEUTRAL,
@@ -80,9 +78,13 @@ export function serviceInterval(
   return SERVICE_INTERVAL_MONTHS[machineType] ?? fallback;
 }
 
-export const isCrmManager = (role?: string | null) => role === "admin" || role === "sales_manager";
+export const isCrmManager = (role?: string | null) => role === "admin" || role === "sales_head";
+/** Roles that can open the CRM section (chief engineer has read-only context access). */
 export const isCrmMember = (role?: string | null) =>
-  role === "admin" || role === "sales_manager" || role === "sales_rep";
+  role === "admin" || role === "sales_head" || role === "sales_rep" || role === "chief_engineer";
+/** Roles allowed to create/edit CRM sales-side records. */
+export const canWriteCrm = (role?: string | null) =>
+  role === "admin" || role === "sales_head" || role === "sales_rep";
 
 /* ------------------------------ dates ------------------------------ */
 

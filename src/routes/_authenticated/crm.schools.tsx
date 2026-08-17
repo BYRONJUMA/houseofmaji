@@ -20,6 +20,7 @@ import {
   SCHOOL_STATUSES,
   SCHOOL_STATUS_BADGE,
   isCrmManager,
+  canWriteCrm,
   isoDate,
   daysBetween,
   label,
@@ -35,7 +36,10 @@ export const Route = createFileRoute("/_authenticated/crm/schools")({
         content: "School prospect list by county and tier with visit tracking and follow-ups.",
       },
       { property: "og:title", content: "Schools Outreach — Machines CRM" },
-      { property: "og:description", content: "Plan and track school outreach visits county by county." },
+      {
+        property: "og:description",
+        content: "Plan and track school outreach visits county by county.",
+      },
     ],
   }),
   component: SchoolsPage,
@@ -44,6 +48,7 @@ export const Route = createFileRoute("/_authenticated/crm/schools")({
 function SchoolsPage() {
   const { profile } = useAuth();
   const manager = isCrmManager(profile?.role);
+  const canWrite = canWriteCrm(profile?.role);
   const { data: schools = [] } = useSchools();
   const { data: team = [] } = useTeam();
   const mutate = useCrmMutation("schools", ["crm-schools"]);
@@ -60,7 +65,11 @@ function SchoolsPage() {
       (county === "all" || s.county === county) &&
       (status === "all" || s.status === status) &&
       (!q ||
-        [s.school_name, s.area, s.county].some((v) => String(v ?? "").toLowerCase().includes(q))),
+        [s.school_name, s.area, s.county].some((v) =>
+          String(v ?? "")
+            .toLowerCase()
+            .includes(q),
+        )),
   );
 
   const overdue = schools.filter(
@@ -94,9 +103,11 @@ function SchoolsPage() {
       title="Schools"
       subtitle={`${schools.length} schools tracked · ${overdue.length} follow-ups overdue.`}
       actions={
-        <Button size="sm" onClick={() => setCreating(true)}>
-          <Plus className="h-4 w-4" /> Add school
-        </Button>
+        canWrite ? (
+          <Button size="sm" onClick={() => setCreating(true)}>
+            <Plus className="h-4 w-4" /> Add school
+          </Button>
+        ) : null
       }
     >
       <div className="space-y-5">
@@ -123,7 +134,10 @@ function SchoolsPage() {
                     key={c}
                     label={c}
                     value={n}
-                    max={Math.max(1, ...counties.map((x) => schools.filter((s) => s.county === x).length))}
+                    max={Math.max(
+                      1,
+                      ...counties.map((x) => schools.filter((s) => s.county === x).length),
+                    )}
                     sub={String(n)}
                   />
                 );
@@ -190,8 +204,7 @@ function SchoolsPage() {
             </thead>
             <tbody>
               {rows.map((s) => {
-                const late =
-                  s.next_follow_up_date && new Date(s.next_follow_up_date) < new Date();
+                const late = s.next_follow_up_date && new Date(s.next_follow_up_date) < new Date();
                 return (
                   <tr
                     key={s.id}
@@ -209,9 +222,7 @@ function SchoolsPage() {
                     </td>
                     <td className="px-3 py-2">{nameOf(team, s.rep_id)}</td>
                     <td className="px-3 py-2">{formatDate(s.last_contact_date)}</td>
-                    <td
-                      className={`px-3 py-2 ${late ? "font-semibold text-destructive" : ""}`}
-                    >
+                    <td className={`px-3 py-2 ${late ? "font-semibold text-destructive" : ""}`}>
                       {s.next_follow_up_date
                         ? `${formatDate(s.next_follow_up_date)}${late ? ` (${daysBetween(s.next_follow_up_date)}d late)` : ""}`
                         : "—"}
@@ -283,7 +294,7 @@ function SchoolDialog({
     rep_id: school?.rep_id ?? profile?.id ?? "none",
   });
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
 
   const submit = () => {
     if (!f.school_name.trim()) {

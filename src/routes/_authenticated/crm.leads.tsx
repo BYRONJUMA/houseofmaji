@@ -38,6 +38,7 @@ import {
   LEAD_SOURCES,
   isOpenStage,
   isCrmManager,
+  canWriteCrm,
   daysBetween,
   label,
   num,
@@ -80,6 +81,7 @@ function withinRange(created: string, range: Range) {
 function LeadsPage() {
   const { profile } = useAuth();
   const manager = isCrmManager(profile?.role);
+  const canWrite = canWriteCrm(profile?.role);
   const { data: leads = [] } = useLeads();
   const { data: team = [] } = useTeam();
   const mutate = useCrmMutation("leads", ["crm-leads"]);
@@ -93,7 +95,7 @@ function LeadsPage() {
   const [openLead, setOpenLead] = useState<Lead | null>(null);
   const [creating, setCreating] = useState(false);
 
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -117,9 +119,8 @@ function LeadsPage() {
   const pipelineValue = open.reduce((s, l) => s + num(l.deal_value), 0);
   const wonValue = won.reduce((s, l) => s + num(l.deal_value), 0);
   const notWon = filtered.filter((l) => l.stage === "not_won");
-  const conversion = won.length + notWon.length
-    ? Math.round((won.length / (won.length + notWon.length)) * 100)
-    : 0;
+  const conversion =
+    won.length + notWon.length ? Math.round((won.length / (won.length + notWon.length)) * 100) : 0;
   const avgAge = open.length
     ? Math.round(open.reduce((s, l) => s + daysBetween(l.created_at), 0) / open.length)
     : 0;
@@ -145,9 +146,11 @@ function LeadsPage() {
       title="Leads"
       subtitle={`Every rep's pipeline — drag a card to move a stage. ${open.length} open.`}
       actions={
-        <Button size="sm" onClick={() => setCreating(true)}>
-          <Plus className="h-4 w-4" /> New lead
-        </Button>
+        canWrite ? (
+          <Button size="sm" onClick={() => setCreating(true)}>
+            <Plus className="h-4 w-4" /> New lead
+          </Button>
+        ) : null
       }
     >
       <div className="space-y-4">
@@ -231,10 +234,18 @@ function LeadsPage() {
         </div>
 
         {view === "kanban" && (
-          <KanbanBoard leads={filtered} team={team} onMove={move} onOpen={setOpenLead} />
+          <KanbanBoard
+            leads={filtered}
+            team={team}
+            onMove={move}
+            onOpen={setOpenLead}
+            manager={manager}
+          />
         )}
         {view === "triage" && <TriageView leads={filtered} team={team} onOpen={setOpenLead} />}
-        {view === "list" && <ListView leads={filtered} team={team} onOpen={setOpenLead} />}
+        {view === "list" && (
+          <ListView leads={filtered} team={team} onOpen={setOpenLead} manager={manager} />
+        )}
 
         {/* glance */}
         <CrmCard title="Pipeline at a glance">
@@ -260,7 +271,10 @@ function LeadsPage() {
                     key={s}
                     label={LEAD_STAGE_LABEL[s]!}
                     value={c}
-                    max={Math.max(1, ...LEAD_STAGES.map((x) => filtered.filter((l) => l.stage === x).length))}
+                    max={Math.max(
+                      1,
+                      ...LEAD_STAGES.map((x) => filtered.filter((l) => l.stage === x).length),
+                    )}
                     sub={String(c)}
                   />
                 );
@@ -275,7 +289,10 @@ function LeadsPage() {
                     key={r.id}
                     label={r.full_name || "Unnamed"}
                     value={c}
-                    max={Math.max(1, ...reps.map((x) => open.filter((l) => l.rep_id === x.id).length))}
+                    max={Math.max(
+                      1,
+                      ...reps.map((x) => open.filter((l) => l.rep_id === x.id).length),
+                    )}
                     sub={String(c)}
                   />
                 );
@@ -296,6 +313,7 @@ function LeadsPage() {
           lead={leads.find((l) => l.id === openLead.id) ?? openLead}
           team={team}
           manager={manager}
+          canWrite={canWrite}
           onClose={() => setOpenLead(null)}
         />
       )}
@@ -346,17 +364,67 @@ function LeadCard({
   );
 }
 
+function ReassignSelect({
+  lead,
+  reps,
+  compact,
+}: {
+  lead: Lead;
+  reps: { id: string; full_name: string }[];
+  compact?: boolean;
+}) {
+  const mutate = useCrmMutation("leads", ["crm-leads"]);
+  return (
+    <Select
+      value={lead.rep_id ?? "none"}
+      onValueChange={(v) =>
+        mutate.mutate(
+          { type: "update", id: lead.id, values: { rep_id: v === "none" ? null : v } },
+          {
+            onSuccess: () =>
+              toast.success(
+                v === "none"
+                  ? "Lead unassigned"
+                  : `Reassigned to ${reps.find((r) => r.id === v)?.full_name ?? "rep"}`,
+              ),
+            onError: (e: unknown) => toast.error((e as Error).message),
+          },
+        )
+      }
+    >
+      <SelectTrigger
+        className={compact ? "h-7 w-full text-xs" : "h-8 w-[10rem] text-xs"}
+        aria-label={`Reassign ${lead.name || lead.phone}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <SelectValue placeholder="Reassign" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="none">Unassigned</SelectItem>
+        {reps.map((r) => (
+          <SelectItem key={r.id} value={r.id}>
+            {r.full_name || "Unnamed"}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 function KanbanBoard({
   leads,
   team,
   onMove,
   onOpen,
+  manager,
 }: {
   leads: Lead[];
   team: { id: string; full_name: string; role: string }[];
   onMove: (l: Lead, stage: string) => void;
   onOpen: (l: Lead) => void;
+  manager?: boolean;
 }) {
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
   const [over, setOver] = useState<string | null>(null);
   return (
     <div className="flex gap-3 overflow-x-auto pb-2">
@@ -387,7 +455,10 @@ function KanbanBoard({
             </div>
             <div className="flex max-h-[32rem] flex-col gap-2 overflow-y-auto">
               {items.map((l) => (
-                <LeadCard key={l.id} lead={l} team={team} onOpen={onOpen} draggable />
+                <div key={l.id} className="space-y-1">
+                  <LeadCard lead={l} team={team} onOpen={onOpen} draggable />
+                  {manager && <ReassignSelect lead={l} reps={reps} compact />}
+                </div>
               ))}
               {items.length === 0 && (
                 <p className="px-1 py-4 text-center text-xs text-muted-foreground">Empty</p>
@@ -449,11 +520,14 @@ function ListView({
   leads,
   team,
   onOpen,
+  manager,
 }: {
   leads: Lead[];
   team: { id: string; full_name: string; role: string }[];
   onOpen: (l: Lead) => void;
+  manager?: boolean;
 }) {
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
   return (
     <div className="surface-card overflow-x-auto">
       <table className="w-full text-sm">
@@ -464,10 +538,11 @@ function ListView({
             <th className="px-3 py-2">Machine</th>
             <th className="px-3 py-2">Location</th>
             <th className="px-3 py-2">Source</th>
-              <th className="px-3 py-2">Stage</th>
+            <th className="px-3 py-2">Stage</th>
             <th className="px-3 py-2">Rep</th>
             <th className="px-3 py-2 text-right">Deal value</th>
             <th className="px-3 py-2">Follow-up</th>
+            {manager && <th className="px-3 py-2">Reassign</th>}
           </tr>
         </thead>
         <tbody>
@@ -496,12 +571,20 @@ function ListView({
                 <td className={`px-3 py-2 ${overdue ? "font-semibold text-destructive" : ""}`}>
                   {l.follow_up_due_at ? formatDate(l.follow_up_due_at) : "—"}
                 </td>
+                {manager && (
+                  <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                    <ReassignSelect lead={l} reps={reps} />
+                  </td>
+                )}
               </tr>
             );
           })}
           {leads.length === 0 && (
             <tr>
-              <td colSpan={9} className="px-3 py-8 text-center text-muted-foreground">
+              <td
+                colSpan={manager ? 10 : 9}
+                className="px-3 py-8 text-center text-muted-foreground"
+              >
                 No leads match these filters.
               </td>
             </tr>
@@ -516,11 +599,13 @@ function LeadDetail({
   lead,
   team,
   manager,
+  canWrite,
   onClose,
 }: {
   lead: Lead;
   team: { id: string; full_name: string; role: string }[];
   manager: boolean;
+  canWrite: boolean;
   onClose: () => void;
 }) {
   const { profile } = useAuth();
@@ -530,18 +615,13 @@ function LeadDetail({
   const [reached, setReached] = useState("yes");
   const [note, setNote] = useState("");
   const [nextDays, setNextDays] = useState("3");
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
   const qc = useQueryClient();
   const remove = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase
-        .from("leads")
-        .delete()
-        .eq("id", lead.id)
-        .select("id");
+      const { data, error } = await supabase.from("leads").delete().eq("id", lead.id).select("id");
       if (error) throw error;
-      if (!data || data.length === 0)
-        throw new Error("You can only delete leads assigned to you");
+      if (!data || data.length === 0) throw new Error("You can only delete leads assigned to you");
       return true;
     },
     onSuccess: () => {
@@ -597,25 +677,27 @@ function LeadDetail({
           <DialogTitle>{lead.name || lead.phone}</DialogTitle>
         </DialogHeader>
         <div className="flex flex-wrap items-center gap-2">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button size="sm" variant="destructive" disabled={remove.isPending}>
-                <Trash2 className="mr-1.5 h-4 w-4" /> Delete
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete this lead?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will permanently delete this lead and its activity history — are you sure?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={deleteLead}>Delete lead</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          {canWrite && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button size="sm" variant="destructive" disabled={remove.isPending}>
+                  <Trash2 className="mr-1.5 h-4 w-4" /> Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete this lead?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete this lead and its activity history — are you sure?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={deleteLead}>Delete lead</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1 text-sm">
@@ -623,8 +705,7 @@ function LeadDetail({
               <span className="text-muted-foreground">Phone:</span> {lead.phone || "—"}
             </p>
             <p>
-              <span className="text-muted-foreground">Machine:</span>{" "}
-              {lead.machine_interest || "—"}
+              <span className="text-muted-foreground">Machine:</span> {lead.machine_interest || "—"}
             </p>
             <p>
               <span className="text-muted-foreground">Location:</span> {lead.location || "—"}
@@ -640,89 +721,93 @@ function LeadDetail({
               {lead.follow_up_due_at ? formatDate(lead.follow_up_due_at) : "not scheduled"}
             </p>
           </div>
-          <div className="space-y-3">
-            <div className="space-y-1.5">
-              <Label>Stage</Label>
-              <Select value={lead.stage} onValueChange={(v) => patch({ stage: v })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {LEAD_STAGES.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {LEAD_STAGE_LABEL[s]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Deal value (KES)</Label>
-              <Input
-                type="number"
-                defaultValue={lead.deal_value ?? ""}
-                onBlur={(e) =>
-                  patch({ deal_value: e.target.value === "" ? null : Number(e.target.value) })
-                }
-              />
-            </div>
-            {manager && (
+          {canWrite && (
+            <div className="space-y-3">
               <div className="space-y-1.5">
-                <Label>Assigned rep</Label>
-                <Select
-                  value={lead.rep_id ?? "none"}
-                  onValueChange={(v) => patch({ rep_id: v === "none" ? null : v })}
-                >
+                <Label>Stage</Label>
+                <Select value={lead.stage} onValueChange={(v) => patch({ stage: v })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">Unassigned</SelectItem>
-                    {reps.map((r) => (
-                      <SelectItem key={r.id} value={r.id}>
-                        {r.full_name || "Unnamed"}
+                    {LEAD_STAGES.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {LEAD_STAGE_LABEL[s]}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-            )}
-          </div>
+              <div className="space-y-1.5">
+                <Label>Deal value (KES)</Label>
+                <Input
+                  type="number"
+                  defaultValue={lead.deal_value ?? ""}
+                  onBlur={(e) =>
+                    patch({ deal_value: e.target.value === "" ? null : Number(e.target.value) })
+                  }
+                />
+              </div>
+              {manager && (
+                <div className="space-y-1.5">
+                  <Label>Assigned rep</Label>
+                  <Select
+                    value={lead.rep_id ?? "none"}
+                    onValueChange={(v) => patch({ rep_id: v === "none" ? null : v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Unassigned</SelectItem>
+                      {reps.map((r) => (
+                        <SelectItem key={r.id} value={r.id}>
+                          {r.full_name || "Unnamed"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
-        <div className="mt-2 space-y-3 rounded-xl border border-border p-3">
-          <h3 className="text-sm font-semibold">Log follow-up</h3>
-          <div className="grid gap-2 sm:grid-cols-3">
-            <div className="space-y-1.5">
-              <Label>Reached?</Label>
-              <Select value={reached} onValueChange={setReached}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="yes">Reached</SelectItem>
-                  <SelectItem value="no">Not reached</SelectItem>
-                </SelectContent>
-              </Select>
+        {canWrite && (
+          <div className="mt-2 space-y-3 rounded-xl border border-border p-3">
+            <h3 className="text-sm font-semibold">Log follow-up</h3>
+            <div className="grid gap-2 sm:grid-cols-3">
+              <div className="space-y-1.5">
+                <Label>Reached?</Label>
+                <Select value={reached} onValueChange={setReached}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="yes">Reached</SelectItem>
+                    <SelectItem value="no">Not reached</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Next follow-up in (days)</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={nextDays}
+                  onChange={(e) => setNextDays(e.target.value)}
+                />
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label>Next follow-up in (days)</Label>
-              <Input
-                type="number"
-                min={0}
-                value={nextDays}
-                onChange={(e) => setNextDays(e.target.value)}
-              />
+              <Label>Outcome note</Label>
+              <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} />
             </div>
+            <Button size="sm" onClick={submit} disabled={logActivity.isPending}>
+              Log follow-up
+            </Button>
           </div>
-          <div className="space-y-1.5">
-            <Label>Outcome note</Label>
-            <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} />
-          </div>
-          <Button size="sm" onClick={submit} disabled={logActivity.isPending}>
-            Log follow-up
-          </Button>
-        </div>
+        )}
 
         <div className="space-y-2">
           <h3 className="text-sm font-semibold">Activity log</h3>

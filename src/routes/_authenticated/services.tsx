@@ -49,7 +49,7 @@ export const Route = createFileRoute("/_authenticated/services")({
   component: ServicesPage,
 });
 
-const CAN_EDIT = ["admin", "chief_engineer", "engineer"];
+const CAN_EDIT = ["admin", "chief_engineer", "engineer", "sales_head"];
 
 function Badge({ className, children }: { className?: string; children: React.ReactNode }) {
   return (

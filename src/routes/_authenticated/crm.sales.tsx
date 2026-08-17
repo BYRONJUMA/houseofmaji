@@ -1,7 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { CrmShell, CrmCard, StatCard, MiniTile, Bar } from "@/components/crm-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +30,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { formatKES, formatDate } from "@/lib/format";
 import {
   isCrmManager,
+  canWriteCrm,
   monthStart,
   monthEnd,
   addMonths,
@@ -49,6 +62,7 @@ export const Route = createFileRoute("/_authenticated/crm/sales")({
 function SalesPage() {
   const { profile } = useAuth();
   const manager = isCrmManager(profile?.role);
+  const canWrite = canWriteCrm(profile?.role);
   const { data: invoices = [] } = useInvoices();
   const { data: targets = [] } = useTargets();
   const { data: team = [] } = useTeam();
@@ -84,7 +98,7 @@ function SalesPage() {
   const target = targets.find((t) => isoDate(monthStart(t.month)) === isoDate(from));
   const revenueTarget = num(target?.revenue_target);
   const dealsTarget = num(target?.deals_target);
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
 
   const perRep = reps
     .map((r) => ({
@@ -106,9 +120,11 @@ function SalesPage() {
               Set target
             </Button>
           )}
-          <Button size="sm" onClick={() => setCreating(true)}>
-            <Plus className="h-4 w-4" /> New invoice
-          </Button>
+          {canWrite && (
+            <Button size="sm" onClick={() => setCreating(true)}>
+              <Plus className="h-4 w-4" /> New invoice
+            </Button>
+          )}
         </div>
       }
     >
@@ -205,11 +221,15 @@ function SalesPage() {
                 <th className="px-3 py-2">Rep</th>
                 <th className="px-3 py-2 text-right">Amount</th>
                 <th className="px-3 py-2 text-right">Balance</th>
+                {canWrite && <th className="px-3 py-2" />}
               </tr>
             </thead>
             <tbody>
               {rows.map((i) => (
-                <tr key={i.id} className="border-t border-border transition-colors hover:bg-secondary/50">
+                <tr
+                  key={i.id}
+                  className="border-t border-border transition-colors hover:bg-secondary/50"
+                >
                   <td className="px-3 py-2 font-medium">{i.invoice_no}</td>
                   <td className="px-3 py-2">{formatDate(i.date)}</td>
                   <td className="px-3 py-2">{i.client_name}</td>
@@ -221,11 +241,19 @@ function SalesPage() {
                   >
                     {formatKES(i.balance)}
                   </td>
+                  {canWrite && (
+                    <td className="px-3 py-2 text-right">
+                      <DeleteInvoiceButton id={i.id} invoiceNo={i.invoice_no} />
+                    </td>
+                  )}
                 </tr>
               ))}
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-3 py-8 text-center text-muted-foreground">
+                  <td
+                    colSpan={canWrite ? 8 : 7}
+                    className="px-3 py-8 text-center text-muted-foreground"
+                  >
                     No invoices for {monthLabel(from)}.
                   </td>
                 </tr>
@@ -238,6 +266,61 @@ function SalesPage() {
       {creating && <InvoiceDialog onClose={() => setCreating(false)} team={team} />}
       {targetOpen && <TargetDialog onClose={() => setTargetOpen(false)} month={isoDate(from)} />}
     </CrmShell>
+  );
+}
+
+function DeleteInvoiceButton({ id, invoiceNo }: { id: string; invoiceNo: string }) {
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const remove = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.from("invoices").delete().eq("id", id).select("id");
+      if (error) throw error;
+      if (!data || data.length === 0) throw new Error("You can only delete invoices you created");
+      return true;
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["crm-invoices"] });
+      toast.success(`Invoice ${invoiceNo} deleted`);
+      setOpen(false);
+    },
+    onError: (e: unknown) => toast.error((e as Error).message),
+  });
+
+  return (
+    <>
+      <Button
+        size="sm"
+        variant="outline"
+        className="text-destructive"
+        aria-label={`Delete invoice ${invoiceNo}`}
+        onClick={() => setOpen(true)}
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </Button>
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete invoice {invoiceNo}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this invoice — are you sure?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                remove.mutate();
+              }}
+            >
+              Delete invoice
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 
@@ -260,7 +343,7 @@ function InvoiceDialog({
     rep_id: profile?.id ?? "none",
   });
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_manager");
+  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
 
   const submit = () => {
     if (!f.invoice_no.trim() || !f.client_name.trim() || !f.amount) {
@@ -315,11 +398,7 @@ function InvoiceDialog({
           </div>
           <div className="space-y-1.5">
             <Label>Amount (KES)</Label>
-            <Input
-              type="number"
-              value={f.amount}
-              onChange={(e) => set("amount", e.target.value)}
-            />
+            <Input type="number" value={f.amount} onChange={(e) => set("amount", e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <Label>Balance (KES)</Label>
@@ -388,11 +467,7 @@ function TargetDialog({ onClose, month }: { onClose: () => void; month: string }
         <div className="space-y-3">
           <div className="space-y-1.5">
             <Label>Revenue target (KES)</Label>
-            <Input
-              type="number"
-              value={revenue}
-              onChange={(e) => setRevenue(e.target.value)}
-            />
+            <Input type="number" value={revenue} onChange={(e) => setRevenue(e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <Label>Deals target</Label>
