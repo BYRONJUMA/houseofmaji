@@ -834,6 +834,9 @@ export type Database = {
       }
       services: {
         Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          assigned_engineer_id: string | null
           client_name: string
           contact: string | null
           created_at: string
@@ -847,6 +850,9 @@ export type Database = {
           visit_count: number
         }
         Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          assigned_engineer_id?: string | null
           client_name?: string
           contact?: string | null
           created_at?: string
@@ -860,6 +866,9 @@ export type Database = {
           visit_count?: number
         }
         Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          assigned_engineer_id?: string | null
           client_name?: string
           contact?: string | null
           created_at?: string
@@ -873,6 +882,20 @@ export type Database = {
           visit_count?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "services_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_assigned_engineer_id_fkey"
+            columns: ["assigned_engineer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "services_fulfillment_id_fkey"
             columns: ["fulfillment_id"]
