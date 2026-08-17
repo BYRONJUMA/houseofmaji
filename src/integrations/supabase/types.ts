@@ -1255,7 +1255,7 @@ export type Database = {
         | "chief_engineer"
         | "engineer"
         | "admin"
-        | "sales_manager"
+        | "sales_head"
       commission_role: "sales" | "assembly" | "installation"
     }
     CompositeTypes: {
@@ -1389,7 +1389,7 @@ export const Constants = {
         "chief_engineer",
         "engineer",
         "admin",
-        "sales_manager",
+        "sales_head",
       ],
       commission_role: ["sales", "assembly", "installation"],
     },
