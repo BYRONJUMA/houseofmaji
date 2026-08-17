@@ -150,6 +150,16 @@ export function MachineHistory({
     }
   }
 
+  for (const edit of edits) {
+    entries.push({
+      at: edit.changed_at,
+      icon: <Pencil className="h-4 w-4" />,
+      title: `Order details edited — ${edit.field_label}`,
+      who: who(edit.actor_id),
+      detail: `${edit.old_value ?? "—"} → ${edit.new_value ?? "—"}`,
+    });
+  }
+
   entries.sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime());
 
   return (
