@@ -80,7 +80,7 @@ export function useProfiles() {
 }
 
 function ChiefPage() {
-  const machinesGuard = useMachinesGuard();
+  useMachinesGuard();
   const { profile } = useAuth();
   const { stage: stageFilter } = Route.useSearch() as { stage?: Stage };
   const qc = useQueryClient();

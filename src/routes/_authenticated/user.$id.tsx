@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/user/$id")({
 });
 
 function UserDetailPage() {
-  const machinesGuard = useMachinesGuard();
+  useMachinesGuard();
   const { id } = Route.useParams();
   const { profile } = useAuth();
   const navigate = useNavigate();

@@ -54,7 +54,7 @@ export const Route = createFileRoute("/_authenticated/commissions")({
 });
 
 function CommissionsPage() {
-  const machinesGuard = useMachinesGuard();
+  useMachinesGuard();
   const { profile } = useAuth();
   const navigate = useNavigate();
   const search = Route.useSearch();

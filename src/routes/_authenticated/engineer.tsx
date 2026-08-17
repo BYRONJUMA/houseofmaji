@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/engineer")({
 });
 
 function EngineerPage() {
-  const machinesGuard = useMachinesGuard();
+  useMachinesGuard();
   const { profile } = useAuth();
   const { stage } = Route.useSearch() as { stage?: Stage };
   const qc = useQueryClient();

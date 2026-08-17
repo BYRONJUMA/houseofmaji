@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
 });
 
 function DetailPage() {
-  const machinesGuard = useMachinesGuard();
+  useMachinesGuard();
   const { id } = Route.useParams();
 
   const { data, isLoading } = useQuery({
