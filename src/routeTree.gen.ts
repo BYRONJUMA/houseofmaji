@@ -14,7 +14,6 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedServicesRouteImport } from './routes/_authenticated/services'
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
-import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedEngineerRouteImport } from './routes/_authenticated/engineer'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
 import { Route as AuthenticatedCommissionsRouteImport } from './routes/_authenticated/commissions'
@@ -52,11 +51,6 @@ const AuthenticatedServicesRoute = AuthenticatedServicesRouteImport.update({
 const AuthenticatedSalesRoute = AuthenticatedSalesRouteImport.update({
   id: '/sales',
   path: '/sales',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedEngineerRoute = AuthenticatedEngineerRouteImport.update({
@@ -142,7 +136,6 @@ export interface FileRoutesByFullPath {
   '/commissions': typeof AuthenticatedCommissionsRoute
   '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/engineer': typeof AuthenticatedEngineerRoute
-  '/orders': typeof AuthenticatedOrdersRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/services': typeof AuthenticatedServicesRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
@@ -162,7 +155,6 @@ export interface FileRoutesByTo {
   '/chief': typeof AuthenticatedChiefRoute
   '/commissions': typeof AuthenticatedCommissionsRoute
   '/engineer': typeof AuthenticatedEngineerRoute
-  '/orders': typeof AuthenticatedOrdersRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/services': typeof AuthenticatedServicesRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
@@ -185,7 +177,6 @@ export interface FileRoutesById {
   '/_authenticated/commissions': typeof AuthenticatedCommissionsRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/_authenticated/engineer': typeof AuthenticatedEngineerRoute
-  '/_authenticated/orders': typeof AuthenticatedOrdersRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/services': typeof AuthenticatedServicesRoute
   '/_authenticated/crm/leads': typeof AuthenticatedCrmLeadsRoute
@@ -208,7 +199,6 @@ export interface FileRouteTypes {
     | '/commissions'
     | '/crm'
     | '/engineer'
-    | '/orders'
     | '/sales'
     | '/services'
     | '/crm/leads'
@@ -228,7 +218,6 @@ export interface FileRouteTypes {
     | '/chief'
     | '/commissions'
     | '/engineer'
-    | '/orders'
     | '/sales'
     | '/services'
     | '/crm/leads'
@@ -250,7 +239,6 @@ export interface FileRouteTypes {
     | '/_authenticated/commissions'
     | '/_authenticated/crm'
     | '/_authenticated/engineer'
-    | '/_authenticated/orders'
     | '/_authenticated/sales'
     | '/_authenticated/services'
     | '/_authenticated/crm/leads'
@@ -305,13 +293,6 @@ declare module '@tanstack/react-router' {
       path: '/sales'
       fullPath: '/sales'
       preLoaderRoute: typeof AuthenticatedSalesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/orders': {
-      id: '/_authenticated/orders'
-      path: '/orders'
-      fullPath: '/orders'
-      preLoaderRoute: typeof AuthenticatedOrdersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/engineer': {
@@ -444,7 +425,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCommissionsRoute: typeof AuthenticatedCommissionsRoute
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRouteWithChildren
   AuthenticatedEngineerRoute: typeof AuthenticatedEngineerRoute
-  AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
   AuthenticatedServicesRoute: typeof AuthenticatedServicesRoute
   AuthenticatedFulfillmentIdRoute: typeof AuthenticatedFulfillmentIdRoute
@@ -457,7 +437,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCommissionsRoute: AuthenticatedCommissionsRoute,
   AuthenticatedCrmRoute: AuthenticatedCrmRouteWithChildren,
   AuthenticatedEngineerRoute: AuthenticatedEngineerRoute,
-  AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
   AuthenticatedServicesRoute: AuthenticatedServicesRoute,
   AuthenticatedFulfillmentIdRoute: AuthenticatedFulfillmentIdRoute,

@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { ROLE_LABEL, ROLE_HOME } from "@/lib/stages";
 import { isCrmMember } from "@/lib/crm";
+import { hasMachinesAccess } from "@/hooks/use-machines-access";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { NotificationBell } from "@/components/notification-bell";
@@ -12,8 +13,13 @@ import { BackButton } from "@/components/back-button";
 function navFor(role?: string) {
   const items: { to: string; label: string }[] = [];
   if (!role) return items;
+  // Sales Head has no Machines-section access; Services is the only carve-out.
+  if (!hasMachinesAccess(role)) {
+    items.push({ to: "/crm", label: "CRM" });
+    items.push({ to: "/services", label: "Services" });
+    return items;
+  }
   items.push({ to: ROLE_HOME[role] ?? "/", label: "Dashboard" });
-  if (role === "sales_head") items.push({ to: "/orders", label: "Orders" });
   items.push({ to: "/commissions", label: "Commissions" });
   items.push({ to: "/services", label: "Services" });
   if (isCrmMember(role)) items.push({ to: "/crm", label: "CRM" });

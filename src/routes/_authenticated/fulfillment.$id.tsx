@@ -13,6 +13,7 @@ import { usePayments } from "@/hooks/use-payments";
 import { useDeliveryChecklists } from "@/hooks/use-delivery-checklist";
 import { formatKES, formatDate } from "@/lib/format";
 import { ServiceHistory } from "@/components/service-history";
+import { useMachinesGuard } from "@/hooks/use-machines-access";
 
 
 export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
 });
 
 function DetailPage() {
+  useMachinesGuard();
   const { id } = Route.useParams();
 
   const { data, isLoading } = useQuery({

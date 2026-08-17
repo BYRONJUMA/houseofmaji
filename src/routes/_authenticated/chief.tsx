@@ -29,6 +29,7 @@ import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
 import { SiteVisitsAwaitingAssignment } from "@/components/site-visit-assignment";
 import { formatDuration } from "@/lib/format";
+import { useMachinesGuard } from "@/hooks/use-machines-access";
 
 export const Route = createFileRoute("/_authenticated/chief")({
   validateSearch: stageSearchSchema,
@@ -79,6 +80,7 @@ export function useProfiles() {
 }
 
 function ChiefPage() {
+  useMachinesGuard();
   const { profile } = useAuth();
   const { stage: stageFilter } = Route.useSearch() as { stage?: Stage };
   const qc = useQueryClient();

@@ -33,6 +33,7 @@ import {
 } from "@/hooks/use-commissions";
 import { DownloadReportButton } from "@/components/commission-report";
 import { ROLE_LABEL } from "@/lib/stages";
+import { useMachinesGuard } from "@/hooks/use-machines-access";
 
 type CommissionSearch = { paid?: "paid" | "unpaid"; month?: string };
 
@@ -53,6 +54,7 @@ export const Route = createFileRoute("/_authenticated/commissions")({
 });
 
 function CommissionsPage() {
+  useMachinesGuard();
   const { profile } = useAuth();
   const navigate = useNavigate();
   const search = Route.useSearch();
