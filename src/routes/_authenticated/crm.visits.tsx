@@ -362,15 +362,40 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
   const { profile } = useAuth();
   const { data: team = [] } = useTeam();
   const update = useCrmMutation("site_visits", ["crm-site-visits"]);
+  const remove = useCrmMutation("site_visits", ["crm-site-visits", "crm-visit-photos"]);
   const addPhoto = useCrmMutation("site_visit_photos", ["crm-visit-photos"]);
   const { data: photos = [] } = useVisitPhotos(visit.id);
   const [uploading, setUploading] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [caption, setCaption] = useState("");
   const items: ChecklistItem[] = Array.isArray(visit.checklist) ? visit.checklist : [];
   const canFile =
     visit.assigned_engineer_id === profile?.id ||
     profile?.role === "chief_engineer" ||
     profile?.role === "admin";
+  const canDelete =
+    visit.created_by === profile?.id ||
+    visit.assigned_engineer_id === profile?.id ||
+    profile?.role === "chief_engineer" ||
+    profile?.role === "admin";
+
+  const deleteVisit = async () => {
+    try {
+      const paths = photos.map((p) => p.photo_url).filter(Boolean);
+      if (paths.length > 0) await supabase.storage.from(PHOTO_BUCKET).remove(paths);
+      await new Promise<void>((resolve, reject) =>
+        remove.mutate(
+          { type: "delete", id: visit.id },
+          { onSuccess: () => resolve(), onError: (e) => reject(e as Error) },
+        ),
+      );
+      toast.success("Site visit deleted");
+      setConfirmDelete(false);
+      onClose();
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
 
   const patch = (values: Record<string, unknown>) =>
     update.mutate(
@@ -380,6 +405,7 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
 
   const setItem = (key: string, next: Partial<ChecklistItem>) =>
     patch({ checklist: items.map((i) => (i.item_key === key ? { ...i, ...next } : i)) });
+
 
   const onFile = async (file?: File | null) => {
     if (!file) return;
