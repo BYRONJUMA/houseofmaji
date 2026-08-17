@@ -13,13 +13,9 @@ const CRM_NAV = [
   { to: "/crm", label: "Dashboard" },
   { to: "/crm/leads", label: "Leads" },
   { to: "/crm/sales", label: "Sales" },
-  { to: "/crm/inventory", label: "Inventory" },
   { to: "/crm/services", label: "Services" },
   { to: "/crm/visits", label: "Site Visits" },
-  { to: "/crm/projects", label: "Projects" },
   { to: "/crm/schools", label: "Schools" },
-  { to: "/crm/calls", label: "Call Reviews" },
-  { to: "/crm/whatsapp", label: "WhatsApp" },
 ] as const;
 
 const MANAGER_NAV = [{ to: "/crm/machines", label: "Taxonomy" }] as const;
