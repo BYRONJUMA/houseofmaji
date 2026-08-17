@@ -591,11 +591,13 @@ function LeadDetail({
   lead,
   team,
   manager,
+  canWrite,
   onClose,
 }: {
   lead: Lead;
   team: { id: string; full_name: string; role: string }[];
   manager: boolean;
+  canWrite: boolean;
   onClose: () => void;
 }) {
   const { profile } = useAuth();
@@ -715,6 +717,7 @@ function LeadDetail({
               {lead.follow_up_due_at ? formatDate(lead.follow_up_due_at) : "not scheduled"}
             </p>
           </div>
+          {canWrite && (
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label>Stage</Label>
@@ -763,8 +766,10 @@ function LeadDetail({
               </div>
             )}
           </div>
+          )}
         </div>
 
+        {canWrite && (
         <div className="mt-2 space-y-3 rounded-xl border border-border p-3">
           <h3 className="text-sm font-semibold">Log follow-up</h3>
           <div className="grid gap-2 sm:grid-cols-3">
@@ -798,6 +803,7 @@ function LeadDetail({
             Log follow-up
           </Button>
         </div>
+        )}
 
         <div className="space-y-2">
           <h3 className="text-sm font-semibold">Activity log</h3>
