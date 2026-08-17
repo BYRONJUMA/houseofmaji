@@ -25,6 +25,7 @@ import {
   type Stage,
 } from "@/lib/stages";
 import { useAllPayments, paidPercent, totalPaid } from "@/hooks/use-payments";
+import { OrderCard } from "@/components/order-card";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { type Metric } from "@/components/metric-tiles";
 import { UnifiedSummary } from "@/components/unified-summary";

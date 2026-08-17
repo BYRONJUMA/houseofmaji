@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formatKES, formatDate } from "@/lib/format";
 import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
+import { OrderCard } from "@/components/order-card";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
 import { useCommissions } from "@/hooks/use-commissions";
 import { MyCommissionsCard } from "@/components/commission-report";
