@@ -472,7 +472,7 @@ function ChiefPage() {
                             </Button>
                           </div>
                         )}
-                      </article>
+                      </OrderCard>
                     );
                   })
                 )}
