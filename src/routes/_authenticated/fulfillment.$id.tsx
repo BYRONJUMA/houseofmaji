@@ -102,6 +102,14 @@ function DetailPage() {
   const signedOff = !!checklist?.engineer_signoff_at;
   const showSignoffProgress = ["delivery", "installed"].includes(f.current_stage) && !!checklist;
 
+  // Capacity was added to fulfillments after some orders were created, so fall back to the
+  // delivery checklist value and finally to a "…250LPH" style figure inside the machine type.
+  const capacity =
+    f.capacity_lph ??
+    checklist?.capacity_lph ??
+    f.machine_type?.match(/(\d[\d,.]*)\s*lph/i)?.[1]?.replace(/,/g, "") ??
+    null;
+
   return (
     <AppShell title={f.client_name} subtitle={`${f.machine_type} · ${f.location}`} showBack>
       <div className="mb-6 flex justify-end">
