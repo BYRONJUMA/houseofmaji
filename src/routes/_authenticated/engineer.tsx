@@ -130,43 +130,18 @@ function EngineerPage() {
             const canAssemble =
               f.current_stage === "assembling" && f.assembly_engineer_id === profile?.id;
             return (
-              <article
+              <OrderCard
                 key={f.id}
-                role="link"
-                tabIndex={0}
-                onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    navigate({ to: "/fulfillment/$id", params: { id: f.id } });
-                  }
-                }}
-                className="surface-card cursor-pointer space-y-4 p-5 transition-all hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <p className="text-base font-semibold">{f.client_name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {f.machine_type} · {f.location}
+                fulfillment={f}
+                meta={
+                  f.additional_notes ? (
+                    <p className="rounded-lg bg-secondary p-3 text-sm text-muted-foreground">
+                      {f.additional_notes}
                     </p>
-                  </div>
-                  <span
-                    className={`rounded-full border px-3 py-1 text-xs font-semibold ${STAGE_SOFT[f.current_stage as Stage]}`}
-                  >
-                    {STAGE_LABEL[f.current_stage as Stage]}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-4 text-sm">
-                  <span className="font-semibold">{formatKES(f.agreed_price)}</span>
-                  <span className="text-muted-foreground">
-                    Due {formatDate(f.agreed_delivery_date)}
-                  </span>
-                </div>
-                {f.additional_notes && (
-                  <p className="rounded-lg bg-secondary p-3 text-sm text-muted-foreground">
-                    {f.additional_notes}
-                  </p>
-                )}
+                  ) : null
+                }
+              >
+
                 {canReceive && (
                   <Button
                     className="w-full"
