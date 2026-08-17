@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { ROLE_LABEL, ROLE_HOME } from "@/lib/stages";
 import { isCrmMember } from "@/lib/crm";
+import { hasMachinesAccess } from "@/hooks/use-machines-access";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { NotificationBell } from "@/components/notification-bell";
