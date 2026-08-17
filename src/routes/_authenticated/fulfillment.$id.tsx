@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +17,12 @@ import { useMachinesGuard } from "@/hooks/use-machines-access";
 
 
 export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    tab:
+      search.tab === "checklist" || search.tab === "history"
+        ? (search.tab as "checklist" | "history")
+        : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Fulfillment Detail — Machines" },
@@ -31,6 +37,8 @@ export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
 function DetailPage() {
   useMachinesGuard();
   const { id } = Route.useParams();
+  const { tab } = Route.useSearch();
+  const navigate = useNavigate();
 
   const { data, isLoading } = useQuery({
     queryKey: ["fulfillment", id],
@@ -133,7 +141,18 @@ function DetailPage() {
             : "— the order is marked installed automatically once the engineer completes the “Delivered & Installed By” sign-off on the checklist."}
         </div>
       )}
-      <Tabs defaultValue="overview" className="space-y-6">
+      <Tabs
+        value={tab ?? "overview"}
+        onValueChange={(v) =>
+          navigate({
+            to: "/fulfillment/$id",
+            params: { id },
+            search: { tab: v === "overview" ? undefined : (v as "checklist" | "history") },
+            replace: true,
+          })
+        }
+        className="space-y-6"
+      >
 
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>

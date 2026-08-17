@@ -1,7 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Wrench, PackageCheck, Truck } from "lucide-react";
+import { Wrench, PackageCheck, Truck, ClipboardCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { TablesUpdate } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/use-auth";
@@ -166,9 +166,22 @@ function EngineerPage() {
                     <Truck className="h-4 w-4" /> Mark Assembly Complete
                   </Button>
                 )}
+                {["assembling", "delivery", "installed"].includes(f.current_stage) && (
+                  <Button asChild variant="outline" className="w-full">
+                    <Link
+                      to="/fulfillment/$id"
+                      params={{ id: f.id }}
+                      search={{ tab: "checklist" }}
+                      onClick={(ev) => ev.stopPropagation()}
+                    >
+                      <ClipboardCheck className="h-4 w-4" /> Delivery Checklist
+                    </Link>
+                  </Button>
+                )}
                 {f.current_stage === "delivery" && (
                   <p className="rounded-lg bg-secondary px-3 py-2 text-xs text-muted-foreground">
-                    Waiting for the sales rep to mark this delivered.
+                    Complete the “Delivered & Installed By” sign-off on the checklist to mark this
+                    installed.
                   </p>
                 )}
               </OrderCard>

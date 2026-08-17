@@ -1,8 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Hammer, Inbox, Boxes, UserCog } from "lucide-react";
+import { Hammer, Inbox, Boxes, UserCog, ClipboardCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { TablesUpdate } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/use-auth";
@@ -394,6 +394,19 @@ function ChiefPage() {
                               <Hammer className="h-4 w-4" /> Assign Engineer
                             </Button>
                           </div>
+                        )}
+
+                        {["assembling", "delivery", "installed"].includes(stage) && (
+                          <Button asChild size="sm" variant="outline" className="w-full">
+                            <Link
+                              to="/fulfillment/$id"
+                              params={{ id: f.id }}
+                              search={{ tab: "checklist" }}
+                              onClick={(ev) => ev.stopPropagation()}
+                            >
+                              <ClipboardCheck className="h-4 w-4" /> Delivery Checklist
+                            </Link>
+                          </Button>
                         )}
 
                         {canAct && (stage === "assigned" ||
