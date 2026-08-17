@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/notification-bell";
 import { BackButton } from "@/components/back-button";
 import { cn } from "@/lib/utils";
+import { hasMachinesAccess } from "@/hooks/use-machines-access";
 
 const CRM_NAV = [
   { to: "/crm", label: "Dashboard" },
@@ -38,6 +39,8 @@ export function CrmShell({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+
+  const machines = hasMachinesAccess(profile?.role);
 
   const nav = [
     ...CRM_NAV,
@@ -84,10 +87,10 @@ export function CrmShell({
 
           <div className="ml-auto hidden items-center gap-3 lg:flex">
             <Link
-              to="/"
+              to={machines ? "/" : "/services"}
               className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
             >
-              <Wrench className="h-4 w-4" /> Machines
+              <Wrench className="h-4 w-4" /> {machines ? "Machines" : "Services"}
             </Link>
             <NotificationBell />
             <div className="text-right leading-tight">
@@ -130,11 +133,11 @@ export function CrmShell({
                 </Link>
               ))}
               <Link
-                to="/"
+                to={machines ? "/" : "/services"}
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
               >
-                Machines section
+                {machines ? "Machines section" : "Services"}
               </Link>
             </div>
             <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
