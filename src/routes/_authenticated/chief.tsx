@@ -26,7 +26,8 @@ import {
 } from "@/lib/stages";
 import { useAllPayments, paidPercent, totalPaid } from "@/hooks/use-payments";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
-import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
+import { type Metric } from "@/components/metric-tiles";
+import { UnifiedSummary } from "@/components/unified-summary";
 import { SiteVisitsAwaitingAssignment } from "@/components/site-visit-assignment";
 import { formatDuration } from "@/lib/format";
 import { canManageMachines } from "@/hooks/use-machines-access";
@@ -209,7 +210,7 @@ function ChiefPage() {
           : "Read-only view of all fulfillments across the pipeline"
       }
     >
-      <MetricTiles metrics={stats} homePath="/chief" />
+      <UnifiedSummary />
 
       <div className="mt-4">
         <StageBreakdown items={fulfillments} homePath="/chief" />

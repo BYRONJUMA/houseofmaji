@@ -9,7 +9,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { formatKES, formatDate, formatDuration } from "@/lib/format";
 import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
 import { StageTiles, stageSearchSchema } from "@/components/stage-tiles";
-import { MetricTiles, StageBreakdown, type Metric } from "@/components/metric-tiles";
+import { type Metric } from "@/components/metric-tiles";
+import { UnifiedSummary } from "@/components/unified-summary";
 import { useAllPayments, totalPaid } from "@/hooks/use-payments";
 
 
@@ -147,11 +148,7 @@ function AdminPage() {
 
   return (
     <AppShell title="Admin Panel" subtitle="Everything happening across the business">
-      <MetricTiles metrics={stats} homePath="/admin" />
-
-      <div className="mt-4">
-        <StageBreakdown items={fulfillments} homePath="/admin" />
-      </div>
+      <UnifiedSummary />
 
       <div className="mt-8">
         <StageTiles items={fulfillments} homePath="/admin" activeStage={stage} />
