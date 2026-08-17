@@ -301,45 +301,20 @@ function SalesPage() {
             />
           ) : (
             visible.map((f) => (
-              <article
+              <OrderCard
                 key={f.id}
-                role="link"
-                tabIndex={0}
-                onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    navigate({ to: "/fulfillment/$id", params: { id: f.id } });
-                  }
-                }}
-                className="surface-card w-full cursor-pointer p-5 text-left transition-all hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <p className="font-semibold">{f.client_name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {f.machine_type} · {f.location}
+                fulfillment={f}
+                paid={paidByFulfillment[f.id] ?? 0}
+                meta={
+                  f.current_stage === "delivery" ? (
+                    <p className="rounded-md border border-dashed border-border px-3 py-2 text-xs text-muted-foreground">
+                      Marked installed automatically once every machine has the engineer’s delivery
+                      sign-off on its checklist.
                     </p>
-                  </div>
-                  <span
-                    className={`rounded-full border px-3 py-1 text-xs font-semibold ${STAGE_SOFT[f.current_stage as Stage]}`}
-                  >
-                    {STAGE_LABEL[f.current_stage as Stage]}
-                  </span>
-                </div>
-                <div className="mt-3 flex flex-wrap gap-4 text-sm">
-                  <span className="font-semibold">{formatKES(f.agreed_price)}</span>
-                  <span className="text-muted-foreground">
-                    Due {formatDate(f.agreed_delivery_date)}
-                  </span>
-                </div>
-                {f.current_stage === "delivery" && (
-                  <p className="mt-4 rounded-md border border-dashed border-border px-3 py-2 text-xs text-muted-foreground">
-                    Marked installed automatically once every machine has the engineer’s delivery
-                    sign-off on its checklist.
-                  </p>
-                )}
-              </article>
+                  ) : null
+                }
+              />
+
             ))
           )}
           <p className="text-xs text-muted-foreground">
