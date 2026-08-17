@@ -67,7 +67,7 @@ export const ROLE_LABEL: Record<string, string> = {
 
 export const ROLE_HOME: Record<string, string> = {
   sales_rep: "/sales",
-  sales_head: "/crm",
+  sales_head: "/chief",
   chief_engineer: "/chief",
   engineer: "/engineer",
   admin: "/admin",

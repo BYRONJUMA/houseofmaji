@@ -49,7 +49,14 @@ export const Route = createFileRoute("/_authenticated/services")({
   component: ServicesPage,
 });
 
-const CAN_EDIT = ["admin", "chief_engineer", "engineer", "sales_head"];
+const CAN_CREATE = ["admin", "chief_engineer", "engineer", "sales_head"];
+
+/** Who may edit/complete a specific service record. */
+function canEditRecord(role: string | undefined, uid: string | undefined, s: ServiceRecord) {
+  if (role === "admin" || role === "chief_engineer" || role === "sales_head") return true;
+  if (uid && s.recorded_by === uid) return true;
+  return !!uid && s.assigned_engineer_id === uid;
+}
 
 function Badge({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
@@ -98,7 +105,9 @@ export function useServiceFulfillments() {
 
 function ServicesPage() {
   const { profile } = useAuth();
-  const canEdit = CAN_EDIT.includes(profile?.role ?? "");
+  const canCreate = CAN_CREATE.includes(profile?.role ?? "");
+  const canAssign = profile?.role === "chief_engineer" || profile?.role === "admin";
+  const canEditAny = (s: ServiceRecord) => canEditRecord(profile?.role, profile?.id, s);
   const { data: services = [] } = useServices();
   const { data: settings } = useSettings();
   const defaultInterval = settingNumber(settings, "default_service_interval_months");
@@ -142,12 +151,12 @@ function ServicesPage() {
     <AppShell
       title="Services"
       subtitle={
-        canEdit
+        canCreate
           ? `${services.length} machines on the service schedule · ${overdue.length} overdue.`
           : `Read-only service history for your clients' machines.`
       }
       actions={
-        canEdit ? (
+        canCreate ? (
           <Button size="sm" onClick={() => setCreating(true)}>
             <Plus className="h-4 w-4" /> Log service
           </Button>
@@ -162,7 +171,7 @@ function ServicesPage() {
           <Tile label="Not scheduled" value={String(unscheduled.length)} />
         </div>
 
-        {canEdit && (overdue.length > 0 || dueSoon.length > 0) && (
+        {canCreate && (overdue.length > 0 || dueSoon.length > 0) && (
           <section className="surface-card p-4 sm:p-5">
             <h2 className="mb-4 text-base font-semibold">Visit queue</h2>
             <div className="space-y-2">
@@ -182,9 +191,14 @@ function ServicesPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge className={b.cls}>{b.text}</Badge>
-                      <Button size="sm" variant="outline" onClick={() => logVisit(s)}>
-                        Log visit
-                      </Button>
+                      <span className="text-xs text-muted-foreground">
+                        {nameOf(team, s.assigned_engineer_id)}
+                      </span>
+                      {canEditAny(s) && (
+                        <Button size="sm" variant="outline" onClick={() => logVisit(s)}>
+                          Log visit
+                        </Button>
+                      )}
                     </div>
                   </div>
                 );
@@ -205,7 +219,8 @@ function ServicesPage() {
                 <th className="px-3 py-2">Next due</th>
                 <th className="px-3 py-2 text-right">Visits</th>
                 <th className="px-3 py-2">Recorded by</th>
-                {canEdit && <th className="px-3 py-2" />}
+                <th className="px-3 py-2">Assigned to</th>
+                <th className="px-3 py-2" />
               </tr>
             </thead>
             <tbody>
@@ -214,10 +229,10 @@ function ServicesPage() {
                 return (
                   <tr
                     key={s.id}
-                    onClick={() => canEdit && setEditing(s)}
+                    onClick={() => canEditAny(s) && setEditing(s)}
                     className={cn(
                       "border-t border-border transition-colors",
-                      canEdit && "cursor-pointer hover:bg-secondary/50",
+                      canEditAny(s) && "cursor-pointer hover:bg-secondary/50",
                     )}
                   >
                     <td className="px-3 py-2 font-medium">{s.client_name}</td>
@@ -230,26 +245,33 @@ function ServicesPage() {
                     </td>
                     <td className="px-3 py-2 text-right tabular-nums">{s.visit_count ?? 0}</td>
                     <td className="px-3 py-2">{nameOf(team, s.recorded_by)}</td>
-                    {canEdit && (
-                      <td className="px-3 py-2 text-right">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            logVisit(s);
-                          }}
-                        >
-                          Log visit
-                        </Button>
-                      </td>
-                    )}
+                    <td className="px-3 py-2">
+                      {s.assigned_engineer_id ? (
+                        nameOf(team, s.assigned_engineer_id)
+                      ) : (
+                        <span className="text-muted-foreground">Unassigned</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      <div
+                        className="flex items-center justify-end gap-2"
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      >
+                        {canAssign && <AssignEngineer record={s} />}
+                        {canEditAny(s) && (
+                          <Button size="sm" variant="outline" onClick={() => logVisit(s)}>
+                            Log visit
+                          </Button>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
               {services.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-3 py-8 text-center text-muted-foreground">
+                  <td colSpan={10} className="px-3 py-8 text-center text-muted-foreground">
                     No service records yet.
                   </td>
                 </tr>
@@ -259,7 +281,7 @@ function ServicesPage() {
         </div>
       </div>
 
-      {canEdit && (creating || editing) && (
+      {(creating || (editing && canEditAny(editing))) && (
         <ServiceDialog
           record={editing}
           onClose={() => {
@@ -439,5 +461,45 @@ function ServiceDialog({
         </Button>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function AssignEngineer({ record }: { record: ServiceRecord }) {
+  const { profile } = useAuth();
+  const { data: team = [] } = useTeam();
+  const mutate = useCrmMutation("services", ["crm-services"]);
+  const engineers = team.filter((t) => t.role === "engineer" || t.role === "chief_engineer");
+
+  const assign = (engineerId: string) => {
+    mutate.mutate(
+      {
+        type: "update",
+        id: record.id,
+        values: {
+          assigned_engineer_id: engineerId,
+          assigned_by: profile?.id ?? null,
+          assigned_at: new Date().toISOString(),
+        },
+      },
+      {
+        onSuccess: () => toast.success("Engineer assigned — they have been notified"),
+        onError: (e: unknown) => toast.error((e as Error).message),
+      },
+    );
+  };
+
+  return (
+    <Select value={record.assigned_engineer_id ?? ""} onValueChange={assign}>
+      <SelectTrigger className="h-8 w-[10.5rem] text-xs">
+        <SelectValue placeholder="Assign engineer" />
+      </SelectTrigger>
+      <SelectContent>
+        {engineers.map((e) => (
+          <SelectItem key={e.id} value={e.id}>
+            {e.full_name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
