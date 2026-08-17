@@ -190,6 +190,7 @@ function DetailPage() {
             events={data!.events}
             payments={payments ?? []}
             checklists={checklists ?? []}
+            edits={data!.edits ?? []}
             names={names}
           />
         </TabsContent>
