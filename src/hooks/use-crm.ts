@@ -48,6 +48,7 @@ export type InventoryItem = {
 
 export type ServiceRecord = {
   id: string;
+  fulfillment_id: string | null;
   client_name: string;
   contact: string | null;
   machine_type: string | null;

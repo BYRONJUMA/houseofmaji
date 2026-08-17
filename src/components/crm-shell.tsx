@@ -13,7 +13,6 @@ const CRM_NAV = [
   { to: "/crm", label: "Dashboard" },
   { to: "/crm/leads", label: "Leads" },
   { to: "/crm/sales", label: "Sales" },
-  { to: "/crm/services", label: "Services" },
   { to: "/crm/visits", label: "Site Visits" },
   { to: "/crm/schools", label: "Schools" },
 ] as const;

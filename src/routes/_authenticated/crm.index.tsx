@@ -186,7 +186,7 @@ function CrmDashboard() {
             value={String(dueSoon.length)}
             sub={`${overdueService.length} overdue`}
             tone={overdueService.length ? "warn" : "good"}
-            to="/crm/services"
+            to="/services"
           />
           <MiniTile
             label="Schools tracked"

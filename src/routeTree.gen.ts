@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedServicesRouteImport } from './routes/_authenticated/services'
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
 import { Route as AuthenticatedEngineerRouteImport } from './routes/_authenticated/engineer'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
@@ -42,6 +43,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedServicesRoute = AuthenticatedServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSalesRoute = AuthenticatedSalesRouteImport.update({
   id: '/sales',
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
+  '/services': typeof AuthenticatedServicesRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
   '/crm/machines': typeof AuthenticatedCrmMachinesRoute
   '/crm/sales': typeof AuthenticatedCrmSalesRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/commissions': typeof AuthenticatedCommissionsRoute
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
+  '/services': typeof AuthenticatedServicesRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
   '/crm/machines': typeof AuthenticatedCrmMachinesRoute
   '/crm/sales': typeof AuthenticatedCrmSalesRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/_authenticated/engineer': typeof AuthenticatedEngineerRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
+  '/_authenticated/services': typeof AuthenticatedServicesRoute
   '/_authenticated/crm/leads': typeof AuthenticatedCrmLeadsRoute
   '/_authenticated/crm/machines': typeof AuthenticatedCrmMachinesRoute
   '/_authenticated/crm/sales': typeof AuthenticatedCrmSalesRoute
@@ -201,6 +210,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/engineer'
     | '/sales'
+    | '/services'
     | '/crm/leads'
     | '/crm/machines'
     | '/crm/sales'
@@ -220,6 +230,7 @@ export interface FileRouteTypes {
     | '/commissions'
     | '/engineer'
     | '/sales'
+    | '/services'
     | '/crm/leads'
     | '/crm/machines'
     | '/crm/sales'
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm'
     | '/_authenticated/engineer'
     | '/_authenticated/sales'
+    | '/_authenticated/services'
     | '/_authenticated/crm/leads'
     | '/_authenticated/crm/machines'
     | '/_authenticated/crm/sales'
@@ -281,6 +293,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/services': {
+      id: '/_authenticated/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof AuthenticatedServicesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/sales': {
       id: '/_authenticated/sales'
@@ -429,6 +448,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRouteWithChildren
   AuthenticatedEngineerRoute: typeof AuthenticatedEngineerRoute
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
+  AuthenticatedServicesRoute: typeof AuthenticatedServicesRoute
   AuthenticatedFulfillmentIdRoute: typeof AuthenticatedFulfillmentIdRoute
   AuthenticatedUserIdRoute: typeof AuthenticatedUserIdRoute
 }
@@ -440,6 +460,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCrmRoute: AuthenticatedCrmRouteWithChildren,
   AuthenticatedEngineerRoute: AuthenticatedEngineerRoute,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
+  AuthenticatedServicesRoute: AuthenticatedServicesRoute,
   AuthenticatedFulfillmentIdRoute: AuthenticatedFulfillmentIdRoute,
   AuthenticatedUserIdRoute: AuthenticatedUserIdRoute,
 }

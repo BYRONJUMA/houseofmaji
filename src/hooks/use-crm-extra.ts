@@ -21,9 +21,12 @@ export type SiteVisit = {
   location: string | null;
   visit_type: "installation" | "maintenance" | "repair" | "inspection";
   engineer_id: string | null;
+  assigned_engineer_id: string | null;
+  assigned_by: string | null;
+  assigned_at: string | null;
   visit_date: string;
   notes: string | null;
-  status: "scheduled" | "completed";
+  status: "pending_assignment" | "scheduled" | "completed";
   checklist: ChecklistItem[];
   created_by: string | null;
   created_at: string;
@@ -219,7 +222,7 @@ export const AUDIO_MIME = [
 export const MAX_AUDIO_BYTES = 200 * 1024 * 1024;
 
 export const VISIT_TYPES = ["installation", "maintenance", "repair", "inspection"] as const;
-export const VISIT_STATUSES = ["scheduled", "completed"] as const;
+export const VISIT_STATUSES = ["pending_assignment", "scheduled", "completed"] as const;
 
 export const INSTALLATION_CHECKLIST: ChecklistItem[] = [
   { item_key: "unpacked_inspected", label: "Machine unpacked and inspected for transit damage", checked: false, notes: null },
