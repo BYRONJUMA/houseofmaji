@@ -101,6 +101,10 @@ function DetailPage() {
 
   return (
     <AppShell title={f.client_name} subtitle={`${f.machine_type} · ${f.location}`} showBack>
+      <div className="mb-6 flex justify-end">
+        <EditOrderDetails fulfillment={f} />
+      </div>
+
 
       {showSignoffProgress && (
         <div
