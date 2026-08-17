@@ -212,9 +212,6 @@ function ChiefPage() {
     >
       <UnifiedSummary />
 
-      <div className="mt-4">
-        <StageBreakdown items={fulfillments} homePath="/chief" />
-      </div>
 
       <div className="mt-8">
         {canAct && <SiteVisitsAwaitingAssignment />}
