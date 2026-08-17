@@ -145,6 +145,8 @@ function CrmDashboard() {
       subtitle={`${monthLabel(thisMonth)} — live pipeline, revenue and service health.`}
     >
       <div className="space-y-5">
+        <UnifiedSummary />
+
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             label="Revenue this month"
@@ -173,6 +175,7 @@ function CrmDashboard() {
             to="/crm/sales"
           />
         </div>
+
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <MiniTile
