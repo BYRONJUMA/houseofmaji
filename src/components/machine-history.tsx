@@ -42,15 +42,26 @@ function stamp(value: string) {
   });
 }
 
+export type FulfillmentEditRow = {
+  id: string;
+  actor_id: string | null;
+  field_label: string;
+  old_value: string | null;
+  new_value: string | null;
+  changed_at: string;
+};
+
 export function MachineHistory({
   events,
   payments,
   checklists,
+  edits = [],
   names,
 }: {
   events: StageEventRow[];
   payments: Payment[];
   checklists: DeliveryChecklist[];
+  edits?: FulfillmentEditRow[];
   names: Record<string, string>;
 }) {
   const who = (id: string | null | undefined) => (id && names[id]) || "System";
