@@ -137,7 +137,9 @@ function UserDetailPage() {
                 {orders.map((f) => (
                   <tr
                     key={f.id}
-                    onClick={() => navigate({ to: "/fulfillment/$id", params: { id: f.id } })}
+                    onClick={() =>
+                      navigate({ to: "/fulfillment/$id", params: { id: f.id }, search: {} })
+                    }
                     className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
                   >
                     <td className="px-4 py-3 font-medium">{f.client_name}</td>

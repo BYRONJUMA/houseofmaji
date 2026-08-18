@@ -249,7 +249,11 @@ function CommissionsPage() {
                 <tr
                   key={r.id}
                   onClick={() =>
-                    navigate({ to: "/fulfillment/$id", params: { id: r.fulfillment_id } })
+                    navigate({
+                      to: "/fulfillment/$id",
+                      params: { id: r.fulfillment_id },
+                      search: { tab: undefined },
+                    })
                   }
                   className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
                 >
