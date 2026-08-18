@@ -49,7 +49,7 @@ export function OrderCard({
   compact?: boolean;
 }) {
   const navigate = useNavigate();
-  const open = () => navigate({ to: "/fulfillment/$id", params: { id: f.id } });
+  const open = () => navigate({ to: "/fulfillment/$id", params: { id: f.id }, search: {} });
   const stage = f.current_stage as Stage;
   const pct = paidPercent(paid ?? 0, f.agreed_price);
 
