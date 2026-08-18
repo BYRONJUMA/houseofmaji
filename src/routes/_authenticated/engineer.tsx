@@ -92,12 +92,27 @@ function EngineerPage() {
 
   const mutate = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: TablesUpdate<"fulfillments"> }) => {
-      const { error } = await supabase.from("fulfillments").update(patch).eq("id", id);
+      const { data, error } = await supabase
+        .from("fulfillments")
+        .update(patch)
+        .eq("id", id)
+        .select("*")
+        .single();
       if (error) throw error;
+      return data;
     },
-    onSuccess: () => {
+    onSuccess: (updated) => {
+      qc.setQueryData<typeof jobs>(["engineer-jobs", profile?.id], (current) =>
+        (current ?? []).map((item) => (item.id === updated.id ? updated : item)),
+      );
+      qc.setQueryData(["fulfillment", updated.id], (current: unknown) => {
+        if (!current || typeof current !== "object" || !("fulfillment" in current)) return current;
+        return { ...current, fulfillment: updated };
+      });
       toast.success("Job updated");
       qc.invalidateQueries({ queryKey: ["engineer-jobs"] });
+      qc.invalidateQueries({ queryKey: ["fulfillments"] });
+      qc.invalidateQueries({ queryKey: ["summary-fulfillments"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });

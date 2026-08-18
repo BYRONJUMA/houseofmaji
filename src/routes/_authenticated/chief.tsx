@@ -31,7 +31,6 @@ import { type Metric } from "@/components/metric-tiles";
 import { UnifiedSummary } from "@/components/unified-summary";
 import { SiteVisitsAwaitingAssignment } from "@/components/site-visit-assignment";
 import { formatDuration } from "@/lib/format";
-import { canManageMachines } from "@/hooks/use-machines-access";
 
 export const Route = createFileRoute("/_authenticated/chief")({
   validateSearch: stageSearchSchema,
@@ -83,7 +82,7 @@ export function useProfiles() {
 
 function ChiefPage() {
   const { profile } = useAuth();
-  const canAct = canManageMachines(profile?.role);
+  const canAct = profile?.role === "chief_engineer" || profile?.role === "admin";
   const { stage: stageFilter } = Route.useSearch() as { stage?: Stage };
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -106,12 +105,26 @@ function ChiefPage() {
 
   const mutate = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: TablesUpdate<"fulfillments"> }) => {
-      const { error } = await supabase.from("fulfillments").update(patch).eq("id", id);
+      const { data, error } = await supabase
+        .from("fulfillments")
+        .update(patch)
+        .eq("id", id)
+        .select("*")
+        .single();
       if (error) throw error;
+      return data;
     },
-    onSuccess: () => {
+    onSuccess: (updated) => {
+      qc.setQueryData<typeof fulfillments>(["fulfillments"], (current) =>
+        (current ?? []).map((item) => (item.id === updated.id ? updated : item)),
+      );
+      qc.setQueryData(["fulfillment", updated.id], (current: unknown) => {
+        if (!current || typeof current !== "object" || !("fulfillment" in current)) return current;
+        return { ...current, fulfillment: updated };
+      });
       toast.success("Pipeline updated");
       qc.invalidateQueries({ queryKey: ["fulfillments"] });
+      qc.invalidateQueries({ queryKey: ["summary-fulfillments"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -298,7 +311,7 @@ function ChiefPage() {
                                 id: f.id,
                                 patch: {
                                   current_stage: "waiting_for_frame",
-                                  chief_engineer_id: profile!.id,
+                                  chief_engineer_id: profile?.id,
                                   frame_ordered_at: new Date().toISOString(),
                                 },
                               });
@@ -319,7 +332,7 @@ function ChiefPage() {
                                 id: f.id,
                                 patch: {
                                   current_stage: "material_procurement",
-                                  chief_engineer_id: f.chief_engineer_id ?? profile!.id,
+                                  chief_engineer_id: f.chief_engineer_id ?? profile?.id,
                                 },
                               });
                             }}
@@ -386,7 +399,7 @@ function ChiefPage() {
                                     current_stage: "assigned",
                                     assembly_engineer_id: a.asm,
                                     installation_engineer_id: a.inst || null,
-                                    chief_engineer_id: f.chief_engineer_id ?? profile!.id,
+                                    chief_engineer_id: f.chief_engineer_id ?? profile?.id,
                                   },
                                 });
                               }}
