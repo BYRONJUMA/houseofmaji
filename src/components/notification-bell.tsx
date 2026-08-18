@@ -58,7 +58,7 @@ export function NotificationBell() {
                     navigate({
                       to: "/fulfillment/$id",
                       params: { id: n.fulfillment_id },
-                      search: {},
+                      search: { tab: undefined },
                     });
                 }}
                 className={`block w-full border-b border-border px-3 py-2.5 text-left last:border-0 hover:bg-secondary ${

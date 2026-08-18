@@ -252,7 +252,7 @@ function CommissionsPage() {
                     navigate({
                       to: "/fulfillment/$id",
                       params: { id: r.fulfillment_id },
-                      search: {},
+                      search: { tab: undefined },
                     })
                   }
                   className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
