@@ -138,7 +138,11 @@ function UserDetailPage() {
                   <tr
                     key={f.id}
                     onClick={() =>
-                      navigate({ to: "/fulfillment/$id", params: { id: f.id }, search: {} })
+                      navigate({
+                        to: "/fulfillment/$id",
+                        params: { id: f.id },
+                        search: { tab: undefined },
+                      })
                     }
                     className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
                   >
