@@ -203,6 +203,8 @@ export type Database = {
           client_name: string
           created_at: string
           current_stage: string
+          delivered_confirmed_at: string | null
+          delivered_confirmed_by: string | null
           frame_ordered_at: string | null
           id: string
           installation_engineer_id: string | null
@@ -224,6 +226,8 @@ export type Database = {
           client_name: string
           created_at?: string
           current_stage?: string
+          delivered_confirmed_at?: string | null
+          delivered_confirmed_by?: string | null
           frame_ordered_at?: string | null
           id?: string
           installation_engineer_id?: string | null
@@ -245,6 +249,8 @@ export type Database = {
           client_name?: string
           created_at?: string
           current_stage?: string
+          delivered_confirmed_at?: string | null
+          delivered_confirmed_by?: string | null
           frame_ordered_at?: string | null
           id?: string
           installation_engineer_id?: string | null
@@ -266,6 +272,13 @@ export type Database = {
           {
             foreignKeyName: "fulfillments_chief_engineer_id_fkey"
             columns: ["chief_engineer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillments_delivered_confirmed_by_fkey"
+            columns: ["delivered_confirmed_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
