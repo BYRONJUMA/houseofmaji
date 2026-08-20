@@ -9,12 +9,12 @@ import { DeliveryChecklistPanel } from "@/components/delivery-checklist-panel";
 import { MachineHistory } from "@/components/machine-history";
 import { EditOrderDetails } from "@/components/edit-order-details";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { usePayments } from "@/hooks/use-payments";
+import { usePayments, totalPaid } from "@/hooks/use-payments";
+import { StageActions } from "@/components/stage-actions";
 import { useDeliveryChecklists } from "@/hooks/use-delivery-checklist";
 import { formatKES, formatDate } from "@/lib/format";
 import { ServiceHistory } from "@/components/service-history";
 import { useMachinesGuard } from "@/hooks/use-machines-access";
-
 
 export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -103,7 +103,6 @@ function DetailPage() {
     );
   }
 
-
   const names = Object.fromEntries((data!.profiles ?? []).map((p) => [p.id, p.full_name]));
   const checklistReady = ["assembling", "delivery", "installed"].includes(f.current_stage);
   const checklist = (checklists ?? [])[0] ?? null;
@@ -123,7 +122,6 @@ function DetailPage() {
       <div className="mb-6 flex justify-end">
         <EditOrderDetails fulfillment={f} />
       </div>
-
 
       {showSignoffProgress && (
         <div
@@ -153,7 +151,6 @@ function DetailPage() {
         }
         className="space-y-6"
       >
-
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="checklist">
@@ -166,6 +163,15 @@ function DetailPage() {
         <TabsContent value="overview">
           <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <div className="space-y-6">
+              <div className="surface-card space-y-3 p-5">
+                <h2 className="text-lg font-semibold">Next step</h2>
+                <StageActions
+                  fulfillment={f}
+                  paid={totalPaid(payments ?? [])}
+                  size="default"
+                  showChecklistLink={false}
+                />
+              </div>
               <StageProgress currentStage={f.current_stage} events={data!.events} names={names} />
               <PaymentsPanel fulfillmentId={f.id} agreedPrice={f.agreed_price} names={names} />
             </div>
@@ -227,7 +233,6 @@ function DetailPage() {
       </Tabs>
     </AppShell>
   );
-
 }
 
 function Row({ label, value }: { label: string; value: string | number | null | undefined }) {

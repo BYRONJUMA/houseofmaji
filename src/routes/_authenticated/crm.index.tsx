@@ -81,7 +81,8 @@ function CrmDashboard() {
     );
 
     const target = targets.find(
-      (t) => new Date(t.month).getMonth() === thisMonth.getMonth() &&
+      (t) =>
+        new Date(t.month).getMonth() === thisMonth.getMonth() &&
         new Date(t.month).getFullYear() === thisMonth.getFullYear(),
     );
 
@@ -103,7 +104,9 @@ function CrmDashboard() {
   }, [invoices, leads, targets]);
 
   const revenueTarget = num(m.target?.revenue_target);
-  const targetPct = revenueTarget ? Math.min(100, Math.round((m.revenue / revenueTarget) * 100)) : 0;
+  const targetPct = revenueTarget
+    ? Math.min(100, Math.round((m.revenue / revenueTarget) * 100))
+    : 0;
   const winRate = m.closedMonth.length
     ? Math.round((m.wonMonth.length / m.closedMonth.length) * 100)
     : 0;
@@ -111,9 +114,7 @@ function CrmDashboard() {
   const dueSoon = services.filter(
     (s) => s.next_due_date && daysBetween(new Date(), s.next_due_date) <= 30,
   );
-  const overdueService = services.filter(
-    (s) => s.next_due_date && new Date(s.next_due_date) < now,
-  );
+  const overdueService = services.filter((s) => s.next_due_date && new Date(s.next_due_date) < now);
   const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
 
   const repRows = reps
@@ -123,10 +124,7 @@ function CrmDashboard() {
       const rWon = m.wonMonth.filter((l) => l.rep_id === r.id);
       const rRevenue = invoices
         .filter(
-          (i) =>
-            i.rep_id === r.id &&
-            new Date(i.date) >= thisMonth &&
-            new Date(i.date) < nextMonth,
+          (i) => i.rep_id === r.id && new Date(i.date) >= thisMonth && new Date(i.date) < nextMonth,
         )
         .reduce((s, i) => s + num(i.amount), 0);
       return {
@@ -176,7 +174,6 @@ function CrmDashboard() {
             to="/crm/sales"
           />
         </div>
-
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <MiniTile

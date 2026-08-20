@@ -67,8 +67,7 @@ function SettingsPage() {
     onError: (e: unknown) => toast.error((e as Error).message),
   });
 
-  const valueOf = (key: string) =>
-    draft[key] ?? settings?.[key] ?? SETTING_DEFAULTS[key] ?? "";
+  const valueOf = (key: string) => draft[key] ?? settings?.[key] ?? SETTING_DEFAULTS[key] ?? "";
 
   if (!isAdmin) {
     return (
@@ -98,11 +97,7 @@ function SettingsPage() {
             </div>
           ))}
           <Button
-            onClick={() =>
-              save.mutate(
-                FIELDS.map((f) => ({ key: f.key, value: valueOf(f.key) })),
-              )
-            }
+            onClick={() => save.mutate(FIELDS.map((f) => ({ key: f.key, value: valueOf(f.key) })))}
             disabled={save.isPending}
           >
             Save settings

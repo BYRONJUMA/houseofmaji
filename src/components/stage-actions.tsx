@@ -126,8 +126,7 @@ export function StageActions({
   const gateBlocked = nextStage !== null && paidPercent(paid, f.agreed_price) < gate;
   const busy = mutate.isPending;
 
-  const canReassign =
-    chiefCanAct && ["assigned", "assembling", "delivery"].includes(stage);
+  const canReassign = chiefCanAct && ["assigned", "assembling", "delivery"].includes(stage);
 
   const nothing =
     !(chiefCanAct && ["received", "waiting_for_frame", "material_procurement"].includes(stage)) &&
@@ -139,7 +138,11 @@ export function StageActions({
   if (nothing) return null;
 
   return (
-    <div className="space-y-2" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+    <div
+      className="space-y-2"
+      onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
+    >
       {gateBlocked && nextStage && chiefCanAct && (
         <p className="rounded-lg bg-destructive/10 px-2.5 py-2 text-xs font-medium text-destructive">
           {PAYMENT_GATE_MESSAGE[nextStage]}

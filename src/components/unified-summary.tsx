@@ -84,9 +84,7 @@ export function UnifiedSummary({ title = "Business summary" }: { title?: string 
   const crmRevenue = invoices.reduce((s, i) => s + num(i.amount), 0);
   const collected = totalPaid(payments);
   const commissionTotal = commissions.reduce((s, c) => s + num(c.amount), 0);
-  const commissionPaid = commissions
-    .filter((c) => c.paid)
-    .reduce((s, c) => s + num(c.amount), 0);
+  const commissionPaid = commissions.filter((c) => c.paid).reduce((s, c) => s + num(c.amount), 0);
 
   const perRole = team.reduce<Record<string, number>>((acc, t) => {
     acc[t.role] = (acc[t.role] ?? 0) + 1;
@@ -128,13 +126,13 @@ export function UnifiedSummary({ title = "Business summary" }: { title?: string 
       to: { to: "/commissions", search: { paid: "paid" } },
     },
     {
-      label: "Team members",
+      label: "Users per role",
       value: String(team.length),
       hint:
         Object.entries(perRole)
           .map(([r, n]) => `${n} ${ROLE_LABEL[r] ?? r}`)
           .join(" · ") || undefined,
-      to: { to: machinesHome, search: {} },
+      to: { to: "/team" },
     },
     {
       label: "Site visits",

@@ -220,7 +220,9 @@ function VisitsPage() {
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold">By engineer</h3>
                 {engineers.map((e) => {
-                  const c = visits.filter((v) => (v.assigned_engineer_id ?? v.engineer_id) === e.id).length;
+                  const c = visits.filter(
+                    (v) => (v.assigned_engineer_id ?? v.engineer_id) === e.id,
+                  ).length;
                   return (
                     <Bar
                       key={e.id}
@@ -228,7 +230,11 @@ function VisitsPage() {
                       value={c}
                       max={Math.max(
                         1,
-                        ...engineers.map((x) => visits.filter((v) => (v.assigned_engineer_id ?? v.engineer_id) === x.id).length),
+                        ...engineers.map(
+                          (x) =>
+                            visits.filter((v) => (v.assigned_engineer_id ?? v.engineer_id) === x.id)
+                              .length,
+                        ),
                       )}
                       sub={String(c)}
                     />
@@ -417,7 +423,6 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
   const setItem = (key: string, next: Partial<ChecklistItem>) =>
     patch({ checklist: items.map((i) => (i.item_key === key ? { ...i, ...next } : i)) });
 
-
   const onFile = async (file?: File | null) => {
     if (!file) return;
     setUploading(true);
@@ -603,7 +608,6 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
         </AlertDialog>
       </DialogContent>
     </Dialog>
-
   );
 }
 

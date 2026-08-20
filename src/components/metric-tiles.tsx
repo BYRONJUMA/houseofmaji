@@ -60,7 +60,6 @@ export function MetricTiles({
   );
 }
 
-
 /** Compact "orders currently in each stage" strip. */
 export function StageBreakdown({
   items,

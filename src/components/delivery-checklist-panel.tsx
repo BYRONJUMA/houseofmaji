@@ -36,7 +36,6 @@ type Fulfillment = {
   installation_engineer_id: string | null;
 };
 
-
 export function DeliveryChecklistPanel({
   fulfillment,
   names,
@@ -57,7 +56,6 @@ export function DeliveryChecklistPanel({
       : checklist?.capacity_lph != null
         ? String(checklist.capacity_lph)
         : "";
-
 
   const sections = (checklist?.sections ?? {}) as ChecklistSections;
   const filled = filledRowCount(sections);
@@ -82,7 +80,6 @@ export function DeliveryChecklistPanel({
       { onError: (e: unknown) => toast.error((e as Error).message ?? "Could not save") },
     );
   };
-
 
   const setCell = (sectionKey: string, rowKey: string, cell: Partial<ChecklistCell>) => {
     const next: ChecklistSections = {
@@ -190,8 +187,6 @@ export function DeliveryChecklistPanel({
             <ReadOnly label="Delivered by" value={meta.deliveredBy || "—"} />
           </div>
         )}
-
-
       </div>
 
       {CHECKLIST_SECTIONS.map((section) => (
@@ -386,8 +381,6 @@ function SignOff({
     </div>
   );
 }
-
-
 
 function ReadOnly({ label, value }: { label: string; value: string }) {
   return (

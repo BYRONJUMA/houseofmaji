@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedServicesRouteImport } from './routes/_authenticated/services'
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
 import { Route as AuthenticatedEngineerRouteImport } from './routes/_authenticated/engineer'
@@ -42,6 +43,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedServicesRoute = AuthenticatedServicesRouteImport.update({
   id: '/services',
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/services': typeof AuthenticatedServicesRoute
+  '/team': typeof AuthenticatedTeamRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
   '/crm/machines': typeof AuthenticatedCrmMachinesRoute
   '/crm/sales': typeof AuthenticatedCrmSalesRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/engineer': typeof AuthenticatedEngineerRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/services': typeof AuthenticatedServicesRoute
+  '/team': typeof AuthenticatedTeamRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
   '/crm/machines': typeof AuthenticatedCrmMachinesRoute
   '/crm/sales': typeof AuthenticatedCrmSalesRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/engineer': typeof AuthenticatedEngineerRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/services': typeof AuthenticatedServicesRoute
+  '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/crm/leads': typeof AuthenticatedCrmLeadsRoute
   '/_authenticated/crm/machines': typeof AuthenticatedCrmMachinesRoute
   '/_authenticated/crm/sales': typeof AuthenticatedCrmSalesRoute
@@ -201,6 +210,7 @@ export interface FileRouteTypes {
     | '/engineer'
     | '/sales'
     | '/services'
+    | '/team'
     | '/crm/leads'
     | '/crm/machines'
     | '/crm/sales'
@@ -220,6 +230,7 @@ export interface FileRouteTypes {
     | '/engineer'
     | '/sales'
     | '/services'
+    | '/team'
     | '/crm/leads'
     | '/crm/machines'
     | '/crm/sales'
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/_authenticated/engineer'
     | '/_authenticated/sales'
     | '/_authenticated/services'
+    | '/_authenticated/team'
     | '/_authenticated/crm/leads'
     | '/_authenticated/crm/machines'
     | '/_authenticated/crm/sales'
@@ -280,6 +292,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/team': {
+      id: '/_authenticated/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof AuthenticatedTeamRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/services': {
       id: '/_authenticated/services'
@@ -427,6 +446,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEngineerRoute: typeof AuthenticatedEngineerRoute
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
   AuthenticatedServicesRoute: typeof AuthenticatedServicesRoute
+  AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedFulfillmentIdRoute: typeof AuthenticatedFulfillmentIdRoute
   AuthenticatedUserIdRoute: typeof AuthenticatedUserIdRoute
 }
@@ -439,6 +459,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEngineerRoute: AuthenticatedEngineerRoute,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
   AuthenticatedServicesRoute: AuthenticatedServicesRoute,
+  AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedFulfillmentIdRoute: AuthenticatedFulfillmentIdRoute,
   AuthenticatedUserIdRoute: AuthenticatedUserIdRoute,
 }
