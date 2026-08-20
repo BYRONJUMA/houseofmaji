@@ -74,8 +74,6 @@ function ChiefPage() {
   const { profile } = useAuth();
   const canAct = profile?.role === "chief_engineer" || profile?.role === "admin";
   const { stage: stageFilter } = Route.useSearch() as { stage?: Stage };
-  const qc = useQueryClient();
-  const navigate = useNavigate();
   const { data: fulfillments = [], isLoading } = useFulfillments();
   const { data: profiles = [] } = useProfiles();
   const { data: payments = [] } = useAllPayments();
@@ -86,37 +84,6 @@ function ChiefPage() {
       if (error) throw error;
       return data;
     },
-  });
-  // the chief engineer can also assign the job to themselves
-  const engineers = profiles.filter(
-    (p) => p.role === "engineer" || (profile?.id && p.id === profile.id),
-  );
-  const [assign, setAssign] = useState<Record<string, { asm?: string; inst?: string }>>({});
-
-  const mutate = useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: TablesUpdate<"fulfillments"> }) => {
-      const { data, error } = await supabase
-        .from("fulfillments")
-        .update(patch)
-        .eq("id", id)
-        .select("*")
-        .single();
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (updated) => {
-      qc.setQueryData<typeof fulfillments>(["fulfillments"], (current) =>
-        (current ?? []).map((item) => (item.id === updated.id ? updated : item)),
-      );
-      qc.setQueryData(["fulfillment", updated.id], (current: unknown) => {
-        if (!current || typeof current !== "object" || !("fulfillment" in current)) return current;
-        return { ...current, fulfillment: updated };
-      });
-      toast.success("Pipeline updated");
-      qc.invalidateQueries({ queryKey: ["fulfillments"] });
-      qc.invalidateQueries({ queryKey: ["summary-fulfillments"] });
-    },
-    onError: (e: Error) => toast.error(e.message),
   });
 
   const names = Object.fromEntries(profiles.map((p) => [p.id, p.full_name]));
@@ -255,7 +222,6 @@ function ChiefPage() {
                   </p>
                 ) : (
                   items.map((f) => {
-                    const a = assign[f.id] ?? {};
                     const pct = paidPercent(paidByFulfillment[f.id] ?? 0, f.agreed_price);
                     const nextStage: Stage | null =
                       stage === "received"
