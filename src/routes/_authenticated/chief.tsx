@@ -131,7 +131,8 @@ function ChiefPage() {
     {
       label: "Revenue collected",
       value: formatKES(collected),
-      hint: revenue > 0 ? `${((collected / revenue) * 100).toFixed(0)}% of agreed value` : undefined,
+      hint:
+        revenue > 0 ? `${((collected / revenue) * 100).toFixed(0)}% of agreed value` : undefined,
       link: { to: "/chief", search: {} },
     },
     {
@@ -171,7 +172,6 @@ function ChiefPage() {
     return paidPercent(paidByFulfillment[f.id] ?? 0, f.agreed_price) < (PAYMENT_GATE[next] ?? 0);
   }).length;
 
-
   return (
     <AppShell
       title={canAct ? "Chief Engineer" : "Machines Pipeline"}
@@ -183,10 +183,7 @@ function ChiefPage() {
     >
       <UnifiedSummary />
 
-
-      <div className="mt-8">
-        {canAct && <SiteVisitsAwaitingAssignment />}
-      </div>
+      <div className="mt-8">{canAct && <SiteVisitsAwaitingAssignment />}</div>
 
       <div className="mb-8 mt-8">
         <StageTiles items={fulfillments} homePath="/chief" activeStage={stageFilter} />
@@ -254,11 +251,7 @@ function ChiefPage() {
                           </div>
                         }
                       >
-                        <StageActions
-                          fulfillment={f}
-                          paid={paidByFulfillment[f.id] ?? 0}
-                        />
-
+                        <StageActions fulfillment={f} paid={paidByFulfillment[f.id] ?? 0} />
                       </OrderCard>
                     );
                   })

@@ -14,7 +14,6 @@ import { type Metric } from "@/components/metric-tiles";
 import { UnifiedSummary } from "@/components/unified-summary";
 import { useAllPayments, totalPaid } from "@/hooks/use-payments";
 
-
 export const Route = createFileRoute("/_authenticated/admin")({
   validateSearch: stageSearchSchema,
   head: () => ({
@@ -122,7 +121,8 @@ function AdminPage() {
     {
       label: "Revenue collected",
       value: formatKES(collected),
-      hint: revenue > 0 ? `${((collected / revenue) * 100).toFixed(0)}% of agreed value` : undefined,
+      hint:
+        revenue > 0 ? `${((collected / revenue) * 100).toFixed(0)}% of agreed value` : undefined,
       link: { to: "/admin", search: {} },
     },
     {
@@ -150,7 +150,6 @@ function AdminPage() {
       stage: "installed",
     },
   ];
-
 
   return (
     <AppShell title="Admin Panel" subtitle="Everything happening across the business">
@@ -184,8 +183,6 @@ function AdminPage() {
           )}
         </div>
       </section>
-
-
     </AppShell>
   );
 }

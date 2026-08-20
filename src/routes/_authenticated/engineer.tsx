@@ -59,8 +59,7 @@ function EngineerPage() {
 
   const assemblies = jobs.filter(
     (f) =>
-      f.assembly_engineer_id === profile?.id &&
-      ["delivery", "installed"].includes(f.current_stage),
+      f.assembly_engineer_id === profile?.id && ["delivery", "installed"].includes(f.current_stage),
   ).length;
   const installations = jobs.filter(
     (f) =>

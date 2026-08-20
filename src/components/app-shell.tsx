@@ -19,7 +19,6 @@ function navFor(role?: string) {
   return items;
 }
 
-
 export function AppShell({
   title,
   subtitle,

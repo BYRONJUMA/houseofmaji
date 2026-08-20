@@ -80,7 +80,10 @@ export function AdminOrderActions({
           client_contact: form.client_contact,
           location: form.location,
           machine_type: form.machine_type,
-          capacity_lph: form.capacity_lph === "" || form.capacity_lph === null ? null : Number(form.capacity_lph),
+          capacity_lph:
+            form.capacity_lph === "" || form.capacity_lph === null
+              ? null
+              : Number(form.capacity_lph),
           agreed_price: Number(form.agreed_price),
           agreed_delivery_date: form.agreed_delivery_date,
           assembly_engineer_id: form.assembly_engineer_id,
@@ -284,10 +287,7 @@ function PersonField({
   return (
     <div className="space-y-1.5">
       <Label>{label}</Label>
-      <Select
-        value={value ?? NONE}
-        onValueChange={(v) => onChange(v === NONE ? null : v)}
-      >
+      <Select value={value ?? NONE} onValueChange={(v) => onChange(v === NONE ? null : v)}>
         <SelectTrigger aria-label={label}>
           <SelectValue placeholder="Unassigned" />
         </SelectTrigger>

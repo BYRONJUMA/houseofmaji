@@ -16,7 +16,6 @@ import { formatKES, formatDate } from "@/lib/format";
 import { ServiceHistory } from "@/components/service-history";
 import { useMachinesGuard } from "@/hooks/use-machines-access";
 
-
 export const Route = createFileRoute("/_authenticated/fulfillment/$id")({
   validateSearch: (search: Record<string, unknown>) => ({
     tab:
@@ -104,7 +103,6 @@ function DetailPage() {
     );
   }
 
-
   const names = Object.fromEntries((data!.profiles ?? []).map((p) => [p.id, p.full_name]));
   const checklistReady = ["assembling", "delivery", "installed"].includes(f.current_stage);
   const checklist = (checklists ?? [])[0] ?? null;
@@ -124,7 +122,6 @@ function DetailPage() {
       <div className="mb-6 flex justify-end">
         <EditOrderDetails fulfillment={f} />
       </div>
-
 
       {showSignoffProgress && (
         <div
@@ -154,7 +151,6 @@ function DetailPage() {
         }
         className="space-y-6"
       >
-
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="checklist">
@@ -237,7 +233,6 @@ function DetailPage() {
       </Tabs>
     </AppShell>
   );
-
 }
 
 function Row({ label, value }: { label: string; value: string | number | null | undefined }) {

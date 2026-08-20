@@ -21,7 +21,6 @@ const CRM_NAV = [
 const MANAGER_NAV = [{ to: "/crm/machines", label: "Taxonomy" }] as const;
 const ADMIN_NAV = [{ to: "/crm/settings", label: "Settings" }] as const;
 
-
 export function CrmShell({
   title,
   subtitle,
@@ -221,7 +220,11 @@ export function StatCard({
           <span
             className={cn(
               "font-semibold",
-              change > 0 ? "text-success" : change < 0 ? "text-destructive" : "text-muted-foreground",
+              change > 0
+                ? "text-success"
+                : change < 0
+                  ? "text-destructive"
+                  : "text-muted-foreground",
             )}
           >
             {change > 0 ? "+" : ""}
@@ -281,7 +284,17 @@ export function MiniTile({
   return <div className="rounded-xl border border-border bg-secondary/40 p-3">{body}</div>;
 }
 
-export function Bar({ label, value, max, sub }: { label: string; value: number; max: number; sub?: string }) {
+export function Bar({
+  label,
+  value,
+  max,
+  sub,
+}: {
+  label: string;
+  value: number;
+  max: number;
+  sub?: string;
+}) {
   const pct = max > 0 ? Math.round((value / max) * 100) : 0;
   return (
     <div className="space-y-1">

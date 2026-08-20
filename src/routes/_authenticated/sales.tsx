@@ -152,9 +152,6 @@ function SalesPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-
-
-
   return (
     <AppShell title="Sales Handover" subtitle="Submit a new machine sale to the workshop">
       <UnifiedSummary />

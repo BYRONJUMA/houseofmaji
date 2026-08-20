@@ -82,7 +82,6 @@ function UserDetailPage() {
     );
   }
 
-
   const earned = commissions.reduce((s, c) => s + Number(c.amount), 0);
   const paid = commissions.filter((c) => c.paid).reduce((s, c) => s + Number(c.amount), 0);
   const active = orders.filter((f) => f.current_stage !== "installed").length;
@@ -111,7 +110,6 @@ function UserDetailPage() {
         isAdmin ? <AdminUserActions user={user} isSelf={user.id === profile?.id} /> : undefined
       }
     >
-
       <MetricTiles metrics={metrics} homePath="/admin" />
 
       <section className="mt-8 space-y-3">

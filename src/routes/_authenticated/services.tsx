@@ -273,13 +273,7 @@ function ServicesPage() {
   );
 }
 
-function ServiceDialog({
-  record,
-  onClose,
-}: {
-  record: ServiceRecord | null;
-  onClose: () => void;
-}) {
+function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onClose: () => void }) {
   const { profile } = useAuth();
   const mutate = useCrmMutation("services", ["crm-services"]);
   const { data: settings } = useSettings();

@@ -68,7 +68,8 @@ function TeamPage() {
       </div>
 
       <p className="mb-3 text-sm text-muted-foreground">
-        Change a role or remove an account. Users still assigned to an active order can’t be deleted.
+        Change a role or remove an account. Users still assigned to an active order can’t be
+        deleted.
       </p>
       <div className="surface-card overflow-x-auto">
         <table className="w-full text-sm">

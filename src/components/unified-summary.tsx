@@ -84,9 +84,7 @@ export function UnifiedSummary({ title = "Business summary" }: { title?: string 
   const crmRevenue = invoices.reduce((s, i) => s + num(i.amount), 0);
   const collected = totalPaid(payments);
   const commissionTotal = commissions.reduce((s, c) => s + num(c.amount), 0);
-  const commissionPaid = commissions
-    .filter((c) => c.paid)
-    .reduce((s, c) => s + num(c.amount), 0);
+  const commissionPaid = commissions.filter((c) => c.paid).reduce((s, c) => s + num(c.amount), 0);
 
   const perRole = team.reduce<Record<string, number>>((acc, t) => {
     acc[t.role] = (acc[t.role] ?? 0) + 1;

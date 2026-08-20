@@ -77,8 +77,7 @@ export function SiteVisitsAwaitingAssignment() {
               <div>
                 <p className="text-sm font-semibold">{v.client_name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {label(v.visit_type)} · {v.location || "no location"} ·{" "}
-                  {formatDate(v.visit_date)}
+                  {label(v.visit_type)} · {v.location || "no location"} · {formatDate(v.visit_date)}
                 </p>
               </div>
               <div className="flex items-center gap-2">

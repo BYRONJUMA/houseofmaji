@@ -8,11 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { isCrmManager, BADGE_GOOD, BADGE_NEUTRAL } from "@/lib/crm";
 import { useCrmMutation } from "@/hooks/use-crm";
-import {
-  useMachineCategories,
-  useMachineTypes,
-  useMachineCapacities,
-} from "@/hooks/use-crm-extra";
+import { useMachineCategories, useMachineTypes, useMachineCapacities } from "@/hooks/use-crm-extra";
 
 export const Route = createFileRoute("/_authenticated/crm/machines")({
   head: () => ({
