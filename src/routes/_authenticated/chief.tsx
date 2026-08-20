@@ -1,21 +1,11 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { Hammer, Inbox, Boxes, UserCog, ClipboardCheck } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { Inbox } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import type { TablesUpdate } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/use-auth";
 import { AppShell, EmptyState } from "@/components/app-shell";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { formatKES, formatDate } from "@/lib/format";
+import { StageActions } from "@/components/stage-actions";
+import { formatKES } from "@/lib/format";
 import {
   STAGES,
   STAGE_LABEL,
