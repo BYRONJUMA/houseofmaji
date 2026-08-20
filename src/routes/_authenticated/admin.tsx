@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { AdminOrderActions } from "@/components/admin-order-actions";
-import { AdminUserActions } from "@/components/admin-user-actions";
+import { StageActions } from "@/components/stage-actions";
 import { useAuth } from "@/hooks/use-auth";
 import { formatKES, formatDate, formatDuration } from "@/lib/format";
 import { STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
@@ -161,54 +161,6 @@ function AdminPage() {
       </div>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-lg font-semibold">Team</h2>
-        <p className="text-sm text-muted-foreground">
-          Change a role or remove an account. Users still assigned to an active order can’t be
-          deleted.
-        </p>
-        <div className="surface-card overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Joined</th>
-                <th className="px-4 py-3 text-right">Earned</th>
-                <th className="px-4 py-3 text-right">Manage</th>
-              </tr>
-            </thead>
-            <tbody>
-              {profiles.map((p) => (
-                <tr
-                  key={p.id}
-                  onClick={() => navigate({ to: "/user/$id", params: { id: p.id } })}
-                  className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
-                >
-                  <td className="px-4 py-3 font-medium">
-                    {p.full_name}
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      {ROLE_LABEL[p.role] ?? p.role}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">{formatDate(p.created_at)}</td>
-                  <td className="px-4 py-3 text-right font-semibold">
-                    {formatKES(
-                      commissions
-                        .filter((c) => c.user_id === p.id)
-                        .reduce((s, c) => s + Number(c.amount), 0),
-                    )}
-                  </td>
-                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                    <AdminUserActions user={p} isSelf={p.id === profile?.id} />
-                  </td>
-                </tr>
-              ))}
-
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="mt-8 space-y-3">
         <h2 className="text-lg font-semibold">
           {stage ? `Fulfillments — ${STAGE_LABEL[stage]}` : "All fulfillments"}
         </h2>
@@ -225,6 +177,7 @@ function AdminPage() {
                   </p>
                 }
               >
+                <StageActions fulfillment={f} paid={paidByFulfillment[f.id] ?? 0} />
                 <AdminOrderActions fulfillment={f} people={profiles} />
               </OrderCard>
             ),

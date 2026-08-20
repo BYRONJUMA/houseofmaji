@@ -128,13 +128,13 @@ export function UnifiedSummary({ title = "Business summary" }: { title?: string 
       to: { to: "/commissions", search: { paid: "paid" } },
     },
     {
-      label: "Team members",
+      label: "Users per role",
       value: String(team.length),
       hint:
         Object.entries(perRole)
           .map(([r, n]) => `${n} ${ROLE_LABEL[r] ?? r}`)
           .join(" · ") || undefined,
-      to: { to: machinesHome, search: {} },
+      to: { to: "/team" },
     },
     {
       label: "Site visits",
