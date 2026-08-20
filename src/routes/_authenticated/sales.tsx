@@ -20,6 +20,7 @@ import { type Metric } from "@/components/metric-tiles";
 import { UnifiedSummary } from "@/components/unified-summary";
 import { useAllPayments, paidPercent } from "@/hooks/use-payments";
 import { useMachinesGuard } from "@/hooks/use-machines-access";
+import { StageActions } from "@/components/stage-actions";
 
 export const Route = createFileRoute("/_authenticated/sales")({
   validateSearch: stageSearchSchema,
@@ -313,8 +314,9 @@ function SalesPage() {
                     </p>
                   ) : null
                 }
-              />
-
+              >
+                <StageActions fulfillment={f} paid={paidByFulfillment[f.id] ?? 0} />
+              </OrderCard>
             ))
           )}
           <p className="text-xs text-muted-foreground">
