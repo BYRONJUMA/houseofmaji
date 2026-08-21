@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Search, Trash2 } from "lucide-react";
+import { LeadsImportExport } from "@/components/leads-import-export";
 import {
   AlertDialog,
   AlertDialogAction,
