@@ -79,6 +79,12 @@ export function serviceInterval(
 }
 
 export const isCrmManager = (role?: string | null) => role === "admin" || role === "sales_head";
+/** Roles allowed to manage the machine taxonomy lists. */
+export const canManageTaxonomy = (role?: string | null) =>
+  role === "admin" || role === "sales_head" || role === "chief_engineer";
+/** Roles allowed to see client contact details on service records. */
+export const canSeeServiceContact = (role?: string | null) =>
+  role === "admin" || role === "sales_head" || role === "chief_engineer";
 /** Roles that can open the CRM section (chief engineer has read-only context access). */
 export const isCrmMember = (role?: string | null) =>
   role === "admin" || role === "sales_head" || role === "sales_rep" || role === "chief_engineer";

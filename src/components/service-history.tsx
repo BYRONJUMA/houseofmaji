@@ -27,7 +27,7 @@ export function ServiceHistory({
     queryKey: ["fulfillment-services", fulfillmentId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("services")
+        .from("services_secure")
         .select("*")
         .eq("fulfillment_id", fulfillmentId)
         .order("last_service_date", { ascending: false });
