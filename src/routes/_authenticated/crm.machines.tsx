@@ -6,7 +6,7 @@ import { CrmShell, CrmCard, Badge } from "@/components/crm-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
-import { isCrmManager, BADGE_GOOD, BADGE_NEUTRAL } from "@/lib/crm";
+import { canManageTaxonomy, BADGE_GOOD, BADGE_NEUTRAL } from "@/lib/crm";
 import { useCrmMutation } from "@/hooks/use-crm";
 import { useMachineCategories, useMachineTypes, useMachineCapacities } from "@/hooks/use-crm-extra";
 
@@ -35,7 +35,7 @@ type Row = { id: string; active: boolean } & Record<string, unknown>;
 
 function MachinesPage() {
   const { profile } = useAuth();
-  const allowed = isCrmManager(profile?.role);
+  const allowed = canManageTaxonomy(profile?.role);
   const cats = useMachineCategories();
   const types = useMachineTypes();
   const caps = useMachineCapacities();
@@ -45,7 +45,7 @@ function MachinesPage() {
       <CrmShell title="Machine taxonomy" showBack>
         <CrmCard>
           <p className="text-sm text-muted-foreground">
-            Only admins and sales managers can manage the machine taxonomy.
+            Only admins, sales heads and chief engineers can manage the machine taxonomy.
           </p>
         </CrmCard>
       </CrmShell>
