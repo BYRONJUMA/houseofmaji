@@ -38,6 +38,7 @@ import {
   BADGE_WARN,
   BADGE_BAD,
   BADGE_NEUTRAL,
+  canSeeServiceContact,
 } from "@/lib/crm";
 import { useServices, useTeam, useCrmMutation, nameOf, type ServiceRecord } from "@/hooks/use-crm";
 import { cn } from "@/lib/utils";
@@ -118,6 +119,7 @@ function ServicesPage() {
   const { profile } = useAuth();
   const canCreate = CAN_CREATE.includes(profile?.role ?? "");
   const canAssign = profile?.role === "chief_engineer" || profile?.role === "admin";
+  const showContact = canSeeServiceContact(profile?.role);
   const canEditAny = (s: ServiceRecord) => canEditRecord(profile?.role, profile?.id, s);
   const { data: services = [] } = useServices();
   const { data: settings } = useSettings();
@@ -175,7 +177,8 @@ function ServicesPage() {
                     <div>
                       <p className="text-sm font-semibold">{s.client_name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {s.machine_type || "machine"} · {s.contact || "no contact"} · due{" "}
+                        {s.machine_type || "machine"}
+                        {showContact ? ` · ${s.contact || "no contact"}` : ""} · due{" "}
                         {formatDate(s.next_due_date)}
                       </p>
                     </div>
@@ -197,7 +200,7 @@ function ServicesPage() {
             <thead className="bg-secondary/60 text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
                 <th className="px-3 py-2">Client</th>
-                <th className="px-3 py-2">Contact</th>
+                {showContact && <th className="px-3 py-2">Contact</th>}
                 <th className="px-3 py-2">Machine</th>
                 <th className="px-3 py-2">Linked order</th>
                 <th className="px-3 py-2">Last service</th>
@@ -220,7 +223,7 @@ function ServicesPage() {
                     )}
                   >
                     <td className="px-3 py-2 font-medium">{s.client_name}</td>
-                    <td className="px-3 py-2">{s.contact || "—"}</td>
+                    {showContact && <td className="px-3 py-2">{s.contact || "—"}</td>}
                     <td className="px-3 py-2">{s.machine_type || "—"}</td>
                     <td className="px-3 py-2">{s.fulfillment_id ? "Linked" : "Manual"}</td>
                     <td className="px-3 py-2">{formatDate(s.last_service_date)}</td>
@@ -279,6 +282,7 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
   const { data: settings } = useSettings();
   const defaultInterval = settingNumber(settings, "default_service_interval_months");
   const machineTypes = useMachineTypeOptions();
+  const showContact = canSeeServiceContact(profile?.role);
   const { data: fulfillments = [] } = useServiceFulfillments();
   const [search, setSearch] = useState("");
   const [f, setF] = useState({
@@ -313,7 +317,7 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
       ...p,
       fulfillment_id: id,
       client_name: m?.client_name ?? p.client_name,
-      contact: m?.client_contact ?? p.contact,
+      contact: showContact ? (m?.client_contact ?? p.contact) : p.contact,
       machine_type: m?.machine_type ?? p.machine_type,
     }));
   };
@@ -332,7 +336,7 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
     const values = {
       fulfillment_id: f.fulfillment_id === "none" ? null : f.fulfillment_id,
       client_name: f.client_name.trim(),
-      contact: f.contact.trim() || null,
+      ...(showContact ? { contact: f.contact.trim() || null } : {}),
       machine_type: f.machine_type.trim() || null,
       last_service_date: f.last_service_date || null,
       next_due_date: next || null,
@@ -378,7 +382,7 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              Linking pulls client name, contact and machine type from the order. Leave unlinked for
+              Linking pulls client details and machine type from the order. Leave unlinked for
               older machines.
             </p>
           </div>
@@ -386,10 +390,12 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
             <Label>Client name</Label>
             <Input value={f.client_name} onChange={(e) => set("client_name", e.target.value)} />
           </div>
-          <div className="space-y-1.5">
-            <Label>Contact</Label>
-            <Input value={f.contact} onChange={(e) => set("contact", e.target.value)} />
-          </div>
+          {showContact && (
+            <div className="space-y-1.5">
+              <Label>Contact</Label>
+              <Input value={f.contact} onChange={(e) => set("contact", e.target.value)} />
+            </div>
+          )}
           <div className="space-y-1.5">
             <Label>Machine type</Label>
             <Select
