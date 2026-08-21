@@ -1269,13 +1269,94 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      services_secure: {
+        Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          assigned_engineer_id: string | null
+          client_name: string | null
+          contact: string | null
+          created_at: string | null
+          fulfillment_id: string | null
+          id: string | null
+          last_service_date: string | null
+          machine_type: string | null
+          next_due_date: string | null
+          recorded_by: string | null
+          updated_at: string | null
+          visit_count: number | null
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          assigned_engineer_id?: string | null
+          client_name?: string | null
+          contact?: never
+          created_at?: string | null
+          fulfillment_id?: string | null
+          id?: string | null
+          last_service_date?: string | null
+          machine_type?: string | null
+          next_due_date?: string | null
+          recorded_by?: string | null
+          updated_at?: string | null
+          visit_count?: number | null
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          assigned_engineer_id?: string | null
+          client_name?: string | null
+          contact?: never
+          created_at?: string | null
+          fulfillment_id?: string | null
+          id?: string | null
+          last_service_date?: string | null
+          machine_type?: string | null
+          next_due_date?: string | null
+          recorded_by?: string | null
+          updated_at?: string | null
+          visit_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_assigned_engineer_id_fkey"
+            columns: ["assigned_engineer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_fulfillment_id_fkey"
+            columns: ["fulfillment_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_recorded_by_fkey"
+            columns: ["recorded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       can_edit_fulfillment_details: {
         Args: { _sales_rep_id: string; _uid: string }
         Returns: boolean
       }
+      can_manage_taxonomy: { Args: { _user_id: string }; Returns: boolean }
+      can_see_service_contact: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
