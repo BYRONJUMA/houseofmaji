@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Search, Trash2 } from "lucide-react";
+import { LeadsImportExport } from "@/components/leads-import-export";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -146,11 +147,19 @@ function LeadsPage() {
       title="Leads"
       subtitle={`Every rep's pipeline — drag a card to move a stage. ${open.length} open.`}
       actions={
-        canWrite ? (
-          <Button size="sm" onClick={() => setCreating(true)}>
-            <Plus className="h-4 w-4" /> New lead
-          </Button>
-        ) : null
+        <>
+          <LeadsImportExport
+            leads={filtered}
+            allLeads={leads}
+            names={Object.fromEntries(team.map((t) => [t.id, t.full_name]))}
+            canWrite={canWrite}
+          />
+          {canWrite && (
+            <Button size="sm" onClick={() => setCreating(true)}>
+              <Plus className="h-4 w-4" /> New lead
+            </Button>
+          )}
+        </>
       }
     >
       <div className="space-y-4">
