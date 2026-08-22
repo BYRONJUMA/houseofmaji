@@ -9,6 +9,7 @@ import { NotificationBell } from "@/components/notification-bell";
 import { BackButton } from "@/components/back-button";
 import { cn } from "@/lib/utils";
 import { hasMachinesAccess } from "@/hooks/use-machines-access";
+import { canManageTaxonomy } from "@/lib/crm";
 
 const CRM_NAV = [
   { to: "/crm", label: "Dashboard" },
