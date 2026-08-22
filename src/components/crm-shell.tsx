@@ -9,6 +9,7 @@ import { NotificationBell } from "@/components/notification-bell";
 import { BackButton } from "@/components/back-button";
 import { cn } from "@/lib/utils";
 import { hasMachinesAccess } from "@/hooks/use-machines-access";
+import { canManageTaxonomy } from "@/lib/crm";
 
 const CRM_NAV = [
   { to: "/crm", label: "Dashboard" },
@@ -43,7 +44,7 @@ export function CrmShell({
 
   const nav = [
     ...CRM_NAV,
-    ...(profile?.role === "admin" || profile?.role === "sales_head" ? MANAGER_NAV : []),
+    ...(canManageTaxonomy(profile?.role) ? MANAGER_NAV : []),
     ...(profile?.role === "admin" ? ADMIN_NAV : []),
   ];
 
