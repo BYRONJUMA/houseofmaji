@@ -44,7 +44,7 @@ export function CrmShell({
 
   const nav = [
     ...CRM_NAV,
-    ...(profile?.role === "admin" || profile?.role === "sales_head" ? MANAGER_NAV : []),
+    ...(canManageTaxonomy(profile?.role) ? MANAGER_NAV : []),
     ...(profile?.role === "admin" ? ADMIN_NAV : []),
   ];
 
