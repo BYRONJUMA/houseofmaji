@@ -423,6 +423,7 @@ export type Database = {
       }
       leads: {
         Row: {
+          budget_range: string | null
           created_at: string
           deal_value: number | null
           follow_up_due_at: string | null
@@ -437,6 +438,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          budget_range?: string | null
           created_at?: string
           deal_value?: number | null
           follow_up_due_at?: string | null
@@ -451,6 +453,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          budget_range?: string | null
           created_at?: string
           deal_value?: number | null
           follow_up_due_at?: string | null
