@@ -12,6 +12,7 @@ export type Lead = {
   rep_id: string | null;
   follow_up_due_at: string | null;
   deal_value: number | null;
+  budget_range: string | null;
   created_at: string;
   updated_at: string;
 };
