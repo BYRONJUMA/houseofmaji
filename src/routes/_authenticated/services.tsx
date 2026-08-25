@@ -383,6 +383,10 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
       toast.error("Client name is required");
       return;
     }
+    if (!record && !f.machine_service_type) {
+      toast.error("Pick a service type");
+      return;
+    }
     let next = f.next_due_date;
     if (!next && f.last_service_date) {
       const d = new Date(f.last_service_date);
