@@ -272,6 +272,13 @@ function ServicesPage() {
                     <td className="px-3 py-2 font-medium">{s.client_name}</td>
                     {showContact && <td className="px-3 py-2">{s.contact || "—"}</td>}
                     <td className="px-3 py-2">{s.machine_type || "—"}</td>
+                    <td className="px-3 py-2">
+                      {s.machine_service_type ? (
+                        <Badge className={BADGE_NEUTRAL}>{typeLabel(s.machine_service_type)}</Badge>
+                      ) : (
+                        <Badge className={BADGE_WARN}>Unclassified</Badge>
+                      )}
+                    </td>
                     <td className="px-3 py-2">{s.fulfillment_id ? "Linked" : "Manual"}</td>
                     <td className="px-3 py-2">{formatDate(s.last_service_date)}</td>
                     <td className="px-3 py-2">
