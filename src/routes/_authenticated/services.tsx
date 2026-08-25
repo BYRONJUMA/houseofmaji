@@ -148,6 +148,19 @@ function ServicesPage() {
   });
   const unscheduled = services.filter((s) => !s.next_due_date);
 
+  const [tab, setTab] = useState<ServiceType | "unclassified">("commercial_industrial");
+  const canDelete = CAN_DELETE.includes(profile?.role ?? "");
+  const counts = {
+    commercial_industrial: services.filter(
+      (s) => s.machine_service_type === "commercial_industrial",
+    ).length,
+    undersink: services.filter((s) => s.machine_service_type === "undersink").length,
+    unclassified: services.filter((s) => !s.machine_service_type).length,
+  };
+  const visible = services.filter((s) =>
+    tab === "unclassified" ? !s.machine_service_type : s.machine_service_type === tab,
+  );
+
   return (
     <AppShell
       title="Services"
