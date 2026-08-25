@@ -53,6 +53,7 @@ export type ServiceRecord = {
   client_name: string;
   contact: string | null;
   machine_type: string | null;
+  machine_service_type: "commercial_industrial" | "undersink" | null;
   last_service_date: string | null;
   next_due_date: string | null;
   visit_count: number;
