@@ -62,6 +62,15 @@ export const Route = createFileRoute("/_authenticated/services")({
 });
 
 const CAN_CREATE = ["admin", "chief_engineer", "engineer", "sales_head"];
+const CAN_DELETE = ["admin", "chief_engineer", "sales_head"];
+
+type ServiceType = "commercial_industrial" | "undersink";
+const SERVICE_TYPES: { value: ServiceType; label: string }[] = [
+  { value: "commercial_industrial", label: "Commercial / Industrial" },
+  { value: "undersink", label: "Undersink" },
+];
+const typeLabel = (t: string | null | undefined) =>
+  SERVICE_TYPES.find((x) => x.value === t)?.label ?? "Unclassified";
 
 /** Who may edit/complete a specific service record. */
 function canEditRecord(role: string | undefined, uid: string | undefined, s: ServiceRecord) {
