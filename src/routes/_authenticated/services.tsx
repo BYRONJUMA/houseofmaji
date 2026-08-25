@@ -398,6 +398,7 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
       client_name: f.client_name.trim(),
       ...(showContact ? { contact: f.contact.trim() || null } : {}),
       machine_type: f.machine_type.trim() || null,
+      machine_service_type: (f.machine_service_type || null) as ServiceType | null,
       last_service_date: f.last_service_date || null,
       next_due_date: next || null,
       ...(record ? {} : { recorded_by: profile?.id ?? null }),
