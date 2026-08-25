@@ -859,6 +859,9 @@ export type Database = {
           fulfillment_id: string | null
           id: string
           last_service_date: string | null
+          machine_service_type:
+            | Database["public"]["Enums"]["machine_service_type"]
+            | null
           machine_type: string | null
           next_due_date: string | null
           recorded_by: string | null
@@ -875,6 +878,9 @@ export type Database = {
           fulfillment_id?: string | null
           id?: string
           last_service_date?: string | null
+          machine_service_type?:
+            | Database["public"]["Enums"]["machine_service_type"]
+            | null
           machine_type?: string | null
           next_due_date?: string | null
           recorded_by?: string | null
@@ -891,6 +897,9 @@ export type Database = {
           fulfillment_id?: string | null
           id?: string
           last_service_date?: string | null
+          machine_service_type?:
+            | Database["public"]["Enums"]["machine_service_type"]
+            | null
           machine_type?: string | null
           next_due_date?: string | null
           recorded_by?: string | null
@@ -1283,6 +1292,9 @@ export type Database = {
           fulfillment_id: string | null
           id: string | null
           last_service_date: string | null
+          machine_service_type:
+            | Database["public"]["Enums"]["machine_service_type"]
+            | null
           machine_type: string | null
           next_due_date: string | null
           recorded_by: string | null
@@ -1299,6 +1311,9 @@ export type Database = {
           fulfillment_id?: string | null
           id?: string | null
           last_service_date?: string | null
+          machine_service_type?:
+            | Database["public"]["Enums"]["machine_service_type"]
+            | null
           machine_type?: string | null
           next_due_date?: string | null
           recorded_by?: string | null
@@ -1315,6 +1330,9 @@ export type Database = {
           fulfillment_id?: string | null
           id?: string | null
           last_service_date?: string | null
+          machine_service_type?:
+            | Database["public"]["Enums"]["machine_service_type"]
+            | null
           machine_type?: string | null
           next_due_date?: string | null
           recorded_by?: string | null
@@ -1377,6 +1395,7 @@ export type Database = {
         | "admin"
         | "sales_head"
       commission_role: "sales" | "assembly" | "installation"
+      machine_service_type: "commercial_industrial" | "undersink"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1512,6 +1531,7 @@ export const Constants = {
         "sales_head",
       ],
       commission_role: ["sales", "assembly", "installation"],
+      machine_service_type: ["commercial_industrial", "undersink"],
     },
   },
 } as const

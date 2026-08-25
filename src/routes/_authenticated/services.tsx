@@ -62,6 +62,15 @@ export const Route = createFileRoute("/_authenticated/services")({
 });
 
 const CAN_CREATE = ["admin", "chief_engineer", "engineer", "sales_head"];
+const CAN_DELETE = ["admin", "chief_engineer", "sales_head"];
+
+type ServiceType = "commercial_industrial" | "undersink";
+const SERVICE_TYPES: { value: ServiceType; label: string }[] = [
+  { value: "commercial_industrial", label: "Commercial / Industrial" },
+  { value: "undersink", label: "Undersink" },
+];
+const typeLabel = (t: string | null | undefined) =>
+  SERVICE_TYPES.find((x) => x.value === t)?.label ?? "Unclassified";
 
 /** Who may edit/complete a specific service record. */
 function canEditRecord(role: string | undefined, uid: string | undefined, s: ServiceRecord) {
@@ -139,6 +148,19 @@ function ServicesPage() {
   });
   const unscheduled = services.filter((s) => !s.next_due_date);
 
+  const [tab, setTab] = useState<ServiceType | "unclassified">("commercial_industrial");
+  const canDelete = CAN_DELETE.includes(profile?.role ?? "");
+  const counts = {
+    commercial_industrial: services.filter(
+      (s) => s.machine_service_type === "commercial_industrial",
+    ).length,
+    undersink: services.filter((s) => s.machine_service_type === "undersink").length,
+    unclassified: services.filter((s) => !s.machine_service_type).length,
+  };
+  const visible = services.filter((s) =>
+    tab === "unclassified" ? !s.machine_service_type : s.machine_service_type === tab,
+  );
+
   return (
     <AppShell
       title="Services"
@@ -195,6 +217,30 @@ function ServicesPage() {
           </section>
         )}
 
+        <div className="flex flex-wrap gap-2">
+          {(
+            [
+              { key: "commercial_industrial", label: "Commercial / Industrial" },
+              { key: "undersink", label: "Undersink" },
+              { key: "unclassified", label: "Unclassified" },
+            ] as const
+          ).map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setTab(t.key)}
+              className={cn(
+                "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
+                tab === t.key
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border text-muted-foreground hover:bg-secondary",
+              )}
+            >
+              {t.label} ({counts[t.key]})
+            </button>
+          ))}
+        </div>
+
         <div className="surface-card overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-secondary/60 text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -202,6 +248,7 @@ function ServicesPage() {
                 <th className="px-3 py-2">Client</th>
                 {showContact && <th className="px-3 py-2">Contact</th>}
                 <th className="px-3 py-2">Machine</th>
+                <th className="px-3 py-2">Service type</th>
                 <th className="px-3 py-2">Linked order</th>
                 <th className="px-3 py-2">Last service</th>
                 <th className="px-3 py-2">Next due</th>
@@ -211,7 +258,7 @@ function ServicesPage() {
               </tr>
             </thead>
             <tbody>
-              {services.map((s) => {
+              {visible.map((s) => {
                 const b = dueBadge(s.next_due_date);
                 return (
                   <tr
@@ -225,6 +272,13 @@ function ServicesPage() {
                     <td className="px-3 py-2 font-medium">{s.client_name}</td>
                     {showContact && <td className="px-3 py-2">{s.contact || "—"}</td>}
                     <td className="px-3 py-2">{s.machine_type || "—"}</td>
+                    <td className="px-3 py-2">
+                      {s.machine_service_type ? (
+                        <Badge className={BADGE_NEUTRAL}>{typeLabel(s.machine_service_type)}</Badge>
+                      ) : (
+                        <Badge className={BADGE_WARN}>Unclassified</Badge>
+                      )}
+                    </td>
                     <td className="px-3 py-2">{s.fulfillment_id ? "Linked" : "Manual"}</td>
                     <td className="px-3 py-2">{formatDate(s.last_service_date)}</td>
                     <td className="px-3 py-2">
@@ -244,17 +298,18 @@ function ServicesPage() {
                         onClick={(e) => e.stopPropagation()}
                         onKeyDown={(e) => e.stopPropagation()}
                       >
+                        {!s.machine_service_type && canEditAny(s) && <SetServiceType record={s} />}
                         {canAssign && <AssignEngineer record={s} />}
-                        {canEditAny(s) && <DeleteService record={s} />}
+                        {canDelete && <DeleteService record={s} />}
                       </div>
                     </td>
                   </tr>
                 );
               })}
-              {services.length === 0 && (
+              {visible.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-3 py-8 text-center text-muted-foreground">
-                    No service records yet.
+                  <td colSpan={10} className="px-3 py-8 text-center text-muted-foreground">
+                    No service records in this view.
                   </td>
                 </tr>
               )}
@@ -290,6 +345,7 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
     client_name: record?.client_name ?? "",
     contact: record?.contact ?? "",
     machine_type: record?.machine_type ?? "",
+    machine_service_type: record?.machine_service_type ?? "",
     last_service_date: record?.last_service_date ?? "",
     next_due_date: record?.next_due_date ?? "",
   });
@@ -327,6 +383,10 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
       toast.error("Client name is required");
       return;
     }
+    if (!record && !f.machine_service_type) {
+      toast.error("Pick a service type");
+      return;
+    }
     let next = f.next_due_date;
     if (!next && f.last_service_date) {
       const d = new Date(f.last_service_date);
@@ -338,6 +398,7 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
       client_name: f.client_name.trim(),
       ...(showContact ? { contact: f.contact.trim() || null } : {}),
       machine_type: f.machine_type.trim() || null,
+      machine_service_type: (f.machine_service_type || null) as ServiceType | null,
       last_service_date: f.last_service_date || null,
       next_due_date: next || null,
       ...(record ? {} : { recorded_by: profile?.id ?? null }),
@@ -396,6 +457,24 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
               <Input value={f.contact} onChange={(e) => set("contact", e.target.value)} />
             </div>
           )}
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label>Service type {!record && <span className="text-destructive">*</span>}</Label>
+            <Select
+              value={f.machine_service_type || undefined}
+              onValueChange={(v) => set("machine_service_type", v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Commercial / Industrial or Undersink" />
+              </SelectTrigger>
+              <SelectContent>
+                {SERVICE_TYPES.map((t) => (
+                  <SelectItem key={t.value} value={t.value}>
+                    {t.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="space-y-1.5">
             <Label>Machine type</Label>
             <Select
@@ -514,6 +593,35 @@ function AssignEngineer({ record }: { record: ServiceRecord }) {
         {engineers.map((e) => (
           <SelectItem key={e.id} value={e.id}>
             {e.full_name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+/** Retroactively classify an unclassified service record. */
+function SetServiceType({ record }: { record: ServiceRecord }) {
+  const mutate = useCrmMutation("services", ["crm-services"]);
+  return (
+    <Select
+      onValueChange={(v) =>
+        mutate.mutate(
+          { type: "update", id: record.id, values: { machine_service_type: v } },
+          {
+            onSuccess: () => toast.success("Service type set"),
+            onError: (e: unknown) => toast.error((e as Error).message),
+          },
+        )
+      }
+    >
+      <SelectTrigger className="h-8 w-[9.5rem] text-xs">
+        <SelectValue placeholder="Set type" />
+      </SelectTrigger>
+      <SelectContent>
+        {SERVICE_TYPES.map((t) => (
+          <SelectItem key={t.value} value={t.value}>
+            {t.label}
           </SelectItem>
         ))}
       </SelectContent>
