@@ -217,6 +217,30 @@ function ServicesPage() {
           </section>
         )}
 
+        <div className="flex flex-wrap gap-2">
+          {(
+            [
+              { key: "commercial_industrial", label: "Commercial / Industrial" },
+              { key: "undersink", label: "Undersink" },
+              { key: "unclassified", label: "Unclassified" },
+            ] as const
+          ).map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setTab(t.key)}
+              className={cn(
+                "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
+                tab === t.key
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border text-muted-foreground hover:bg-secondary",
+              )}
+            >
+              {t.label} ({counts[t.key]})
+            </button>
+          ))}
+        </div>
+
         <div className="surface-card overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-secondary/60 text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -224,6 +248,7 @@ function ServicesPage() {
                 <th className="px-3 py-2">Client</th>
                 {showContact && <th className="px-3 py-2">Contact</th>}
                 <th className="px-3 py-2">Machine</th>
+                <th className="px-3 py-2">Service type</th>
                 <th className="px-3 py-2">Linked order</th>
                 <th className="px-3 py-2">Last service</th>
                 <th className="px-3 py-2">Next due</th>
@@ -233,7 +258,7 @@ function ServicesPage() {
               </tr>
             </thead>
             <tbody>
-              {services.map((s) => {
+              {visible.map((s) => {
                 const b = dueBadge(s.next_due_date);
                 return (
                   <tr
