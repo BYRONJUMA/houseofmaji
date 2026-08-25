@@ -298,17 +298,18 @@ function ServicesPage() {
                         onClick={(e) => e.stopPropagation()}
                         onKeyDown={(e) => e.stopPropagation()}
                       >
+                        {!s.machine_service_type && canEditAny(s) && <SetServiceType record={s} />}
                         {canAssign && <AssignEngineer record={s} />}
-                        {canEditAny(s) && <DeleteService record={s} />}
+                        {canDelete && <DeleteService record={s} />}
                       </div>
                     </td>
                   </tr>
                 );
               })}
-              {services.length === 0 && (
+              {visible.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-3 py-8 text-center text-muted-foreground">
-                    No service records yet.
+                  <td colSpan={10} className="px-3 py-8 text-center text-muted-foreground">
+                    No service records in this view.
                   </td>
                 </tr>
               )}
