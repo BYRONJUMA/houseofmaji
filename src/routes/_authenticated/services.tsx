@@ -457,6 +457,24 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
               <Input value={f.contact} onChange={(e) => set("contact", e.target.value)} />
             </div>
           )}
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label>Service type {!record && <span className="text-destructive">*</span>}</Label>
+            <Select
+              value={f.machine_service_type || undefined}
+              onValueChange={(v) => set("machine_service_type", v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Commercial / Industrial or Undersink" />
+              </SelectTrigger>
+              <SelectContent>
+                {SERVICE_TYPES.map((t) => (
+                  <SelectItem key={t.value} value={t.value}>
+                    {t.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="space-y-1.5">
             <Label>Machine type</Label>
             <Select
