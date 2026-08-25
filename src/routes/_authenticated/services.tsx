@@ -599,3 +599,32 @@ function AssignEngineer({ record }: { record: ServiceRecord }) {
     </Select>
   );
 }
+
+/** Retroactively classify an unclassified service record. */
+function SetServiceType({ record }: { record: ServiceRecord }) {
+  const mutate = useCrmMutation("services", ["crm-services"]);
+  return (
+    <Select
+      onValueChange={(v) =>
+        mutate.mutate(
+          { type: "update", id: record.id, values: { machine_service_type: v } },
+          {
+            onSuccess: () => toast.success("Service type set"),
+            onError: (e: unknown) => toast.error((e as Error).message),
+          },
+        )
+      }
+    >
+      <SelectTrigger className="h-8 w-[9.5rem] text-xs">
+        <SelectValue placeholder="Set type" />
+      </SelectTrigger>
+      <SelectContent>
+        {SERVICE_TYPES.map((t) => (
+          <SelectItem key={t.value} value={t.value}>
+            {t.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
