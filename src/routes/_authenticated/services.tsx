@@ -345,6 +345,7 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
     client_name: record?.client_name ?? "",
     contact: record?.contact ?? "",
     machine_type: record?.machine_type ?? "",
+    machine_service_type: record?.machine_service_type ?? "",
     last_service_date: record?.last_service_date ?? "",
     next_due_date: record?.next_due_date ?? "",
   });
