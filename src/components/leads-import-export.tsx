@@ -406,6 +406,12 @@ export function LeadsImportExport({
                     <td className="px-3 py-2 text-muted-foreground">
                       {p.row.machine_interest ?? "—"}
                     </td>
+                    <td className="px-3 py-2 text-muted-foreground">
+                      {(p.row.rep_id && names[p.row.rep_id]) || "Unassigned"}
+                    </td>
+                    <td className="px-3 py-2 text-muted-foreground">
+                      {p.row.follow_up_due_at ? p.row.follow_up_due_at.slice(0, 10) : "—"}
+                    </td>
                     <td className="px-3 py-2 text-xs">
                       {p.flags.length === 0 ? (
                         <span className="text-success">Ready</span>
