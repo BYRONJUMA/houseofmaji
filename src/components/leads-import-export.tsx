@@ -203,14 +203,37 @@ export function LeadsImportExport({
           .map((l) => normalizePhone(l.phone)),
       );
 
+      const A = {
+        name: ["clientname", "name", "fullname", "client", "leadname"],
+        phone: ["clientcontact", "phone", "mobile", "phonenumber", "contact", "tel"],
+        stage: ["leadstatus", "status", "stage", "leadstage", "pipelinestage"],
+        owner: ["leadownername", "leadowner", "owner", "rep", "salesrep", "assignedto"],
+        machine: ["typeofmachine", "machineinterest", "machine", "interest", "product"],
+        date: [
+          "nextfollowupdate",
+          "followupdate",
+          "nextfollowup",
+          "followupdueat",
+          "followup",
+          "nextaction",
+        ],
+        location: ["clientlocation", "location", "area", "county", "town"],
+        budget: ["budgetrange", "budget"],
+      };
+
+      const first = raw[0] ?? {};
+      const detected = Object.fromEntries(
+        Object.entries(A).map(([field, keys]) => [field, findHeader(first, keys) ?? "NOT FOUND"]),
+      );
+      console.info("[Leads import] file headers:", Object.keys(first));
+      console.info("[Leads import] detected column per field:", detected);
+
       const out: PreviewRow[] = [];
       raw.forEach((r, i) => {
         const line = i + 2;
         const flags: string[] = [];
-        const name = pick(r, ["clientname", "name", "fullname", "client", "leadname"]);
-        const phone = normalizePhone(
-          pick(r, ["clientcontact", "phone", "mobile", "phonenumber", "contact", "tel"]),
-        );
+        const name = pick(r, A.name);
+        const phone = normalizePhone(pick(r, A.phone));
         if (!name && !phone) {
           out.push({
             line,
@@ -230,18 +253,31 @@ export function LeadsImportExport({
           return;
         }
 
-        const statusText = pick(r, ["leadstatus", "status", "stage"]);
+        const statusText = pick(r, A.stage);
         const stage = matchStage(statusText);
-        if (!stage) flags.push("Unrecognized status — defaulted to New");
+        if (!stage)
+          flags.push(`Unrecognized status "${statusText || "(blank)"}" — defaulted to New`);
 
-        const ownerName = pick(r, ["leadownername", "leadowner", "owner", "rep", "salesrep"]);
+        const ownerName = pick(r, A.owner);
         let rep_id: string | null = null;
         if (ownerName) {
           rep_id = ownerByName.get(norm(ownerName)) ?? null;
-          if (!rep_id) flags.push(`Owner "${ownerName}" not found — unassigned`);
+          if (!rep_id) {
+            let best: { id: string; full: string; score: number } | null = null;
+            for (const [id, full] of Object.entries(names)) {
+              const score = similarity(norm(ownerName), norm(full));
+              if (!best || score > best.score) best = { id, full, score };
+            }
+            if (best && best.score >= 0.8) {
+              rep_id = best.id;
+              flags.push(`Owner "${ownerName}" matched to "${best.full}" — confirm this is correct`);
+            } else {
+              flags.push(`Owner "${ownerName}" not found — imported as unassigned`);
+            }
+          }
         }
 
-        const machineText = pick(r, ["typeofmachine", "machineinterest", "machine", "interest", "product"]);
+        const machineText = pick(r, A.machine);
         let machine_interest: string | null = null;
         if (machineText) {
           const matched = typeByName.get(norm(machineText));
@@ -249,12 +285,13 @@ export function LeadsImportExport({
           if (!matched) flags.push("Unmatched machine type — check taxonomy");
         }
 
-        const dateText = pick(r, ["nextfollowupdate", "followupdate", "followup", "nextfollowup", "followupdueat"]);
+        const dateText = pick(r, A.date);
         let follow_up_due_at: string | null = null;
         if (dateText) {
           follow_up_due_at = parseDate(dateText);
-          if (!follow_up_due_at) flags.push("Invalid date — follow-up left blank");
+          if (!follow_up_due_at) flags.push(`Invalid date "${dateText}" — follow-up left blank`);
         }
+
 
         if (phone && recentPhones.has(phone)) flags.push("Duplicate phone (48h)");
         if (phone) recentPhones.add(phone);
