@@ -50,16 +50,23 @@ const HEADERS = [
   "Next Follow-up Date",
 ];
 
-const norm = (s: string) => s.trim().toLowerCase().replace(/[\s_\-.]+/g, "");
+const norm = (s: string) => s.trim().toLowerCase().replace(/[\s_\-.()/]+/g, "");
+
+/** Find the actual header key in a row for a set of normalized aliases. */
+function findHeader(row: Record<string, unknown>, keys: string[]) {
+  const cols = Object.keys(row);
+  const exact = cols.find((k) => keys.includes(norm(k)));
+  if (exact) return exact;
+  // tolerate extra words in the header, e.g. "Lead Status (pipeline)"
+  return cols.find((k) => keys.some((key) => norm(k).includes(key))) ?? null;
+}
 
 function pick(row: Record<string, unknown>, keys: string[]) {
-  for (const k of Object.keys(row)) {
-    if (keys.includes(norm(k))) {
-      const v = row[k];
-      if (v !== undefined && v !== null && String(v).trim() !== "") return String(v).trim();
-    }
-  }
-  return "";
+  const k = findHeader(row, keys);
+  if (!k) return "";
+  const v = row[k];
+  if (v === undefined || v === null) return "";
+  return String(v).trim();
 }
 
 function normalizePhone(v: unknown) {
@@ -68,14 +75,40 @@ function normalizePhone(v: unknown) {
     .trim();
 }
 
-/** Map free text to one of the 5 stages; null when unrecognized. */
+/** Map real-world business text to one of the 5 stages; null when unrecognized. */
 function matchStage(v: string): string | null {
-  const s = norm(v).replace(/^lead/, "");
+  const s = norm(v);
   if (!s) return null;
-  if (s === "notwon" || s === "lost" || s === "notwon") return "not_won";
-  const found = (LEAD_STAGES as readonly string[]).find((st) => norm(st) === s);
+  if (s.includes("notwon") || s.includes("lost")) return "not_won";
+  if (s.includes("won")) return "won";
+  if (s.includes("hot")) return "hot";
+  if (s.includes("warm")) return "warm";
+  if (s.includes("new")) return "new";
+  const found = (LEAD_STAGES as readonly string[]).find((st) => norm(st) === s.replace(/^lead/, ""));
   return found ?? null;
 }
+
+/** Levenshtein distance based similarity 0..1 */
+function similarity(a: string, b: string) {
+  if (!a || !b) return 0;
+  if (a === b) return 1;
+  const m = a.length;
+  const n = b.length;
+  let prev = Array.from({ length: n + 1 }, (_, i) => i);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) {
+      cur[j] = Math.min(
+        prev[j]! + 1,
+        cur[j - 1]! + 1,
+        prev[j - 1]! + (a[i - 1] === b[j - 1] ? 0 : 1),
+      );
+    }
+    prev = cur;
+  }
+  return 1 - prev[n]! / Math.max(m, n);
+}
+
 
 /** Parse DD/MM/YYYY, MM/DD/YYYY, YYYY-MM-DD and Excel serial dates. */
 function parseDate(v: string): string | null {
