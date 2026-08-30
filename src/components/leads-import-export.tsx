@@ -391,6 +391,8 @@ export function LeadsImportExport({
                   <th className="px-3 py-2">Contact</th>
                   <th className="px-3 py-2">Stage</th>
                   <th className="px-3 py-2">Machine</th>
+                  <th className="px-3 py-2">Owner</th>
+                  <th className="px-3 py-2">Follow-up</th>
                   <th className="px-3 py-2">Status</th>
                 </tr>
               </thead>
