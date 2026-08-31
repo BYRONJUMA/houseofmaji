@@ -33,6 +33,7 @@ type Parsed = {
   location: string | null;
   stage: string;
   budget_range: string | null;
+  source: string | null;
   follow_up_due_at: string | null;
   rep_id: string | null;
 };
@@ -47,6 +48,7 @@ const HEADERS = [
   "Lead Owner Name",
   "Budget Range",
   "Type of Machine",
+  "Lead Source",
   "Next Follow-up Date",
 ];
 
@@ -182,6 +184,7 @@ export function LeadsImportExport({
       (l.rep_id && names[l.rep_id]) || "",
       l.budget_range ?? "",
       l.machine_interest ?? "",
+      l.source ?? "",
       l.follow_up_due_at ? l.follow_up_due_at.slice(0, 10) : "",
     ]);
     downloadCsv(`house-of-maji-leads-${todayStamp()}.csv`, toCsv(HEADERS, rows));
@@ -230,6 +233,7 @@ export function LeadsImportExport({
           "county",
           "town",
         ],
+        source: ["leadsource", "source", "leadorigin", "channel"],
         budget: [
           "budgetrange",
           "budget",
@@ -264,6 +268,7 @@ export function LeadsImportExport({
               location: null,
               stage: "new",
               budget_range: null,
+              source: null,
               follow_up_due_at: null,
               rep_id: null,
             },
@@ -325,6 +330,7 @@ export function LeadsImportExport({
             location: pick(r, A.location) || null,
             stage: stage ?? "new",
             budget_range: pick(r, A.budget) || null,
+            source: pick(r, A.source) || null,
             follow_up_due_at,
             rep_id,
           },
@@ -425,6 +431,7 @@ export function LeadsImportExport({
                   <th className="px-3 py-2">Machine</th>
                   <th className="px-3 py-2">Location</th>
                   <th className="px-3 py-2">Budget</th>
+                  <th className="px-3 py-2">Source</th>
                   <th className="px-3 py-2">Owner</th>
                   <th className="px-3 py-2">Follow-up</th>
                   <th className="px-3 py-2">Status</th>
@@ -442,6 +449,7 @@ export function LeadsImportExport({
                     </td>
                     <td className="px-3 py-2 text-muted-foreground">{p.row.location ?? "—"}</td>
                     <td className="px-3 py-2 text-muted-foreground">{p.row.budget_range ?? "—"}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{p.row.source ?? "—"}</td>
                     <td className="px-3 py-2 text-muted-foreground">
                       {(p.row.rep_id && names[p.row.rep_id]) || "Unassigned"}
                     </td>
