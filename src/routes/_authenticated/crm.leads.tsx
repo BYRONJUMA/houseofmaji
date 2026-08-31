@@ -968,8 +968,17 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
               </SelectContent>
             </Select>
           </div>
+          <div className="space-y-1.5">
+            <Label>Budget Range</Label>
+            <Input
+              value={f.budget_range}
+              onChange={(e) => set("budget_range", e.target.value)}
+              placeholder="e.g. 300k - 500k"
+            />
+          </div>
           <div className="space-y-1.5 sm:col-span-2">
             <Label>Source</Label>
+
             <Select value={f.source} onValueChange={(v) => set("source", v)}>
               <SelectTrigger>
                 <SelectValue />
