@@ -164,6 +164,10 @@ export function LeadsImportExport({
   const fileRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<PreviewRow[] | null>(null);
   const [saving, setSaving] = useState(false);
+  const [detectedMap, setDetectedMap] = useState<{
+    headers: string[];
+    map: Record<string, string>;
+  } | null>(null);
 
   const exportLeads = () => {
     if (leads.length === 0) {
@@ -217,8 +221,23 @@ export function LeadsImportExport({
           "followup",
           "nextaction",
         ],
-        location: ["clientlocation", "location", "area", "county", "town"],
-        budget: ["budgetrange", "budget"],
+        location: [
+          "clientlocation",
+          "sitelocation",
+          "projectlocation",
+          "location",
+          "area",
+          "county",
+          "town",
+        ],
+        budget: [
+          "budgetrange",
+          "budget",
+          "dealvalue",
+          "estimatedvalue",
+          "estimatedbudget",
+          "value",
+        ],
       };
 
       const first = raw[0] ?? {};
@@ -227,6 +246,7 @@ export function LeadsImportExport({
       );
       console.info("[Leads import] file headers:", Object.keys(first));
       console.info("[Leads import] detected column per field:", detected);
+      setDetectedMap({ headers: Object.keys(first), map: detected as Record<string, string> });
 
       const out: PreviewRow[] = [];
       raw.forEach((r, i) => {
@@ -302,9 +322,9 @@ export function LeadsImportExport({
             name: name || phone,
             phone,
             machine_interest,
-            location: pick(r, ["clientlocation", "location", "area", "county", "town"]) || null,
+            location: pick(r, A.location) || null,
             stage: stage ?? "new",
-            budget_range: pick(r, ["budgetrange", "budget"]) || null,
+            budget_range: pick(r, A.budget) || null,
             follow_up_due_at,
             rep_id,
           },
@@ -382,6 +402,18 @@ export function LeadsImportExport({
             skipped. Warnings are informational — flagged rows still import.
           </p>
 
+          {detectedMap && (
+            <div className="surface-card space-y-1 p-3 text-xs text-muted-foreground">
+              <p className="font-medium text-foreground">Detected columns</p>
+              <p>File headers: {detectedMap.headers.join(" | ") || "—"}</p>
+              <p>
+                {Object.entries(detectedMap.map)
+                  .map(([field, col]) => `${field} → ${col}`)
+                  .join(" · ")}
+              </p>
+            </div>
+          )}
+
           <div className="surface-card overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -391,6 +423,8 @@ export function LeadsImportExport({
                   <th className="px-3 py-2">Contact</th>
                   <th className="px-3 py-2">Stage</th>
                   <th className="px-3 py-2">Machine</th>
+                  <th className="px-3 py-2">Location</th>
+                  <th className="px-3 py-2">Budget</th>
                   <th className="px-3 py-2">Owner</th>
                   <th className="px-3 py-2">Follow-up</th>
                   <th className="px-3 py-2">Status</th>
@@ -406,12 +440,15 @@ export function LeadsImportExport({
                     <td className="px-3 py-2 text-muted-foreground">
                       {p.row.machine_interest ?? "—"}
                     </td>
+                    <td className="px-3 py-2 text-muted-foreground">{p.row.location ?? "—"}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{p.row.budget_range ?? "—"}</td>
                     <td className="px-3 py-2 text-muted-foreground">
                       {(p.row.rep_id && names[p.row.rep_id]) || "Unassigned"}
                     </td>
                     <td className="px-3 py-2 text-muted-foreground">
                       {p.row.follow_up_due_at ? p.row.follow_up_due_at.slice(0, 10) : "—"}
                     </td>
+
                     <td className="px-3 py-2 text-xs">
                       {p.flags.length === 0 ? (
                         <span className="text-success">Ready</span>
