@@ -720,6 +720,10 @@ function LeadDetail({
               <span className="text-muted-foreground">Location:</span> {lead.location || "—"}
             </p>
             <p>
+              <span className="text-muted-foreground">Budget Range:</span> {lead.budget_range || "—"}
+            </p>
+
+            <p>
               <span className="text-muted-foreground">Source:</span> {label(lead.source)}
             </p>
             <p>
@@ -855,7 +859,9 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
     location: "",
     machine_interest: "none",
     source: "walk_in",
+    budget_range: "",
   });
+
   const [dupe, setDupe] = useState<Lead | null>(null);
   const [checking, setChecking] = useState(false);
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
@@ -870,7 +876,9 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
           location: f.location.trim() || null,
           machine_interest: f.machine_interest === "none" ? null : f.machine_interest,
           source: f.source,
+          budget_range: f.budget_range.trim() || null,
           stage: "new",
+
           rep_id: null,
         },
       },
@@ -960,8 +968,17 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
               </SelectContent>
             </Select>
           </div>
+          <div className="space-y-1.5">
+            <Label>Budget Range</Label>
+            <Input
+              value={f.budget_range}
+              onChange={(e) => set("budget_range", e.target.value)}
+              placeholder="e.g. 300k - 500k"
+            />
+          </div>
           <div className="space-y-1.5 sm:col-span-2">
             <Label>Source</Label>
+
             <Select value={f.source} onValueChange={(v) => set("source", v)}>
               <SelectTrigger>
                 <SelectValue />
