@@ -402,6 +402,18 @@ export function LeadsImportExport({
             skipped. Warnings are informational — flagged rows still import.
           </p>
 
+          {detectedMap && (
+            <div className="surface-card space-y-1 p-3 text-xs text-muted-foreground">
+              <p className="font-medium text-foreground">Detected columns</p>
+              <p>File headers: {detectedMap.headers.join(" | ") || "—"}</p>
+              <p>
+                {Object.entries(detectedMap.map)
+                  .map(([field, col]) => `${field} → ${col}`)
+                  .join(" · ")}
+              </p>
+            </div>
+          )}
+
           <div className="surface-card overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -411,6 +423,8 @@ export function LeadsImportExport({
                   <th className="px-3 py-2">Contact</th>
                   <th className="px-3 py-2">Stage</th>
                   <th className="px-3 py-2">Machine</th>
+                  <th className="px-3 py-2">Location</th>
+                  <th className="px-3 py-2">Budget</th>
                   <th className="px-3 py-2">Owner</th>
                   <th className="px-3 py-2">Follow-up</th>
                   <th className="px-3 py-2">Status</th>
@@ -426,12 +440,15 @@ export function LeadsImportExport({
                     <td className="px-3 py-2 text-muted-foreground">
                       {p.row.machine_interest ?? "—"}
                     </td>
+                    <td className="px-3 py-2 text-muted-foreground">{p.row.location ?? "—"}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{p.row.budget_range ?? "—"}</td>
                     <td className="px-3 py-2 text-muted-foreground">
                       {(p.row.rep_id && names[p.row.rep_id]) || "Unassigned"}
                     </td>
                     <td className="px-3 py-2 text-muted-foreground">
                       {p.row.follow_up_due_at ? p.row.follow_up_due_at.slice(0, 10) : "—"}
                     </td>
+
                     <td className="px-3 py-2 text-xs">
                       {p.flags.length === 0 ? (
                         <span className="text-success">Ready</span>
