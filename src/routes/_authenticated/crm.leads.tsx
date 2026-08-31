@@ -876,7 +876,9 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
           location: f.location.trim() || null,
           machine_interest: f.machine_interest === "none" ? null : f.machine_interest,
           source: f.source,
+          budget_range: f.budget_range.trim() || null,
           stage: "new",
+
           rep_id: null,
         },
       },
