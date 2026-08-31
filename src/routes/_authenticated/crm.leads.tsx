@@ -859,7 +859,9 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
     location: "",
     machine_interest: "none",
     source: "walk_in",
+    budget_range: "",
   });
+
   const [dupe, setDupe] = useState<Lead | null>(null);
   const [checking, setChecking] = useState(false);
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
