@@ -164,6 +164,10 @@ export function LeadsImportExport({
   const fileRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<PreviewRow[] | null>(null);
   const [saving, setSaving] = useState(false);
+  const [detectedMap, setDetectedMap] = useState<{
+    headers: string[];
+    map: Record<string, string>;
+  } | null>(null);
 
   const exportLeads = () => {
     if (leads.length === 0) {
@@ -217,8 +221,23 @@ export function LeadsImportExport({
           "followup",
           "nextaction",
         ],
-        location: ["clientlocation", "location", "area", "county", "town"],
-        budget: ["budgetrange", "budget"],
+        location: [
+          "clientlocation",
+          "sitelocation",
+          "projectlocation",
+          "location",
+          "area",
+          "county",
+          "town",
+        ],
+        budget: [
+          "budgetrange",
+          "budget",
+          "dealvalue",
+          "estimatedvalue",
+          "estimatedbudget",
+          "value",
+        ],
       };
 
       const first = raw[0] ?? {};
@@ -227,6 +246,7 @@ export function LeadsImportExport({
       );
       console.info("[Leads import] file headers:", Object.keys(first));
       console.info("[Leads import] detected column per field:", detected);
+      setDetectedMap({ headers: Object.keys(first), map: detected as Record<string, string> });
 
       const out: PreviewRow[] = [];
       raw.forEach((r, i) => {
