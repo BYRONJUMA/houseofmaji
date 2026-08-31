@@ -720,6 +720,10 @@ function LeadDetail({
               <span className="text-muted-foreground">Location:</span> {lead.location || "—"}
             </p>
             <p>
+              <span className="text-muted-foreground">Budget Range:</span> {lead.budget_range || "—"}
+            </p>
+
+            <p>
               <span className="text-muted-foreground">Source:</span> {label(lead.source)}
             </p>
             <p>
