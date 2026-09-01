@@ -28,6 +28,11 @@
   --color-stage-assembling: var(--stage-assembling);
   --color-stage-delivery: var(--stage-delivery);
   --color-stage-installed: var(--stage-installed);
+  --color-lead-new: var(--lead-new);
+  --color-lead-warm: var(--lead-warm);
+  --color-lead-hot: var(--lead-hot);
+  --color-lead-won: var(--lead-won);
+  --color-lead-notwon: var(--lead-notwon);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --radius-sm: calc(var(--radius) - 4px);
