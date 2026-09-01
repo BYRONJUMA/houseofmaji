@@ -36,7 +36,11 @@ import {
   LEAD_STAGES,
   LEAD_STAGE_LABEL,
   LEAD_STAGE_BADGE,
+  LEAD_STAGE_COLUMN,
   LEAD_SOURCES,
+  LEAD_SCORING_CRITERIA,
+  MAX_LEAD_SCORE,
+  followUpCountdown,
   isOpenStage,
   isCrmManager,
   canWriteCrm,
@@ -52,6 +56,11 @@ import {
   nameOf,
   type Lead,
 } from "@/hooks/use-crm";
+import {
+  useLeadScoringEvents,
+  useToggleLeadCriterion,
+} from "@/hooks/use-lead-scoring";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_authenticated/crm/leads")({
   head: () => ({
@@ -342,7 +351,7 @@ function LeadCard({
   onOpen: (l: Lead) => void;
   draggable?: boolean;
 }) {
-  const overdue = lead.follow_up_due_at && new Date(lead.follow_up_due_at) < new Date();
+  const countdown = followUpCountdown(lead.follow_up_due_at);
   return (
     <button
       draggable={draggable}
@@ -363,10 +372,11 @@ function LeadCard({
         {lead.deal_value ? (
           <span className="font-semibold text-foreground">{formatKES(lead.deal_value)}</span>
         ) : null}
-        {overdue && (
-          <span className="font-semibold text-destructive">
-            due {daysBetween(lead.follow_up_due_at!)}d ago
-          </span>
+        <span className="font-semibold tabular-nums">
+          {num(lead.total_score)}/{MAX_LEAD_SCORE}
+        </span>
+        {countdown && (
+          <span className={`font-semibold ${countdown.className}`}>{countdown.text}</span>
         )}
       </div>
     </button>

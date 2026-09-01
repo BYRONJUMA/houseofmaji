@@ -13,6 +13,15 @@ export type Lead = {
   follow_up_due_at: string | null;
   deal_value: number | null;
   budget_range: string | null;
+  showroom_visited_at: string | null;
+  water_test_or_site_visit_paid_at: string | null;
+  timeline_stated_at: string | null;
+  timeline_notes: string | null;
+  responded_within_agreed_period_at: string | null;
+  budget_confirmed_at: string | null;
+  location_confirmed_at: string | null;
+  total_score: number;
+  stage_manually_set_at: string | null;
   created_at: string;
   updated_at: string;
 };

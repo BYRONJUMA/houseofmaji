@@ -421,51 +421,120 @@ export type Database = {
           },
         ]
       }
+      lead_scoring_events: {
+        Row: {
+          criterion: string
+          id: string
+          lead_id: string
+          points: number
+          recorded_at: string
+          recorded_by: string | null
+        }
+        Insert: {
+          criterion: string
+          id?: string
+          lead_id: string
+          points: number
+          recorded_at?: string
+          recorded_by?: string | null
+        }
+        Update: {
+          criterion?: string
+          id?: string
+          lead_id?: string
+          points?: number
+          recorded_at?: string
+          recorded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_scoring_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_scoring_events_recorded_by_fkey"
+            columns: ["recorded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
+          budget_confirmed_at: string | null
           budget_range: string | null
           created_at: string
           deal_value: number | null
           follow_up_due_at: string | null
           id: string
           location: string | null
+          location_confirmed_at: string | null
           machine_interest: string | null
           name: string
           phone: string
           rep_id: string | null
+          responded_within_agreed_period_at: string | null
+          showroom_visited_at: string | null
           source: string | null
           stage: string
+          stage_manually_set_at: string | null
+          timeline_notes: string | null
+          timeline_stated_at: string | null
+          total_score: number
           updated_at: string
+          water_test_or_site_visit_paid_at: string | null
         }
         Insert: {
+          budget_confirmed_at?: string | null
           budget_range?: string | null
           created_at?: string
           deal_value?: number | null
           follow_up_due_at?: string | null
           id?: string
           location?: string | null
+          location_confirmed_at?: string | null
           machine_interest?: string | null
           name?: string
           phone?: string
           rep_id?: string | null
+          responded_within_agreed_period_at?: string | null
+          showroom_visited_at?: string | null
           source?: string | null
           stage?: string
+          stage_manually_set_at?: string | null
+          timeline_notes?: string | null
+          timeline_stated_at?: string | null
+          total_score?: number
           updated_at?: string
+          water_test_or_site_visit_paid_at?: string | null
         }
         Update: {
+          budget_confirmed_at?: string | null
           budget_range?: string | null
           created_at?: string
           deal_value?: number | null
           follow_up_due_at?: string | null
           id?: string
           location?: string | null
+          location_confirmed_at?: string | null
           machine_interest?: string | null
           name?: string
           phone?: string
           rep_id?: string | null
+          responded_within_agreed_period_at?: string | null
+          showroom_visited_at?: string | null
           source?: string | null
           stage?: string
+          stage_manually_set_at?: string | null
+          timeline_notes?: string | null
+          timeline_stated_at?: string | null
+          total_score?: number
           updated_at?: string
+          water_test_or_site_visit_paid_at?: string | null
         }
         Relationships: [
           {
@@ -1378,6 +1447,7 @@ export type Database = {
       }
       can_manage_taxonomy: { Args: { _user_id: string }; Returns: boolean }
       can_see_service_contact: { Args: { _user_id: string }; Returns: boolean }
+      expire_stale_leads: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1386,6 +1456,7 @@ export type Database = {
         Returns: boolean
       }
       is_crm_manager: { Args: { _user_id: string }; Returns: boolean }
+      lead_criterion_points: { Args: { _criterion: string }; Returns: number }
     }
     Enums: {
       app_role:
