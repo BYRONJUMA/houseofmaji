@@ -351,7 +351,7 @@ function LeadCard({
   onOpen: (l: Lead) => void;
   draggable?: boolean;
 }) {
-  const overdue = lead.follow_up_due_at && new Date(lead.follow_up_due_at) < new Date();
+  const countdown = followUpCountdown(lead.follow_up_due_at);
   return (
     <button
       draggable={draggable}
@@ -372,10 +372,11 @@ function LeadCard({
         {lead.deal_value ? (
           <span className="font-semibold text-foreground">{formatKES(lead.deal_value)}</span>
         ) : null}
-        {overdue && (
-          <span className="font-semibold text-destructive">
-            due {daysBetween(lead.follow_up_due_at!)}d ago
-          </span>
+        <span className="font-semibold tabular-nums">
+          {num(lead.total_score)}/{MAX_LEAD_SCORE}
+        </span>
+        {countdown && (
+          <span className={`font-semibold ${countdown.className}`}>{countdown.text}</span>
         )}
       </div>
     </button>
