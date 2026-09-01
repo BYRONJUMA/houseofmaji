@@ -38,13 +38,64 @@ export const BADGE_WARN = "border-warning/30 bg-warning/10 text-warning";
 export const BADGE_BAD = "border-destructive/30 bg-destructive/10 text-destructive";
 export const BADGE_NEUTRAL = "border-border bg-secondary text-secondary-foreground";
 
+/**
+ * Leads-only stage colours: New = light blue, Warm = yellow-orange,
+ * Hot = strong orange, Won = green, Not Won = red.
+ * Deliberately separate from the Machines pipeline stage colours.
+ */
 export const LEAD_STAGE_BADGE: Record<string, string> = {
-  new: BADGE_NEUTRAL,
-  warm: BADGE_WARN,
-  hot: BADGE_BAD,
-  won: BADGE_GOOD,
-  not_won: BADGE_NEUTRAL,
+  new: "border-lead-new/35 bg-lead-new/10 text-lead-new",
+  warm: "border-lead-warm/40 bg-lead-warm/15 text-lead-warm",
+  hot: "border-lead-hot/40 bg-lead-hot/15 text-lead-hot",
+  won: "border-lead-won/35 bg-lead-won/10 text-lead-won",
+  not_won: "border-lead-notwon/35 bg-lead-notwon/10 text-lead-notwon",
 };
+
+/** Kanban column tint per lead stage. */
+export const LEAD_STAGE_COLUMN: Record<string, string> = {
+  new: "border-lead-new/30 bg-lead-new/5",
+  warm: "border-lead-warm/30 bg-lead-warm/5",
+  hot: "border-lead-hot/35 bg-lead-hot/5",
+  won: "border-lead-won/30 bg-lead-won/5",
+  not_won: "border-lead-notwon/30 bg-lead-notwon/5",
+};
+
+/* --------------------------- lead scoring --------------------------- */
+
+export const LEAD_SCORING_CRITERIA = [
+  { key: "showroom_visited", column: "showroom_visited_at", points: 5, label: "Visited the showroom" },
+  {
+    key: "water_test_or_site_visit_paid",
+    column: "water_test_or_site_visit_paid_at",
+    points: 5,
+    label: "Paid for a water test / site assessment",
+  },
+  { key: "timeline_stated", column: "timeline_stated_at", points: 3, label: "Stated a purchase timeline" },
+  {
+    key: "responded_within_agreed_period",
+    column: "responded_within_agreed_period_at",
+    points: 3,
+    label: "Responded within the agreed period",
+  },
+  { key: "budget_confirmed", column: "budget_confirmed_at", points: 2, label: "Confirmed their budget" },
+  { key: "location_confirmed", column: "location_confirmed_at", points: 2, label: "Confirmed their location" },
+] as const;
+
+export type LeadCriterionKey = (typeof LEAD_SCORING_CRITERIA)[number]["key"];
+export const MAX_LEAD_SCORE = 20;
+
+/** Days until (positive) or since (negative) a follow-up due date. */
+export function followUpCountdown(due?: string | null) {
+  if (!due) return null;
+  const ms = new Date(due).getTime() - Date.now();
+  const days = Math.ceil(ms / 86_400_000);
+  return {
+    days: Math.abs(days),
+    overdue: ms < 0,
+    text: ms < 0 ? `${Math.abs(days)}d overdue` : `${days}d until follow-up`,
+    className: ms < 0 ? "text-destructive" : "text-success",
+  };
+}
 
 export const SCHOOL_STATUS_BADGE: Record<string, string> = {
   prospect: BADGE_NEUTRAL,
