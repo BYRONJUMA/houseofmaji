@@ -36,7 +36,11 @@ import {
   LEAD_STAGES,
   LEAD_STAGE_LABEL,
   LEAD_STAGE_BADGE,
+  LEAD_STAGE_COLUMN,
   LEAD_SOURCES,
+  LEAD_SCORING_CRITERIA,
+  MAX_LEAD_SCORE,
+  followUpCountdown,
   isOpenStage,
   isCrmManager,
   canWriteCrm,
@@ -52,6 +56,11 @@ import {
   nameOf,
   type Lead,
 } from "@/hooks/use-crm";
+import {
+  useLeadScoringEvents,
+  useToggleLeadCriterion,
+} from "@/hooks/use-lead-scoring";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_authenticated/crm/leads")({
   head: () => ({
