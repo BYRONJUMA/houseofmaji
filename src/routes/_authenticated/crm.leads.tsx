@@ -727,6 +727,7 @@ function LeadDetail({
             </AlertDialog>
           )}
         </div>
+        <LeadScoringPanel lead={lead} />
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1 text-sm">
             <p>
