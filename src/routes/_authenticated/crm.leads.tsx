@@ -587,8 +587,17 @@ function ListView({
                 <td className="px-3 py-2 text-right tabular-nums">
                   {l.deal_value ? formatKES(l.deal_value) : "—"}
                 </td>
-                <td className={`px-3 py-2 ${overdue ? "font-semibold text-destructive" : ""}`}>
-                  {l.follow_up_due_at ? formatDate(l.follow_up_due_at) : "—"}
+                <td className="px-3 py-2">
+                  {countdown ? (
+                    <span className="whitespace-nowrap">
+                      {formatDate(l.follow_up_due_at!)}{" "}
+                      <span className={`font-semibold ${countdown.className}`}>
+                        · {countdown.text}
+                      </span>
+                    </span>
+                  ) : (
+                    "—"
+                  )}
                 </td>
                 {manager && (
                   <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
