@@ -751,6 +751,13 @@ function LeadDetail({
             <p>
               <span className="text-muted-foreground">Follow-up:</span>{" "}
               {lead.follow_up_due_at ? formatDate(lead.follow_up_due_at) : "not scheduled"}
+              {followUpCountdown(lead.follow_up_due_at) && (
+                <span
+                  className={`ml-1 font-semibold ${followUpCountdown(lead.follow_up_due_at)!.className}`}
+                >
+                  · {followUpCountdown(lead.follow_up_due_at)!.text}
+                </span>
+              )}
             </p>
           </div>
           {canWrite && (
