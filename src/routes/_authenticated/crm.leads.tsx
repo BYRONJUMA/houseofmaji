@@ -566,7 +566,7 @@ function ListView({
         </thead>
         <tbody>
           {leads.map((l) => {
-            const overdue = l.follow_up_due_at && new Date(l.follow_up_due_at) < new Date();
+            const countdown = followUpCountdown(l.follow_up_due_at);
             return (
               <tr
                 key={l.id}
