@@ -14,6 +14,7 @@ import { canManageTaxonomy } from "@/lib/crm";
 const CRM_NAV = [
   { to: "/crm", label: "Dashboard" },
   { to: "/crm/leads", label: "Leads" },
+  { to: "/crm/analytics", label: "Analytics" },
   { to: "/crm/sales", label: "Sales" },
   { to: "/crm/visits", label: "Site Visits" },
   { to: "/crm/schools", label: "Schools" },
