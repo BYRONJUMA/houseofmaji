@@ -464,7 +464,7 @@ function KanbanBoard({
               const lead = leads.find((l) => l.id === id);
               if (lead) onMove(lead, stage);
             }}
-            className={`w-[15rem] shrink-0 rounded-xl border p-2 ${over === stage ? "border-primary bg-primary/5" : "border-border bg-secondary/30"}`}
+            className={`w-[15rem] shrink-0 rounded-xl border p-2 ${over === stage ? "border-primary bg-primary/5" : (LEAD_STAGE_COLUMN[stage] ?? "border-border bg-secondary/30")}`}
           >
             <div className="mb-2 flex items-center justify-between gap-2 px-1">
               <span className="text-xs font-bold uppercase tracking-wide">
