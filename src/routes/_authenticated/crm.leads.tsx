@@ -464,7 +464,7 @@ function KanbanBoard({
               const lead = leads.find((l) => l.id === id);
               if (lead) onMove(lead, stage);
             }}
-            className={`w-[15rem] shrink-0 rounded-xl border p-2 ${over === stage ? "border-primary bg-primary/5" : "border-border bg-secondary/30"}`}
+            className={`w-[15rem] shrink-0 rounded-xl border p-2 ${over === stage ? "border-primary bg-primary/5" : (LEAD_STAGE_COLUMN[stage] ?? "border-border bg-secondary/30")}`}
           >
             <div className="mb-2 flex items-center justify-between gap-2 px-1">
               <span className="text-xs font-bold uppercase tracking-wide">
@@ -566,7 +566,7 @@ function ListView({
         </thead>
         <tbody>
           {leads.map((l) => {
-            const overdue = l.follow_up_due_at && new Date(l.follow_up_due_at) < new Date();
+            const countdown = followUpCountdown(l.follow_up_due_at);
             return (
               <tr
                 key={l.id}
@@ -587,8 +587,17 @@ function ListView({
                 <td className="px-3 py-2 text-right tabular-nums">
                   {l.deal_value ? formatKES(l.deal_value) : "—"}
                 </td>
-                <td className={`px-3 py-2 ${overdue ? "font-semibold text-destructive" : ""}`}>
-                  {l.follow_up_due_at ? formatDate(l.follow_up_due_at) : "—"}
+                <td className="px-3 py-2">
+                  {countdown ? (
+                    <span className="whitespace-nowrap">
+                      {formatDate(l.follow_up_due_at!)}{" "}
+                      <span className={`font-semibold ${countdown.className}`}>
+                        · {countdown.text}
+                      </span>
+                    </span>
+                  ) : (
+                    "—"
+                  )}
                 </td>
                 {manager && (
                   <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
@@ -718,6 +727,7 @@ function LeadDetail({
             </AlertDialog>
           )}
         </div>
+        <LeadScoringPanel lead={lead} />
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1 text-sm">
             <p>
@@ -742,6 +752,13 @@ function LeadDetail({
             <p>
               <span className="text-muted-foreground">Follow-up:</span>{" "}
               {lead.follow_up_due_at ? formatDate(lead.follow_up_due_at) : "not scheduled"}
+              {followUpCountdown(lead.follow_up_due_at) && (
+                <span
+                  className={`ml-1 font-semibold ${followUpCountdown(lead.follow_up_due_at)!.className}`}
+                >
+                  · {followUpCountdown(lead.follow_up_due_at)!.text}
+                </span>
+              )}
             </p>
           </div>
           {canWrite && (
@@ -1029,5 +1046,90 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+/** Lead quality score: 6 auditable criteria, each recorded in lead_scoring_events. */
+function LeadScoringPanel({ lead }: { lead: Lead }) {
+  const { profile } = useAuth();
+  const { data: events = [] } = useLeadScoringEvents(lead.id);
+  const toggle = useToggleLeadCriterion();
+  const team = useTeam().data ?? [];
+  const updateLead = useCrmMutation("leads", ["crm-leads"]);
+  const [notes, setNotes] = useState(lead.timeline_notes ?? "");
+
+  const earned = new Set(events.map((e) => e.criterion));
+  const score = Math.min(
+    MAX_LEAD_SCORE,
+    LEAD_SCORING_CRITERIA.filter((c) => earned.has(c.key)).reduce((s, c) => s + c.points, 0),
+  );
+
+  const flip = (key: (typeof LEAD_SCORING_CRITERIA)[number]["key"], on: boolean) =>
+    toggle.mutate(
+      { leadId: lead.id, criterion: key, on, userId: profile?.id ?? null },
+      { onError: (e: unknown) => toast.error((e as Error).message) },
+    );
+
+  return (
+    <section className="rounded-xl border border-border bg-secondary/30 p-3">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold">Lead score</h3>
+        <span className="font-display text-xl font-bold tabular-nums">
+          {score}
+          <span className="text-sm font-medium text-muted-foreground">/{MAX_LEAD_SCORE}</span>
+        </span>
+      </div>
+      <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+        <div
+          className="h-full rounded-full bg-primary"
+          style={{ width: `${(score / MAX_LEAD_SCORE) * 100}%` }}
+        />
+      </div>
+      <div className="mt-3 space-y-2">
+        {LEAD_SCORING_CRITERIA.map((c) => {
+          const ev = events.find((e) => e.criterion === c.key);
+          return (
+            <label key={c.key} className="flex items-start gap-2.5 text-sm">
+              <Checkbox
+                checked={Boolean(ev)}
+                disabled={toggle.isPending}
+                onCheckedChange={(v) => flip(c.key, Boolean(v))}
+                className="mt-0.5"
+              />
+              <span>
+                {c.label}{" "}
+                <span className="text-xs font-semibold text-muted-foreground">+{c.points}</span>
+                {ev && (
+                  <span className="block text-xs text-muted-foreground">
+                    {nameOf(team, ev.recorded_by)} · {formatDate(ev.recorded_at)}
+                  </span>
+                )}
+              </span>
+            </label>
+          );
+        })}
+      </div>
+      <div className="mt-3 space-y-1.5">
+        <Label className="text-xs">Timeline stated by client</Label>
+        <Textarea
+          rows={2}
+          value={notes}
+          placeholder="e.g. wants installation before the school term starts"
+          onChange={(e) => setNotes(e.target.value)}
+          onBlur={() => {
+            if ((lead.timeline_notes ?? "") === notes) return;
+            updateLead.mutate(
+              { type: "update", id: lead.id, values: { timeline_notes: notes.trim() || null } },
+              { onError: (e: unknown) => toast.error((e as Error).message) },
+            );
+          }}
+        />
+      </div>
+      {lead.stage_manually_set_at && (
+        <p className="mt-2 text-xs text-muted-foreground">
+          Stage was set manually — automatic score-based stage moves no longer apply to this lead.
+        </p>
+      )}
+    </section>
   );
 }
