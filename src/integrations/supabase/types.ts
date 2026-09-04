@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      assigned_equipment: {
+        Row: {
+          condition: string | null
+          created_at: string
+          date_assigned: string
+          id: string
+          item_description: string | null
+          item_name: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          condition?: string | null
+          created_at?: string
+          date_assigned?: string
+          id?: string
+          item_description?: string | null
+          item_name: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          condition?: string | null
+          created_at?: string
+          date_assigned?: string
+          id?: string
+          item_description?: string | null
+          item_name?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assigned_equipment_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       commissions: {
         Row: {
           amount: number
@@ -923,6 +967,8 @@ export type Database = {
           assigned_by: string | null
           assigned_engineer_id: string | null
           client_name: string
+          completed: boolean
+          completed_at: string | null
           contact: string | null
           created_at: string
           fulfillment_id: string | null
@@ -942,6 +988,8 @@ export type Database = {
           assigned_by?: string | null
           assigned_engineer_id?: string | null
           client_name?: string
+          completed?: boolean
+          completed_at?: string | null
           contact?: string | null
           created_at?: string
           fulfillment_id?: string | null
@@ -961,6 +1009,8 @@ export type Database = {
           assigned_by?: string | null
           assigned_engineer_id?: string | null
           client_name?: string
+          completed?: boolean
+          completed_at?: string | null
           contact?: string | null
           created_at?: string
           fulfillment_id?: string | null
@@ -1356,6 +1406,8 @@ export type Database = {
           assigned_by: string | null
           assigned_engineer_id: string | null
           client_name: string | null
+          completed: boolean | null
+          completed_at: string | null
           contact: string | null
           created_at: string | null
           fulfillment_id: string | null
@@ -1375,6 +1427,8 @@ export type Database = {
           assigned_by?: string | null
           assigned_engineer_id?: string | null
           client_name?: string | null
+          completed?: boolean | null
+          completed_at?: string | null
           contact?: never
           created_at?: string | null
           fulfillment_id?: string | null
@@ -1394,6 +1448,8 @@ export type Database = {
           assigned_by?: string | null
           assigned_engineer_id?: string | null
           client_name?: string | null
+          completed?: boolean | null
+          completed_at?: string | null
           contact?: never
           created_at?: string | null
           fulfillment_id?: string | null
