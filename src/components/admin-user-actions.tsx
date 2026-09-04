@@ -39,10 +39,13 @@ export function AdminUserActions({
 }) {
   const qc = useQueryClient();
   const [confirming, setConfirming] = useState(false);
+  const [editing, setEditing] = useState(false);
   const removeUser = useServerFn(deleteAppUser);
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["profiles"] });
+    qc.invalidateQueries({ queryKey: ["profile", user.id] });
+    qc.invalidateQueries({ queryKey: ["crm-team"] });
     qc.invalidateQueries({ queryKey: ["fulfillments"] });
     qc.invalidateQueries({ queryKey: ["commissions"] });
   };
