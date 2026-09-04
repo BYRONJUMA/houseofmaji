@@ -141,3 +141,71 @@ export function AdminUserActions({
     </div>
   );
 }
+
+function EditUserDialog({
+  user,
+  onClose,
+  onSaved,
+}: {
+  user: { id: string; full_name: string; role: string };
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [fullName, setFullName] = useState(user.full_name ?? "");
+  const [role, setRole] = useState(user.role);
+
+  const save = useMutation({
+    mutationFn: async () => {
+      if (!fullName.trim()) throw new Error("Full name is required");
+      const { error } = await supabase
+        .from("profiles")
+        .update({ full_name: fullName.trim(), role: role as (typeof ROLES)[number] })
+        .eq("id", user.id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      toast.success("User updated");
+      onSaved();
+      onClose();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Edit user</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-3">
+          <div className="space-y-1.5">
+            <Label>Full name</Label>
+            <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Role</Label>
+            <Select value={role} onValueChange={setRole}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {ROLES.map((r) => (
+                  <SelectItem key={r} value={r}>
+                    {ROLE_LABEL[r]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Email addresses can’t be changed here — they go through the verified email-change
+            process.
+          </p>
+        </div>
+        <Button onClick={() => save.mutate()} disabled={save.isPending}>
+          Save changes
+        </Button>
+      </DialogContent>
+    </Dialog>
+  );
+}
