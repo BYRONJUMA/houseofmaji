@@ -94,6 +94,14 @@ export function AdminUserActions({
       <Button
         size="sm"
         variant="outline"
+        aria-label={`Edit ${user.full_name}`}
+        onClick={() => setEditing(true)}
+      >
+        <Pencil className="h-3.5 w-3.5" />
+      </Button>
+      <Button
+        size="sm"
+        variant="outline"
         className="text-destructive"
         disabled={isSelf}
         aria-label={`Delete ${user.full_name}`}
@@ -101,6 +109,11 @@ export function AdminUserActions({
       >
         <Trash2 className="h-3.5 w-3.5" />
       </Button>
+
+      {editing && (
+        <EditUserDialog user={user} onClose={() => setEditing(false)} onSaved={invalidate} />
+      )}
+
 
       <AlertDialog open={confirming} onOpenChange={setConfirming}>
         <AlertDialogContent>
