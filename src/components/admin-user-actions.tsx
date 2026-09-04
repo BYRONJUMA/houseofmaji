@@ -22,10 +22,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { deleteAppUser } from "@/lib/admin-users.functions";
 import { ROLE_LABEL } from "@/lib/stages";
 
-const ROLES = ["sales_rep", "engineer", "chief_engineer", "admin"] as const;
+const ROLES = ["sales_rep", "engineer", "chief_engineer", "sales_head", "admin"] as const;
 
 export function AdminUserActions({
   user,
