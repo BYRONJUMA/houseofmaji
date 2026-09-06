@@ -306,7 +306,11 @@ function ServicesPage() {
                       >
                         {!s.machine_service_type && canEditAny(s) && <SetServiceType record={s} />}
                         {canAssign && <AssignEngineer record={s} />}
-                        {canDelete && <DeleteService record={s} />}
+                        <ServiceRowMenu
+                          record={s}
+                          canDelete={canDelete}
+                          canComplete={canEditAny(s)}
+                        />
                       </div>
                     </td>
                   </tr>
