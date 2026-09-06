@@ -50,6 +50,8 @@ function TeamPage() {
     },
   });
 
+  const { data: equipment = [] } = useEquipment();
+
   const perRole = profiles.reduce<Record<string, number>>((acc, p) => {
     acc[p.role] = (acc[p.role] ?? 0) + 1;
     return acc;
@@ -78,6 +80,7 @@ function TeamPage() {
             <tr>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Joined</th>
+              <th className="px-4 py-3 text-right">Equipment</th>
               <th className="px-4 py-3 text-right">Earned</th>
               <th className="px-4 py-3 text-right">Manage</th>
             </tr>
