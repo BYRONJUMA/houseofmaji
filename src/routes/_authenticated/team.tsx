@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { AdminUserActions } from "@/components/admin-user-actions";
+import { useEquipment } from "@/components/equipment-panel";
 import { useAuth } from "@/hooks/use-auth";
 import { formatKES, formatDate } from "@/lib/format";
 import { ROLE_LABEL } from "@/lib/stages";
@@ -49,6 +50,8 @@ function TeamPage() {
     },
   });
 
+  const { data: equipment = [] } = useEquipment();
+
   const perRole = profiles.reduce<Record<string, number>>((acc, p) => {
     acc[p.role] = (acc[p.role] ?? 0) + 1;
     return acc;
@@ -68,7 +71,8 @@ function TeamPage() {
       </div>
 
       <p className="mb-3 text-sm text-muted-foreground">
-        Change a role or remove an account. Users still assigned to an active order can’t be
+        Edit a person’s name and role, or remove an account. Open a person to see and correct the
+        company equipment assigned to them. Users still assigned to an active order can’t be
         deleted.
       </p>
       <div className="surface-card overflow-x-auto">
@@ -77,6 +81,7 @@ function TeamPage() {
             <tr>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Joined</th>
+              <th className="px-4 py-3 text-right">Equipment</th>
               <th className="px-4 py-3 text-right">Earned</th>
               <th className="px-4 py-3 text-right">Manage</th>
             </tr>
@@ -95,6 +100,9 @@ function TeamPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{formatDate(p.created_at)}</td>
+                <td className="px-4 py-3 text-right tabular-nums">
+                  {equipment.filter((e) => e.user_id === p.id).length}
+                </td>
                 <td className="px-4 py-3 text-right font-semibold">
                   {formatKES(
                     commissions

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Wrench } from "lucide-react";
+import { CheckCircle2, Wrench } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/lib/format";
 
@@ -12,6 +12,7 @@ type ServiceRow = {
   next_due_date: string | null;
   visit_count: number;
   recorded_by: string | null;
+  completed: boolean | null;
   created_at: string;
 };
 
@@ -55,7 +56,12 @@ export function ServiceHistory({
           {rows.map((s) => (
             <div key={s.id} className="rounded-lg border border-border p-3 text-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="font-semibold">{s.machine_type || "Machine"} service</p>
+                <p className="flex items-center gap-1.5 font-semibold">
+                  {s.completed && (
+                    <CheckCircle2 className="h-4 w-4 text-success" aria-label="Service completed" />
+                  )}
+                  {s.machine_type || "Machine"} service
+                </p>
                 <p className="text-xs text-muted-foreground">
                   Last serviced {formatDate(s.last_service_date)}
                 </p>

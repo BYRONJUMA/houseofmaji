@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
+import { CheckCircle2, MoreVertical, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -25,8 +25,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { useSettings, settingNumber, useMachineTypeOptions } from "@/hooks/use-crm-extra";
 import { formatDate } from "@/lib/format";
@@ -197,7 +202,15 @@ function ServicesPage() {
                     className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-2.5"
                   >
                     <div>
-                      <p className="text-sm font-semibold">{s.client_name}</p>
+                      <p className="flex items-center gap-1.5 text-sm font-semibold">
+                        {s.completed && (
+                          <CheckCircle2
+                            className="h-4 w-4 text-success"
+                            aria-label="Service completed"
+                          />
+                        )}
+                        {s.client_name}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         {s.machine_type || "machine"}
                         {showContact ? ` · ${s.contact || "no contact"}` : ""} · due{" "}
@@ -269,7 +282,17 @@ function ServicesPage() {
                       canEditAny(s) && "cursor-pointer hover:bg-secondary/50",
                     )}
                   >
-                    <td className="px-3 py-2 font-medium">{s.client_name}</td>
+                    <td className="px-3 py-2 font-medium">
+                      <span className="inline-flex items-center gap-1.5">
+                        {s.completed && (
+                          <CheckCircle2
+                            className="h-4 w-4 text-success"
+                            aria-label="Service completed"
+                          />
+                        )}
+                        {s.client_name}
+                      </span>
+                    </td>
                     {showContact && <td className="px-3 py-2">{s.contact || "—"}</td>}
                     <td className="px-3 py-2">{s.machine_type || "—"}</td>
                     <td className="px-3 py-2">
@@ -300,7 +323,11 @@ function ServicesPage() {
                       >
                         {!s.machine_service_type && canEditAny(s) && <SetServiceType record={s} />}
                         {canAssign && <AssignEngineer record={s} />}
-                        {canDelete && <DeleteService record={s} />}
+                        <ServiceRowMenu
+                          record={s}
+                          canDelete={canDelete}
+                          canComplete={canEditAny(s)}
+                        />
                       </div>
                     </td>
                   </tr>
@@ -522,17 +549,61 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
   );
 }
 
-function DeleteService({ record }: { record: ServiceRecord }) {
+/** Row overflow menu: Mark complete + Delete, permission-scoped. */
+function ServiceRowMenu({
+  record,
+  canDelete,
+  canComplete,
+}: {
+  record: ServiceRecord;
+  canDelete: boolean;
+  canComplete: boolean;
+}) {
   const mutate = useCrmMutation("services", ["crm-services"]);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const showComplete = canComplete && !!record.assigned_engineer_id && !record.completed;
+  if (!canDelete && !showComplete) return null;
+
+  const markComplete = () =>
+    mutate.mutate(
+      {
+        type: "update",
+        id: record.id,
+        values: { completed: true, completed_at: new Date().toISOString() },
+      },
+      {
+        onSuccess: () => toast.success("Service marked complete"),
+        onError: (e: unknown) => toast.error((e as Error).message),
+      },
+    );
+
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button size="sm" variant="outline" className="text-destructive">
-          <Trash2 className="h-4 w-4" />
-          <span className="sr-only">Delete service record</span>
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button size="sm" variant="outline" aria-label="More actions">
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {showComplete && (
+            <DropdownMenuItem onClick={markComplete}>
+              <CheckCircle2 className="mr-2 h-4 w-4" /> Mark complete
+            </DropdownMenuItem>
+          )}
+          {canDelete && (
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => setConfirmDelete(true)}
+            >
+              Delete
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete service record?</AlertDialogTitle>
           <AlertDialogDescription>
@@ -555,8 +626,9 @@ function DeleteService({ record }: { record: ServiceRecord }) {
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 

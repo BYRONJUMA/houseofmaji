@@ -70,6 +70,8 @@ export type ServiceRecord = {
   assigned_engineer_id: string | null;
   assigned_by: string | null;
   assigned_at: string | null;
+  completed: boolean;
+  completed_at: string | null;
 };
 
 export type Project = {
