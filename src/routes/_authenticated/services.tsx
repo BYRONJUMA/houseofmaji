@@ -542,17 +542,61 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
   );
 }
 
-function DeleteService({ record }: { record: ServiceRecord }) {
+/** Row overflow menu: Mark complete + Delete, permission-scoped. */
+function ServiceRowMenu({
+  record,
+  canDelete,
+  canComplete,
+}: {
+  record: ServiceRecord;
+  canDelete: boolean;
+  canComplete: boolean;
+}) {
   const mutate = useCrmMutation("services", ["crm-services"]);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const showComplete = canComplete && !!record.assigned_engineer_id && !record.completed;
+  if (!canDelete && !showComplete) return null;
+
+  const markComplete = () =>
+    mutate.mutate(
+      {
+        type: "update",
+        id: record.id,
+        values: { completed: true, completed_at: new Date().toISOString() },
+      },
+      {
+        onSuccess: () => toast.success("Service marked complete"),
+        onError: (e: unknown) => toast.error((e as Error).message),
+      },
+    );
+
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button size="sm" variant="outline" className="text-destructive">
-          <Trash2 className="h-4 w-4" />
-          <span className="sr-only">Delete service record</span>
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button size="sm" variant="outline" aria-label="More actions">
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {showComplete && (
+            <DropdownMenuItem onClick={markComplete}>
+              <CheckCircle2 className="mr-2 h-4 w-4" /> Mark complete
+            </DropdownMenuItem>
+          )}
+          {canDelete && (
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => setConfirmDelete(true)}
+            >
+              Delete
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete service record?</AlertDialogTitle>
           <AlertDialogDescription>
