@@ -8,6 +8,7 @@ import { formatKES, formatDate } from "@/lib/format";
 import { ROLE_LABEL, STAGE_LABEL, STAGE_SOFT, type Stage } from "@/lib/stages";
 import { Inbox } from "lucide-react";
 import { MetricTiles, type Metric } from "@/components/metric-tiles";
+import { EquipmentPanel } from "@/components/equipment-panel";
 import { useMachinesGuard } from "@/hooks/use-machines-access";
 
 export const Route = createFileRoute("/_authenticated/user/$id")({
