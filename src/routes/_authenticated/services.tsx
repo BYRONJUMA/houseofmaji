@@ -202,7 +202,15 @@ function ServicesPage() {
                     className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-2.5"
                   >
                     <div>
-                      <p className="text-sm font-semibold">{s.client_name}</p>
+                      <p className="flex items-center gap-1.5 text-sm font-semibold">
+                        {s.completed && (
+                          <CheckCircle2
+                            className="h-4 w-4 text-success"
+                            aria-label="Service completed"
+                          />
+                        )}
+                        {s.client_name}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         {s.machine_type || "machine"}
                         {showContact ? ` · ${s.contact || "no contact"}` : ""} · due{" "}
