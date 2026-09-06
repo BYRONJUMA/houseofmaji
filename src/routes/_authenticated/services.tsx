@@ -619,8 +619,9 @@ function ServiceRowMenu({
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 
