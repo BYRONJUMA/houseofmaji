@@ -113,6 +113,15 @@ function UserDetailPage() {
     >
       <MetricTiles metrics={metrics} homePath="/admin" />
 
+      <div className="mt-8">
+        <EquipmentPanel
+          userId={user.id}
+          canEdit={isAdmin || user.id === profile?.id}
+          title="Assigned equipment"
+        />
+      </div>
+
+
       <section className="mt-8 space-y-3">
         <h2 className="text-lg font-semibold">Orders</h2>
         {orders.length === 0 ? (
