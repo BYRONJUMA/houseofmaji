@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { AdminUserActions } from "@/components/admin-user-actions";
+import { useEquipment } from "@/components/equipment-panel";
 import { useAuth } from "@/hooks/use-auth";
 import { formatKES, formatDate } from "@/lib/format";
 import { ROLE_LABEL } from "@/lib/stages";
