@@ -99,6 +99,9 @@ function TeamPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{formatDate(p.created_at)}</td>
+                <td className="px-4 py-3 text-right tabular-nums">
+                  {equipment.filter((e) => e.user_id === p.id).length}
+                </td>
                 <td className="px-4 py-3 text-right font-semibold">
                   {formatKES(
                     commissions
