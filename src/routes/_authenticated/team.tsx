@@ -71,7 +71,8 @@ function TeamPage() {
       </div>
 
       <p className="mb-3 text-sm text-muted-foreground">
-        Change a role or remove an account. Users still assigned to an active order can’t be
+        Edit a person’s name and role, or remove an account. Open a person to see and correct the
+        company equipment assigned to them. Users still assigned to an active order can’t be
         deleted.
       </p>
       <div className="surface-card overflow-x-auto">
