@@ -275,7 +275,17 @@ function ServicesPage() {
                       canEditAny(s) && "cursor-pointer hover:bg-secondary/50",
                     )}
                   >
-                    <td className="px-3 py-2 font-medium">{s.client_name}</td>
+                    <td className="px-3 py-2 font-medium">
+                      <span className="inline-flex items-center gap-1.5">
+                        {s.completed && (
+                          <CheckCircle2
+                            className="h-4 w-4 text-success"
+                            aria-label="Service completed"
+                          />
+                        )}
+                        {s.client_name}
+                      </span>
+                    </td>
                     {showContact && <td className="px-3 py-2">{s.contact || "—"}</td>}
                     <td className="px-3 py-2">{s.machine_type || "—"}</td>
                     <td className="px-3 py-2">
