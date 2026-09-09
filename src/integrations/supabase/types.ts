@@ -1265,6 +1265,143 @@ export type Database = {
           },
         ]
       }
+      store_access: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_access_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_access_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_products: {
+        Row: {
+          category: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          in_house_qty: number
+          name: string
+          sku: string | null
+          unit: string | null
+          updated_at: string
+          warehouse_qty: number
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          in_house_qty?: number
+          name: string
+          sku?: string | null
+          unit?: string | null
+          updated_at?: string
+          warehouse_qty?: number
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          in_house_qty?: number
+          name?: string
+          sku?: string | null
+          unit?: string | null
+          updated_at?: string
+          warehouse_qty?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_products_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_stock_entries: {
+        Row: {
+          entered_at: string
+          entered_by: string | null
+          id: string
+          location: Database["public"]["Enums"]["store_location"]
+          notes: string | null
+          product_id: string
+          quantity: number
+          supplier_contact: string | null
+          supplier_name: string | null
+          total_amount: number | null
+          unit_price: number | null
+        }
+        Insert: {
+          entered_at?: string
+          entered_by?: string | null
+          id?: string
+          location: Database["public"]["Enums"]["store_location"]
+          notes?: string | null
+          product_id: string
+          quantity: number
+          supplier_contact?: string | null
+          supplier_name?: string | null
+          total_amount?: number | null
+          unit_price?: number | null
+        }
+        Update: {
+          entered_at?: string
+          entered_by?: string | null
+          id?: string
+          location?: Database["public"]["Enums"]["store_location"]
+          notes?: string | null
+          product_id?: string
+          quantity?: number
+          supplier_contact?: string | null
+          supplier_name?: string | null
+          total_amount?: number | null
+          unit_price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_stock_entries_entered_by_fkey"
+            columns: ["entered_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_stock_entries_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "store_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transcripts: {
         Row: {
           applied_at: string | null
@@ -1503,6 +1640,7 @@ export type Database = {
       }
       can_manage_taxonomy: { Args: { _user_id: string }; Returns: boolean }
       can_see_service_contact: { Args: { _user_id: string }; Returns: boolean }
+      can_write_store: { Args: { _user_id: string }; Returns: boolean }
       expire_stale_leads: { Args: never; Returns: number }
       has_role: {
         Args: {
@@ -1523,6 +1661,7 @@ export type Database = {
         | "sales_head"
       commission_role: "sales" | "assembly" | "installation"
       machine_service_type: "commercial_industrial" | "undersink"
+      store_location: "in_house" | "warehouse"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1659,6 +1798,7 @@ export const Constants = {
       ],
       commission_role: ["sales", "assembly", "installation"],
       machine_service_type: ["commercial_industrial", "undersink"],
+      store_location: ["in_house", "warehouse"],
     },
   },
 } as const
