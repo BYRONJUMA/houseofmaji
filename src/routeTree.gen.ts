@@ -25,6 +25,7 @@ import { Route as AuthenticatedStoreIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedUserIdRouteImport } from './routes/_authenticated/user.$id'
 import { Route as AuthenticatedStoreAccessRouteImport } from './routes/_authenticated/store.access'
+import { Route as AuthenticatedStoreIdRouteImport } from './routes/_authenticated/store.$id'
 import { Route as AuthenticatedFulfillmentIdRouteImport } from './routes/_authenticated/fulfillment.$id'
 import { Route as AuthenticatedCrmVisitsRouteImport } from './routes/_authenticated/crm.visits'
 import { Route as AuthenticatedCrmSettingsRouteImport } from './routes/_authenticated/crm.settings'
@@ -115,6 +116,11 @@ const AuthenticatedStoreAccessRoute =
     path: '/store/access',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedStoreIdRoute = AuthenticatedStoreIdRouteImport.update({
+  id: '/store/$id',
+  path: '/store/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedFulfillmentIdRoute =
   AuthenticatedFulfillmentIdRouteImport.update({
     id: '/fulfillment/$id',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/crm/visits': typeof AuthenticatedCrmVisitsRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/store/$id': typeof AuthenticatedStoreIdRoute
   '/store/access': typeof AuthenticatedStoreAccessRoute
   '/user/$id': typeof AuthenticatedUserIdRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/crm/visits': typeof AuthenticatedCrmVisitsRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/store/$id': typeof AuthenticatedStoreIdRoute
   '/store/access': typeof AuthenticatedStoreAccessRoute
   '/user/$id': typeof AuthenticatedUserIdRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/_authenticated/crm/visits': typeof AuthenticatedCrmVisitsRoute
   '/_authenticated/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/_authenticated/store/$id': typeof AuthenticatedStoreIdRoute
   '/_authenticated/store/access': typeof AuthenticatedStoreAccessRoute
   '/_authenticated/user/$id': typeof AuthenticatedUserIdRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/crm/settings'
     | '/crm/visits'
     | '/fulfillment/$id'
+    | '/store/$id'
     | '/store/access'
     | '/user/$id'
     | '/crm/'
@@ -282,6 +292,7 @@ export interface FileRouteTypes {
     | '/crm/settings'
     | '/crm/visits'
     | '/fulfillment/$id'
+    | '/store/$id'
     | '/store/access'
     | '/user/$id'
     | '/crm'
@@ -308,6 +319,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/settings'
     | '/_authenticated/crm/visits'
     | '/_authenticated/fulfillment/$id'
+    | '/_authenticated/store/$id'
     | '/_authenticated/store/access'
     | '/_authenticated/user/$id'
     | '/_authenticated/crm/'
@@ -434,6 +446,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStoreAccessRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/store/$id': {
+      id: '/_authenticated/store/$id'
+      path: '/store/$id'
+      fullPath: '/store/$id'
+      preLoaderRoute: typeof AuthenticatedStoreIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/fulfillment/$id': {
       id: '/_authenticated/fulfillment/$id'
       path: '/fulfillment/$id'
@@ -529,6 +548,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedServicesRoute: typeof AuthenticatedServicesRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedFulfillmentIdRoute: typeof AuthenticatedFulfillmentIdRoute
+  AuthenticatedStoreIdRoute: typeof AuthenticatedStoreIdRoute
   AuthenticatedStoreAccessRoute: typeof AuthenticatedStoreAccessRoute
   AuthenticatedUserIdRoute: typeof AuthenticatedUserIdRoute
   AuthenticatedStoreIndexRoute: typeof AuthenticatedStoreIndexRoute
@@ -545,6 +565,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedServicesRoute: AuthenticatedServicesRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedFulfillmentIdRoute: AuthenticatedFulfillmentIdRoute,
+  AuthenticatedStoreIdRoute: AuthenticatedStoreIdRoute,
   AuthenticatedStoreAccessRoute: AuthenticatedStoreAccessRoute,
   AuthenticatedUserIdRoute: AuthenticatedUserIdRoute,
   AuthenticatedStoreIndexRoute: AuthenticatedStoreIndexRoute,
