@@ -21,8 +21,10 @@ import { Route as AuthenticatedCommissionsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedChiefRouteImport } from './routes/_authenticated/chief'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as AuthenticatedStoreIndexRouteImport } from './routes/_authenticated/store.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedUserIdRouteImport } from './routes/_authenticated/user.$id'
+import { Route as AuthenticatedStoreAccessRouteImport } from './routes/_authenticated/store.access'
 import { Route as AuthenticatedFulfillmentIdRouteImport } from './routes/_authenticated/fulfillment.$id'
 import { Route as AuthenticatedCrmVisitsRouteImport } from './routes/_authenticated/crm.visits'
 import { Route as AuthenticatedCrmSettingsRouteImport } from './routes/_authenticated/crm.settings'
@@ -92,6 +94,11 @@ const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedStoreIndexRoute = AuthenticatedStoreIndexRouteImport.update({
+  id: '/store/',
+  path: '/store/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -102,6 +109,12 @@ const AuthenticatedUserIdRoute = AuthenticatedUserIdRouteImport.update({
   path: '/user/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedStoreAccessRoute =
+  AuthenticatedStoreAccessRouteImport.update({
+    id: '/store/access',
+    path: '/store/access',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedFulfillmentIdRoute =
   AuthenticatedFulfillmentIdRouteImport.update({
     id: '/fulfillment/$id',
@@ -167,8 +180,10 @@ export interface FileRoutesByFullPath {
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/crm/visits': typeof AuthenticatedCrmVisitsRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/store/access': typeof AuthenticatedStoreAccessRoute
   '/user/$id': typeof AuthenticatedUserIdRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
+  '/store/': typeof AuthenticatedStoreIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -189,8 +204,10 @@ export interface FileRoutesByTo {
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/crm/visits': typeof AuthenticatedCrmVisitsRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/store/access': typeof AuthenticatedStoreAccessRoute
   '/user/$id': typeof AuthenticatedUserIdRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
+  '/store': typeof AuthenticatedStoreIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -214,8 +231,10 @@ export interface FileRoutesById {
   '/_authenticated/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/_authenticated/crm/visits': typeof AuthenticatedCrmVisitsRoute
   '/_authenticated/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/_authenticated/store/access': typeof AuthenticatedStoreAccessRoute
   '/_authenticated/user/$id': typeof AuthenticatedUserIdRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
+  '/_authenticated/store/': typeof AuthenticatedStoreIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -239,8 +258,10 @@ export interface FileRouteTypes {
     | '/crm/settings'
     | '/crm/visits'
     | '/fulfillment/$id'
+    | '/store/access'
     | '/user/$id'
     | '/crm/'
+    | '/store/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -261,8 +282,10 @@ export interface FileRouteTypes {
     | '/crm/settings'
     | '/crm/visits'
     | '/fulfillment/$id'
+    | '/store/access'
     | '/user/$id'
     | '/crm'
+    | '/store'
   id:
     | '__root__'
     | '/'
@@ -285,8 +308,10 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/settings'
     | '/_authenticated/crm/visits'
     | '/_authenticated/fulfillment/$id'
+    | '/_authenticated/store/access'
     | '/_authenticated/user/$id'
     | '/_authenticated/crm/'
+    | '/_authenticated/store/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -381,6 +406,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccountRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/store/': {
+      id: '/_authenticated/store/'
+      path: '/store'
+      fullPath: '/store/'
+      preLoaderRoute: typeof AuthenticatedStoreIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/crm/': {
       id: '/_authenticated/crm/'
       path: '/'
@@ -393,6 +425,13 @@ declare module '@tanstack/react-router' {
       path: '/user/$id'
       fullPath: '/user/$id'
       preLoaderRoute: typeof AuthenticatedUserIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/store/access': {
+      id: '/_authenticated/store/access'
+      path: '/store/access'
+      fullPath: '/store/access'
+      preLoaderRoute: typeof AuthenticatedStoreAccessRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/fulfillment/$id': {
@@ -490,7 +529,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedServicesRoute: typeof AuthenticatedServicesRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedFulfillmentIdRoute: typeof AuthenticatedFulfillmentIdRoute
+  AuthenticatedStoreAccessRoute: typeof AuthenticatedStoreAccessRoute
   AuthenticatedUserIdRoute: typeof AuthenticatedUserIdRoute
+  AuthenticatedStoreIndexRoute: typeof AuthenticatedStoreIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -504,7 +545,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedServicesRoute: AuthenticatedServicesRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedFulfillmentIdRoute: AuthenticatedFulfillmentIdRoute,
+  AuthenticatedStoreAccessRoute: AuthenticatedStoreAccessRoute,
   AuthenticatedUserIdRoute: AuthenticatedUserIdRoute,
+  AuthenticatedStoreIndexRoute: AuthenticatedStoreIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
