@@ -869,6 +869,111 @@ export type Database = {
           },
         ]
       }
+      purchase_order_items: {
+        Row: {
+          created_at: string
+          discount_percent: number
+          id: string
+          line_total: number | null
+          product_id: string
+          purchase_order_id: string
+          quantity: number
+          tax_percent: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          discount_percent?: number
+          id?: string
+          line_total?: number | null
+          product_id: string
+          purchase_order_id: string
+          quantity: number
+          tax_percent?: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          discount_percent?: number
+          id?: string
+          line_total?: number | null
+          product_id?: string
+          purchase_order_id?: string
+          quantity?: number
+          tax_percent?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "store_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_order_items_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_orders: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          destination_location: Database["public"]["Enums"]["store_location"]
+          id: string
+          lpo_no: string
+          status: string
+          supplier_id: string | null
+          supplier_invoice_no: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          destination_location: Database["public"]["Enums"]["store_location"]
+          id?: string
+          lpo_no: string
+          status?: string
+          supplier_id?: string | null
+          supplier_invoice_no?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          destination_location?: Database["public"]["Enums"]["store_location"]
+          id?: string
+          lpo_no?: string
+          status?: string
+          supplier_id?: string | null
+          supplier_invoice_no?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_orders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recordings: {
         Row: {
           audio_file_url: string
@@ -1265,6 +1370,54 @@ export type Database = {
           },
         ]
       }
+      stock_take_variances: {
+        Row: {
+          counted_at: string
+          counted_by: string | null
+          counted_quantity: number
+          id: string
+          location: Database["public"]["Enums"]["store_location"]
+          product_id: string
+          system_quantity: number
+          variance: number
+        }
+        Insert: {
+          counted_at?: string
+          counted_by?: string | null
+          counted_quantity: number
+          id?: string
+          location: Database["public"]["Enums"]["store_location"]
+          product_id: string
+          system_quantity: number
+          variance: number
+        }
+        Update: {
+          counted_at?: string
+          counted_by?: string | null
+          counted_quantity?: number
+          id?: string
+          location?: Database["public"]["Enums"]["store_location"]
+          product_id?: string
+          system_quantity?: number
+          variance?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_take_variances_counted_by_fkey"
+            columns: ["counted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_take_variances_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "store_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_access: {
         Row: {
           granted_at: string
@@ -1300,36 +1453,42 @@ export type Database = {
       }
       store_products: {
         Row: {
+          brand: string | null
           category: string | null
           created_at: string
           created_by: string | null
           id: string
           in_house_qty: number
           name: string
+          product_code: string | null
           sku: string | null
           unit: string | null
           updated_at: string
           warehouse_qty: number
         }
         Insert: {
+          brand?: string | null
           category?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
           in_house_qty?: number
           name: string
+          product_code?: string | null
           sku?: string | null
           unit?: string | null
           updated_at?: string
           warehouse_qty?: number
         }
         Update: {
+          brand?: string | null
           category?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
           in_house_qty?: number
           name?: string
+          product_code?: string | null
           sku?: string | null
           unit?: string | null
           updated_at?: string
@@ -1345,6 +1504,92 @@ export type Database = {
           },
         ]
       }
+      store_requisition_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          quantity: number
+          requisition_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          quantity: number
+          requisition_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          requisition_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_requisition_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "store_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_requisition_items_requisition_id_fkey"
+            columns: ["requisition_id"]
+            isOneToOne: false
+            referencedRelation: "store_requisitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_requisitions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          delivery_status: string
+          description: string | null
+          destination_location: Database["public"]["Enums"]["store_location"]
+          id: string
+          requisition_no: string
+          source_location: Database["public"]["Enums"]["store_location"]
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          delivery_status?: string
+          description?: string | null
+          destination_location: Database["public"]["Enums"]["store_location"]
+          id?: string
+          requisition_no: string
+          source_location: Database["public"]["Enums"]["store_location"]
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          delivery_status?: string
+          description?: string | null
+          destination_location?: Database["public"]["Enums"]["store_location"]
+          id?: string
+          requisition_no?: string
+          source_location?: Database["public"]["Enums"]["store_location"]
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_requisitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_stock_entries: {
         Row: {
           entered_at: string
@@ -1353,8 +1598,11 @@ export type Database = {
           location: Database["public"]["Enums"]["store_location"]
           notes: string | null
           product_id: string
+          purchase_order_id: string | null
           quantity: number
+          requisition_id: string | null
           supplier_contact: string | null
+          supplier_id: string | null
           supplier_name: string | null
           total_amount: number | null
           unit_price: number | null
@@ -1366,8 +1614,11 @@ export type Database = {
           location: Database["public"]["Enums"]["store_location"]
           notes?: string | null
           product_id: string
+          purchase_order_id?: string | null
           quantity: number
+          requisition_id?: string | null
           supplier_contact?: string | null
+          supplier_id?: string | null
           supplier_name?: string | null
           total_amount?: number | null
           unit_price?: number | null
@@ -1379,8 +1630,11 @@ export type Database = {
           location?: Database["public"]["Enums"]["store_location"]
           notes?: string | null
           product_id?: string
+          purchase_order_id?: string | null
           quantity?: number
+          requisition_id?: string | null
           supplier_contact?: string | null
+          supplier_id?: string | null
           supplier_name?: string | null
           total_amount?: number | null
           unit_price?: number | null
@@ -1398,6 +1652,68 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "store_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_stock_entries_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_stock_entries_requisition_id_fkey"
+            columns: ["requisition_id"]
+            isOneToOne: false
+            referencedRelation: "store_requisitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_stock_entries_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suppliers: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suppliers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1651,6 +1967,24 @@ export type Database = {
       }
       is_crm_manager: { Args: { _user_id: string }; Returns: boolean }
       lead_criterion_points: { Args: { _criterion: string }; Returns: number }
+      store_purchase_approve: { Args: { _id: string }; Returns: undefined }
+      store_requisition_deliver: { Args: { _id: string }; Returns: undefined }
+      store_set_quantity: {
+        Args: {
+          _location: Database["public"]["Enums"]["store_location"]
+          _new_qty: number
+          _notes?: string
+          _product_id: string
+        }
+        Returns: undefined
+      }
+      store_stock_take_submit: {
+        Args: {
+          _location: Database["public"]["Enums"]["store_location"]
+          _rows: Json
+        }
+        Returns: number
+      }
     }
     Enums: {
       app_role:
