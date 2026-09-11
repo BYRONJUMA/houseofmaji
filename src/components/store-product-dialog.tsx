@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useStoreProductMutation, type StoreProduct } from "@/hooks/use-store";
 
-/** Create or edit a store product (name, sku/model, category, unit). */
+/** Create or edit a store product (name, sku/model, brand, category, unit). */
 export function StoreProductDialog({
   product,
   createdBy,
@@ -20,6 +20,7 @@ export function StoreProductDialog({
   const [f, setF] = useState({
     name: product?.name ?? "",
     sku: product?.sku ?? "",
+    brand: product?.brand ?? "",
     category: product?.category ?? "",
     unit: product?.unit ?? "",
   });
@@ -33,6 +34,7 @@ export function StoreProductDialog({
     const values: Record<string, unknown> = {
       name: f.name.trim(),
       sku: f.sku.trim() || null,
+      brand: f.brand.trim() || null,
       category: f.category.trim() || null,
       unit: f.unit.trim() || null,
     };
@@ -56,6 +58,11 @@ export function StoreProductDialog({
           <DialogTitle>{product ? "Edit product" : "New product"}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-3">
+          {product?.product_code && (
+            <p className="text-xs text-muted-foreground">
+              Product code <span className="font-semibold text-foreground">#{product.product_code}</span>
+            </p>
+          )}
           <div className="space-y-1.5">
             <Label>Product name</Label>
             <Input
@@ -64,13 +71,23 @@ export function StoreProductDialog({
               placeholder="Membrane, Sediment filter, Pump…"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label>SKU / model</Label>
-            <Input
-              value={f.sku}
-              onChange={(e) => set("sku", e.target.value)}
-              placeholder="Optional"
-            />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label>SKU / model</Label>
+              <Input
+                value={f.sku}
+                onChange={(e) => set("sku", e.target.value)}
+                placeholder="Optional"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Brand</Label>
+              <Input
+                value={f.brand}
+                onChange={(e) => set("brand", e.target.value)}
+                placeholder="Optional"
+              />
+            </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">

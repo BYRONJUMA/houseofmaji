@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Boxes, Pencil, Plus, Shield, Trash2 } from "lucide-react";
-import { AppShell, EmptyState } from "@/components/app-shell";
+import { Boxes, Pencil, Plus, Trash2 } from "lucide-react";
+import { EmptyState } from "@/components/app-shell";
+import { StoreShell } from "@/components/store-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,7 +19,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { StoreProductDialog } from "@/components/store-product-dialog";
 import { useAuth } from "@/hooks/use-auth";
+import { useStoreLocation } from "@/hooks/use-store-location";
 import {
+  locationLabel,
   useCanWriteStore,
   useStoreProductMutation,
   useStoreProducts,
@@ -29,28 +32,29 @@ import { num } from "@/lib/crm";
 export const Route = createFileRoute("/_authenticated/store/")({
   head: () => ({
     meta: [
-      { title: "Store — Products & Stock | Machines" },
+      { title: "Store Products — Machines" },
       {
         name: "description",
         content:
-          "Track store products with separate in-house and warehouse stock levels, deliveries and stock corrections.",
+          "Manage store product definitions: code, name, brand, SKU, category and unit of measure.",
       },
-      { property: "og:title", content: "Store — Products & Stock | Machines" },
+      { property: "og:title", content: "Store Products — Machines" },
       {
         property: "og:description",
-        content: "In-house and warehouse stock levels for every store product.",
+        content: "Product definitions for the in-house and warehouse stores.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: StorePage,
+  component: StoreProductsPage,
 });
 
-function StorePage() {
+function StoreProductsPage() {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const canWrite = useCanWriteStore(profile?.role, profile?.id);
+  const [location] = useStoreLocation();
   const { data: products = [], isLoading } = useStoreProducts();
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<StoreProduct | null>(null);
@@ -59,42 +63,29 @@ function StorePage() {
   const term = q.trim().toLowerCase();
   const rows = term
     ? products.filter((p) =>
-        [p.name, p.sku, p.category].some((v) => (v ?? "").toLowerCase().includes(term)),
+        [p.name, p.sku, p.brand, p.category, p.product_code].some((v) =>
+          (v ?? "").toLowerCase().includes(term),
+        ),
       )
     : products;
 
   return (
-    <AppShell
-      title="Store"
-      subtitle="Products with separate in-house and warehouse stock levels"
-      showBack
+    <StoreShell
+      title="Store products"
+      subtitle="Product definitions — stock levels live on the Stock details page"
       actions={
-        <div className="flex flex-wrap items-center gap-2">
-          {profile?.role === "admin" && (
-            <Button variant="outline" onClick={() => navigate({ to: "/store/access" })}>
-              <Shield className="h-4 w-4" /> Store access
-            </Button>
-          )}
-          {canWrite && (
-            <Button onClick={() => setAdding(true)}>
-              <Plus className="h-4 w-4" /> New product
-            </Button>
-          )}
-        </div>
+        canWrite && (
+          <Button onClick={() => setAdding(true)}>
+            <Plus className="h-4 w-4" /> New product
+          </Button>
+        )
       }
     >
-      {!canWrite && (
-        <p className="mb-4 rounded-xl border border-border bg-secondary/50 px-3 py-2 text-xs text-muted-foreground">
-          You have view-only access to the Store. An admin can grant you permission to add and
-          adjust stock.
-        </p>
-      )}
-
       <div className="mb-4 max-w-sm">
         <Input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search by name, SKU or category"
+          placeholder="Search by code, name, brand, SKU or category"
         />
       </div>
 
@@ -104,7 +95,7 @@ function StorePage() {
           title="No products yet"
           message={
             canWrite
-              ? "Add your first store product to start tracking in-house and warehouse stock."
+              ? "Add your first store product to start tracking stock."
               : "Nothing has been added to the store yet."
           }
         />
@@ -113,12 +104,13 @@ function StorePage() {
           <table className="w-full text-sm">
             <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
+                <th className="px-4 py-3">Code</th>
                 <th className="px-4 py-3">Product</th>
                 <th className="px-4 py-3">SKU / Model</th>
+                <th className="px-4 py-3">Brand</th>
                 <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Unit</th>
-                <th className="px-4 py-3 text-right">In-House Qty</th>
-                <th className="px-4 py-3 text-right">Warehouse Qty</th>
+                <th className="px-4 py-3 text-right">{locationLabel(location)} Qty</th>
                 {canWrite && <th className="px-4 py-3 text-right">Manage</th>}
               </tr>
             </thead>
@@ -129,15 +121,16 @@ function StorePage() {
                   onClick={() => navigate({ to: "/store/$id", params: { id: p.id } })}
                   className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
                 >
+                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                    #{p.product_code || "—"}
+                  </td>
                   <td className="px-4 py-3 font-medium">{p.name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.sku || "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{p.brand || "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.category || "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.unit || "—"}</td>
                   <td className="px-4 py-3 text-right font-semibold tabular-nums">
-                    {num(p.in_house_qty)}
-                  </td>
-                  <td className="px-4 py-3 text-right font-semibold tabular-nums">
-                    {num(p.warehouse_qty)}
+                    {num(location === "in_house" ? p.in_house_qty : p.warehouse_qty)}
                   </td>
                   {canWrite && (
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
@@ -171,7 +164,7 @@ function StorePage() {
           }}
         />
       )}
-    </AppShell>
+    </StoreShell>
   );
 }
 
