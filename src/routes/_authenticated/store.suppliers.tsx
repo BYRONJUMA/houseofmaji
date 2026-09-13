@@ -177,8 +177,11 @@ function SupplierDialog({
         upsert: true,
       });
       if (error) throw error;
-      const { data } = supabase.storage.from("supplier-logos").getPublicUrl(path);
-      setLogoUrl(data.publicUrl);
+      const { data, error: signErr } = await supabase.storage
+        .from("supplier-logos")
+        .createSignedUrl(path, 60 * 60 * 24 * 365 * 5);
+      if (signErr) throw signErr;
+      setLogoUrl(data.signedUrl);
       toast.success("Logo uploaded");
     } catch (e) {
       toast.error((e as Error).message);
