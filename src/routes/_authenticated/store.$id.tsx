@@ -25,6 +25,7 @@ import {
   useStoreEntries,
   useStoreEntryMutation,
   useStoreProduct,
+  useSuppliers,
   type StoreLocation,
   type StoreProduct,
 } from "@/hooks/use-store";
@@ -58,6 +59,7 @@ function ProductDetailPage() {
   const canWrite = useCanWriteStore(profile?.role, profile?.id);
   const { data: product, isLoading } = useStoreProduct(id);
   const { data: entries = [] } = useStoreEntries(id);
+  const { data: suppliers = [] } = useSuppliers();
   const { data: team = [] } = useTeam();
 
   const [editing, setEditing] = useState(false);
