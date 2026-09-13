@@ -1601,9 +1601,7 @@ export type Database = {
           purchase_order_id: string | null
           quantity: number
           requisition_id: string | null
-          supplier_contact: string | null
           supplier_id: string | null
-          supplier_name: string | null
           total_amount: number | null
           unit_price: number | null
         }
@@ -1617,9 +1615,7 @@ export type Database = {
           purchase_order_id?: string | null
           quantity: number
           requisition_id?: string | null
-          supplier_contact?: string | null
           supplier_id?: string | null
-          supplier_name?: string | null
           total_amount?: number | null
           unit_price?: number | null
         }
@@ -1633,9 +1629,7 @@ export type Database = {
           purchase_order_id?: string | null
           quantity?: number
           requisition_id?: string | null
-          supplier_contact?: string | null
           supplier_id?: string | null
-          supplier_name?: string | null
           total_amount?: number | null
           unit_price?: number | null
         }
