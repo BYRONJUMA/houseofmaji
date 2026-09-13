@@ -25,8 +25,10 @@ import { Route as AuthenticatedStoreIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedUserIdRouteImport } from './routes/_authenticated/user.$id'
 import { Route as AuthenticatedStoreSuppliersRouteImport } from './routes/_authenticated/store.suppliers'
+import { Route as AuthenticatedStoreStocktakeRouteImport } from './routes/_authenticated/store.stocktake'
 import { Route as AuthenticatedStoreStockRouteImport } from './routes/_authenticated/store.stock'
 import { Route as AuthenticatedStoreRequisitionsRouteImport } from './routes/_authenticated/store.requisitions'
+import { Route as AuthenticatedStorePurchasesRouteImport } from './routes/_authenticated/store.purchases'
 import { Route as AuthenticatedStoreAccessRouteImport } from './routes/_authenticated/store.access'
 import { Route as AuthenticatedStoreIdRouteImport } from './routes/_authenticated/store.$id'
 import { Route as AuthenticatedFulfillmentIdRouteImport } from './routes/_authenticated/fulfillment.$id'
@@ -119,6 +121,12 @@ const AuthenticatedStoreSuppliersRoute =
     path: '/store/suppliers',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedStoreStocktakeRoute =
+  AuthenticatedStoreStocktakeRouteImport.update({
+    id: '/store/stocktake',
+    path: '/store/stocktake',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedStoreStockRoute = AuthenticatedStoreStockRouteImport.update({
   id: '/store/stock',
   path: '/store/stock',
@@ -128,6 +136,12 @@ const AuthenticatedStoreRequisitionsRoute =
   AuthenticatedStoreRequisitionsRouteImport.update({
     id: '/store/requisitions',
     path: '/store/requisitions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedStorePurchasesRoute =
+  AuthenticatedStorePurchasesRouteImport.update({
+    id: '/store/purchases',
+    path: '/store/purchases',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedStoreAccessRoute =
@@ -208,8 +222,10 @@ export interface FileRoutesByFullPath {
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
   '/store/$id': typeof AuthenticatedStoreIdRoute
   '/store/access': typeof AuthenticatedStoreAccessRoute
+  '/store/purchases': typeof AuthenticatedStorePurchasesRoute
   '/store/requisitions': typeof AuthenticatedStoreRequisitionsRoute
   '/store/stock': typeof AuthenticatedStoreStockRoute
+  '/store/stocktake': typeof AuthenticatedStoreStocktakeRoute
   '/store/suppliers': typeof AuthenticatedStoreSuppliersRoute
   '/user/$id': typeof AuthenticatedUserIdRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
@@ -236,8 +252,10 @@ export interface FileRoutesByTo {
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
   '/store/$id': typeof AuthenticatedStoreIdRoute
   '/store/access': typeof AuthenticatedStoreAccessRoute
+  '/store/purchases': typeof AuthenticatedStorePurchasesRoute
   '/store/requisitions': typeof AuthenticatedStoreRequisitionsRoute
   '/store/stock': typeof AuthenticatedStoreStockRoute
+  '/store/stocktake': typeof AuthenticatedStoreStocktakeRoute
   '/store/suppliers': typeof AuthenticatedStoreSuppliersRoute
   '/user/$id': typeof AuthenticatedUserIdRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
@@ -267,8 +285,10 @@ export interface FileRoutesById {
   '/_authenticated/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
   '/_authenticated/store/$id': typeof AuthenticatedStoreIdRoute
   '/_authenticated/store/access': typeof AuthenticatedStoreAccessRoute
+  '/_authenticated/store/purchases': typeof AuthenticatedStorePurchasesRoute
   '/_authenticated/store/requisitions': typeof AuthenticatedStoreRequisitionsRoute
   '/_authenticated/store/stock': typeof AuthenticatedStoreStockRoute
+  '/_authenticated/store/stocktake': typeof AuthenticatedStoreStocktakeRoute
   '/_authenticated/store/suppliers': typeof AuthenticatedStoreSuppliersRoute
   '/_authenticated/user/$id': typeof AuthenticatedUserIdRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
@@ -298,8 +318,10 @@ export interface FileRouteTypes {
     | '/fulfillment/$id'
     | '/store/$id'
     | '/store/access'
+    | '/store/purchases'
     | '/store/requisitions'
     | '/store/stock'
+    | '/store/stocktake'
     | '/store/suppliers'
     | '/user/$id'
     | '/crm/'
@@ -326,8 +348,10 @@ export interface FileRouteTypes {
     | '/fulfillment/$id'
     | '/store/$id'
     | '/store/access'
+    | '/store/purchases'
     | '/store/requisitions'
     | '/store/stock'
+    | '/store/stocktake'
     | '/store/suppliers'
     | '/user/$id'
     | '/crm'
@@ -356,8 +380,10 @@ export interface FileRouteTypes {
     | '/_authenticated/fulfillment/$id'
     | '/_authenticated/store/$id'
     | '/_authenticated/store/access'
+    | '/_authenticated/store/purchases'
     | '/_authenticated/store/requisitions'
     | '/_authenticated/store/stock'
+    | '/_authenticated/store/stocktake'
     | '/_authenticated/store/suppliers'
     | '/_authenticated/user/$id'
     | '/_authenticated/crm/'
@@ -484,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStoreSuppliersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/store/stocktake': {
+      id: '/_authenticated/store/stocktake'
+      path: '/store/stocktake'
+      fullPath: '/store/stocktake'
+      preLoaderRoute: typeof AuthenticatedStoreStocktakeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/store/stock': {
       id: '/_authenticated/store/stock'
       path: '/store/stock'
@@ -496,6 +529,13 @@ declare module '@tanstack/react-router' {
       path: '/store/requisitions'
       fullPath: '/store/requisitions'
       preLoaderRoute: typeof AuthenticatedStoreRequisitionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/store/purchases': {
+      id: '/_authenticated/store/purchases'
+      path: '/store/purchases'
+      fullPath: '/store/purchases'
+      preLoaderRoute: typeof AuthenticatedStorePurchasesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/store/access': {
@@ -609,8 +649,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFulfillmentIdRoute: typeof AuthenticatedFulfillmentIdRoute
   AuthenticatedStoreIdRoute: typeof AuthenticatedStoreIdRoute
   AuthenticatedStoreAccessRoute: typeof AuthenticatedStoreAccessRoute
+  AuthenticatedStorePurchasesRoute: typeof AuthenticatedStorePurchasesRoute
   AuthenticatedStoreRequisitionsRoute: typeof AuthenticatedStoreRequisitionsRoute
   AuthenticatedStoreStockRoute: typeof AuthenticatedStoreStockRoute
+  AuthenticatedStoreStocktakeRoute: typeof AuthenticatedStoreStocktakeRoute
   AuthenticatedStoreSuppliersRoute: typeof AuthenticatedStoreSuppliersRoute
   AuthenticatedUserIdRoute: typeof AuthenticatedUserIdRoute
   AuthenticatedStoreIndexRoute: typeof AuthenticatedStoreIndexRoute
@@ -629,8 +671,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFulfillmentIdRoute: AuthenticatedFulfillmentIdRoute,
   AuthenticatedStoreIdRoute: AuthenticatedStoreIdRoute,
   AuthenticatedStoreAccessRoute: AuthenticatedStoreAccessRoute,
+  AuthenticatedStorePurchasesRoute: AuthenticatedStorePurchasesRoute,
   AuthenticatedStoreRequisitionsRoute: AuthenticatedStoreRequisitionsRoute,
   AuthenticatedStoreStockRoute: AuthenticatedStoreStockRoute,
+  AuthenticatedStoreStocktakeRoute: AuthenticatedStoreStocktakeRoute,
   AuthenticatedStoreSuppliersRoute: AuthenticatedStoreSuppliersRoute,
   AuthenticatedUserIdRoute: AuthenticatedUserIdRoute,
   AuthenticatedStoreIndexRoute: AuthenticatedStoreIndexRoute,
