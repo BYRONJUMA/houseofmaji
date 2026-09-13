@@ -160,8 +160,7 @@ function ProductDetailPage() {
                       {e.total_amount == null ? "—" : formatKES(e.total_amount)}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {e.supplier_name || "—"}
-                      {e.supplier_contact ? ` · ${e.supplier_contact}` : ""}
+                      {suppliers.find((s) => s.id === e.supplier_id)?.name || "—"}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{e.notes || "—"}</td>
                     <td className="px-4 py-3 text-muted-foreground">
@@ -248,12 +247,12 @@ function AddStockDialog({
 }) {
   const { profile } = useAuth();
   const mutate = useStoreEntryMutation(productId);
+  const { data: suppliers = [] } = useSuppliers();
   const [loc, setLoc] = useState<StoreLocation>(location);
+  const [supplierId, setSupplierId] = useState("");
   const [f, setF] = useState({
     quantity: "",
     unit_price: "",
-    supplier_name: "",
-    supplier_contact: "",
     notes: "",
   });
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
@@ -276,8 +275,7 @@ function AddStockDialog({
         location: loc,
         quantity: q,
         unit_price: f.unit_price ? Number(f.unit_price) : null,
-        supplier_name: f.supplier_name.trim() || null,
-        supplier_contact: f.supplier_contact.trim() || null,
+        supplier_id: supplierId || null,
         notes: f.notes.trim() || null,
         entered_by: profile?.id ?? null,
       },
@@ -336,23 +334,20 @@ function AddStockDialog({
               {total == null ? "—" : formatKES(total)}
             </span>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Supplier name</Label>
-              <Input
-                value={f.supplier_name}
-                onChange={(e) => set("supplier_name", e.target.value)}
-                placeholder="Optional"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Supplier contact</Label>
-              <Input
-                value={f.supplier_contact}
-                onChange={(e) => set("supplier_contact", e.target.value)}
-                placeholder="Optional"
-              />
-            </div>
+          <div className="space-y-1.5">
+            <Label>Supplier (if any)</Label>
+            <Select value={supplierId} onValueChange={setSupplierId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Optional" />
+              </SelectTrigger>
+              <SelectContent>
+                {suppliers.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-1.5">
             <Label>Notes</Label>
