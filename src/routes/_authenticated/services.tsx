@@ -141,7 +141,7 @@ function DueBadge({ next }: { next: string | null }) {
   const badge = dueBadge(next);
   return (
     <Badge className={badge.cls}>
-      {badge.showTick && <CheckCircle2 className="mr-1 h-3.5 w-3.5" aria-hidden="true" />}
+      {badge.showTick && <CheckCircle2 className="mr-1.5 h-5 w-5" aria-hidden="true" />}
       {badge.text}
     </Badge>
   );
@@ -230,7 +230,10 @@ function ServicesPage() {
                     className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-2.5"
                   >
                     <div>
-                      <p className="text-sm font-semibold">{s.client_name}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-sm font-semibold">{s.client_name}</p>
+                        <DueBadge next={s.next_due_date} />
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         {s.machine_type || "machine"}
                         {showContact ? ` · ${s.contact || "no contact"}` : ""} · due{" "}
@@ -238,7 +241,6 @@ function ServicesPage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <DueBadge next={s.next_due_date} />
                       <span className="text-xs text-muted-foreground">
                         {nameOf(team, s.assigned_engineer_id)}
                       </span>
@@ -301,7 +303,12 @@ function ServicesPage() {
                       canEditAny(s) && "cursor-pointer hover:bg-secondary/50",
                     )}
                   >
-                    <td className="px-3 py-2 font-medium">{s.client_name}</td>
+                    <td className="px-3 py-2 font-medium">
+                      <div className="flex items-center gap-2">
+                        {s.client_name}
+                        <DueBadge next={s.next_due_date} />
+                      </div>
+                    </td>
                     {showContact && <td className="px-3 py-2">{s.contact || "—"}</td>}
                     <td className="px-3 py-2">{s.machine_type || "—"}</td>
                     <td className="px-3 py-2">
@@ -314,7 +321,7 @@ function ServicesPage() {
                     <td className="px-3 py-2">{s.fulfillment_id ? "Linked" : "Manual"}</td>
                     <td className="px-3 py-2">{formatDate(s.last_service_date)}</td>
                     <td className="px-3 py-2">
-                      <DueBadge next={s.next_due_date} />
+                      {s.next_due_date ? formatDate(s.next_due_date) : "—"}
                     </td>
                     <td className="px-3 py-2">{nameOf(team, s.recorded_by)}</td>
                     <td className="px-3 py-2">
