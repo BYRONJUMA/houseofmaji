@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { useSettings, SETTING_DEFAULTS } from "@/hooks/use-crm-extra";
+import { useSettings, SETTING_DEFAULTS, useProductCategories } from "@/hooks/use-crm-extra";
+import { ListEditor, type Row } from "@/routes/_authenticated/crm.machines";
 
 export const Route = createFileRoute("/_authenticated/crm/settings")({
   head: () => ({
@@ -137,6 +138,7 @@ function SettingsPage() {
   const { profile, hasRole } = useAuth();
   const isAdmin = hasRole("admin");
   const { data: settings } = useSettings();
+  const productCats = useProductCategories();
   const qc = useQueryClient();
   const [draft, setDraft] = useState<Record<string, string>>({});
 
@@ -202,6 +204,21 @@ function SettingsPage() {
         <CrmCard title="Stage thresholds & new-lead timeout">
           <div className="space-y-4">{group(THRESHOLDS)}</div>
         </CrmCard>
+
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Product categories populate the Category dropdown on store products. Renaming or
+            deactivating an entry takes effect immediately; deactivated entries stay on existing
+            products but can no longer be picked.
+          </p>
+          <ListEditor
+            title="Product categories"
+            table="product_categories"
+            queryKey="product-categories"
+            field="name"
+            rows={(productCats.data ?? []) as unknown as Row[]}
+          />
+        </div>
 
         <Button
           onClick={() => save.mutate(FIELDS.map((f) => ({ key: f.key, value: valueOf(f.key) })))}

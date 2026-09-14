@@ -107,6 +107,10 @@ export const useMachineTypes = () =>
 export const useMachineCapacities = () =>
   useQuery(rows<CapacityRow>("crm-machine-capacities", "machine_capacities", "label"));
 
+/** Managed store-product categories (populates the product Category dropdown). */
+export const useProductCategories = () =>
+  useQuery(rows<TaxonomyRow>("product-categories", "product_categories", "name"));
+
 /** Active machine type names — used to populate machine dropdowns. */
 export function useMachineTypeOptions() {
   const { data = [] } = useMachineTypes();
@@ -238,13 +242,53 @@ export const VISIT_TYPES = ["installation", "maintenance", "repair", "inspection
 export const VISIT_STATUSES = ["pending_assignment", "scheduled", "completed"] as const;
 
 export const INSTALLATION_CHECKLIST: ChecklistItem[] = [
-  { item_key: "unpacked_inspected", label: "Machine unpacked and inspected for transit damage", checked: false, notes: null },
-  { item_key: "positioned_level", label: "Positioned and levelled correctly", checked: false, notes: null },
-  { item_key: "inlet_connected", label: "Inlet water connection fitted and leak-free", checked: false, notes: null },
-  { item_key: "drain_connected", label: "Drain / waste line connected", checked: false, notes: null },
-  { item_key: "power_on", label: "Power connected and machine powers on", checked: false, notes: null },
-  { item_key: "system_flushed", label: "System flushed and initial run completed", checked: false, notes: null },
-  { item_key: "output_tested", label: "Output water tested (TDS / quality checked)", checked: false, notes: null },
+  {
+    item_key: "unpacked_inspected",
+    label: "Machine unpacked and inspected for transit damage",
+    checked: false,
+    notes: null,
+  },
+  {
+    item_key: "positioned_level",
+    label: "Positioned and levelled correctly",
+    checked: false,
+    notes: null,
+  },
+  {
+    item_key: "inlet_connected",
+    label: "Inlet water connection fitted and leak-free",
+    checked: false,
+    notes: null,
+  },
+  {
+    item_key: "drain_connected",
+    label: "Drain / waste line connected",
+    checked: false,
+    notes: null,
+  },
+  {
+    item_key: "power_on",
+    label: "Power connected and machine powers on",
+    checked: false,
+    notes: null,
+  },
+  {
+    item_key: "system_flushed",
+    label: "System flushed and initial run completed",
+    checked: false,
+    notes: null,
+  },
+  {
+    item_key: "output_tested",
+    label: "Output water tested (TDS / quality checked)",
+    checked: false,
+    notes: null,
+  },
   { item_key: "no_leaks", label: "No leaks after a 10-minute run", checked: false, notes: null },
-  { item_key: "customer_operation", label: "Customer trained on operation", checked: false, notes: null },
+  {
+    item_key: "customer_operation",
+    label: "Customer trained on operation",
+    checked: false,
+    notes: null,
+  },
 ];
