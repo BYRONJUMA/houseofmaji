@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -115,13 +115,46 @@ function Badge({ className, children }: { className?: string; children: React.Re
   );
 }
 
-function Tile({ label, value, hint }: { label: string; value: string; hint?: string }) {
+/** Map the URL status filter to a due-zone. */
+const STATUS_ZONE: Record<StatusFilter, Zone | "all"> = {
+  all: "all",
+  red: "bad",
+  orange: "warn",
+  green: "good",
+  unscheduled: "none",
+};
+
+function zoneOf(s: ServiceRecord): Zone {
+  return dueBadge(s.next_due_date).zone;
+}
+
+function StatTile({
+  label,
+  value,
+  hint,
+  status,
+  active,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  status: StatusFilter;
+  active: boolean;
+}) {
   return (
-    <div className="surface-card p-4">
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 text-2xl font-bold tabular-nums">{value}</p>
-      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
-    </div>
+    <Link
+      to="/services"
+      search={{ status }}
+      aria-current={active ? "true" : undefined}
+      className={cn(
+        "surface-card p-4 text-left transition-all hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+        active && "border-primary/60 ring-1 ring-primary/30",
+      )}
+    >
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mt-2 text-2xl font-bold tracking-tight tabular-nums">{value}</p>
+      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
+    </Link>
   );
 }
 
