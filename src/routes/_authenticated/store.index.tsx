@@ -56,6 +56,8 @@ function StoreProductsPage() {
   const { profile, roles } = useAuth();
   const canWrite = useCanWriteStore(roles, profile?.id);
   const { data: products = [], isLoading } = useStoreProducts();
+  const { data: categories = [] } = useProductCategories();
+  const knownCats = new Set(categories.filter((c) => c.active).map((c) => c.name));
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<StoreProduct | null>(null);
   const [q, setQ] = useState("");
