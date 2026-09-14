@@ -297,12 +297,58 @@ function ServicesPage() {
       }
     >
       <div className="space-y-5">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <Tile label="Machines on schedule" value={String(services.length)} />
-          <Tile label="Overdue" value={String(overdue.length)} hint="past next due date" />
-          <Tile label="Due in 30 days" value={String(dueSoon.length)} />
-          <Tile label="Not scheduled" value={String(unscheduled.length)} />
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
+          <StatTile
+            label="Machines on schedule"
+            value={String(services.length)}
+            hint="all machines"
+            status="all"
+            active={statusActive === "all"}
+          />
+          <StatTile
+            label="Overdue / due soon"
+            value={String(redCount)}
+            hint="≤3 days or past due"
+            status="red"
+            active={statusActive === "red"}
+          />
+          <StatTile
+            label="Due soon"
+            value={String(orangeCount)}
+            hint="4–5 days remaining"
+            status="orange"
+            active={statusActive === "orange"}
+          />
+          <StatTile
+            label="On track"
+            value={String(greenCount)}
+            hint=">5 days remaining"
+            status="green"
+            active={statusActive === "green"}
+          />
+          <StatTile
+            label="Not scheduled"
+            value={String(unscheduledCount)}
+            hint="needs a due date"
+            status="unscheduled"
+            active={statusActive === "unscheduled"}
+          />
         </div>
+
+        {status !== "all" && (
+          <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 py-2 text-sm">
+            <span className="text-muted-foreground">
+              Filtered: <span className="font-semibold text-foreground">{statusLabel}</span>
+            </span>
+            <Link
+              to="/services"
+              search={{ status: "all" }}
+              className="ml-auto rounded-md border border-border px-2 py-1 text-xs font-medium transition-colors hover:border-primary/50 hover:bg-secondary"
+            >
+              Clear filter
+            </Link>
+          </div>
+        )}
 
         {canCreate && (overdue.length > 0 || dueSoon.length > 0) && (
           <section className="surface-card p-4 sm:p-5">
