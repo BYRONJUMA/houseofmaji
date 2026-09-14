@@ -31,6 +31,7 @@ export function StoreProductDialog({
   onClose: () => void;
 }) {
   const mutate = useStoreProductMutation();
+  const { data: categories = [] } = useProductCategories();
   const [f, setF] = useState({
     name: product?.name ?? "",
     sku: product?.sku ?? "",
