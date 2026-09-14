@@ -1,3 +1,4 @@
+import { personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { CrmShell, CrmCard, StatCard, MiniTile, Bar, Badge } from "@/components/crm-shell";
@@ -115,7 +116,7 @@ function CrmDashboard() {
     (s) => s.next_due_date && daysBetween(new Date(), s.next_due_date) <= 30,
   );
   const overdueService = services.filter((s) => s.next_due_date && new Date(s.next_due_date) < now);
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
+  const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
 
   const repRows = reps
     .map((r) => {

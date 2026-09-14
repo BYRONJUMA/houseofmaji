@@ -32,7 +32,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { useSettings, settingNumber, useMachineTypeOptions } from "@/hooks/use-crm-extra";
 import { formatDate } from "@/lib/format";
 import {
@@ -641,7 +641,7 @@ function AssignEngineer({ record }: { record: ServiceRecord }) {
   const { profile, hasRole, roles } = useAuth();
   const { data: team = [] } = useTeam();
   const mutate = useCrmMutation("services", ["crm-services"]);
-  const engineers = team.filter((t) => t.role === "engineer" || t.role === "chief_engineer");
+  const engineers = team.filter((t) => personHasRole(roleMap, t, "engineer", "chief_engineer"));
 
   const assign = (engineerId: string) => {
     mutate.mutate(

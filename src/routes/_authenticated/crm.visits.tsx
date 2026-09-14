@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { formatDate } from "@/lib/format";
 import { isCrmManager, label, BADGE_GOOD, BADGE_WARN, BADGE_NEUTRAL } from "@/lib/crm";
 import { useLeads, useTeam, useCrmMutation, nameOf } from "@/hooks/use-crm";
@@ -79,7 +79,7 @@ function VisitsPage() {
   const [status, setStatus] = useState("all");
   const [engineer, setEngineer] = useState("all");
 
-  const engineers = team.filter((t) => t.role === "engineer" || t.role === "chief_engineer");
+  const engineers = team.filter((t) => personHasRole(roleMap, t, "engineer", "chief_engineer"));
 
   const filtered = useMemo(
     () =>

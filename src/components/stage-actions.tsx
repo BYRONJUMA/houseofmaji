@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { TablesUpdate } from "@/integrations/supabase/types";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -51,7 +51,9 @@ function useEngineerOptions(enabled: boolean) {
     },
   });
   // the chief engineer can also take the job themselves
-  return data.filter((p) => p.role === "engineer" || (profile?.id && p.id === profile.id));
+  return data.filter(
+    (p) => personHasRole(roleMap, p, "engineer") || (profile?.id && p.id === profile.id),
+  );
 }
 
 /**
