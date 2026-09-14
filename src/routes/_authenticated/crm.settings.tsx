@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { useSettings, SETTING_DEFAULTS } from "@/hooks/use-crm-extra";
+import { useSettings, SETTING_DEFAULTS, useProductCategories } from "@/hooks/use-crm-extra";
+import { ListEditor, type Row } from "@/routes/_authenticated/crm.machines";
 
 export const Route = createFileRoute("/_authenticated/crm/settings")({
   head: () => ({
