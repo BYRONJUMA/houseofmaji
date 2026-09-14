@@ -284,7 +284,7 @@ function CommissionsPage() {
                         onClick={(e) => {
                           e.stopPropagation();
                           togglePaid.mutate(
-                            { id: r.id, paid: !r.paid },
+                            { id: r.id, paid: !r.paid, source: r.source },
                             {
                               onError: (err: unknown) =>
                                 toast.error((err as Error).message ?? "Could not update"),
