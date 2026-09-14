@@ -47,7 +47,7 @@ const FIELDS: { key: string; label: string; hint: string; type?: string }[] = [
 
 function SettingsPage() {
   const { profile } = useAuth();
-  const isAdmin = profile?.role === "admin";
+  const isAdmin = hasRole("admin");
   const { data: settings } = useSettings();
   const qc = useQueryClient();
   const [draft, setDraft] = useState<Record<string, string>>({});

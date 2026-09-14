@@ -131,10 +131,10 @@ export function useServiceFulfillments() {
 
 function ServicesPage() {
   const { profile } = useAuth();
-  const canCreate = CAN_CREATE.includes(profile?.role ?? "");
-  const canAssign = profile?.role === "chief_engineer" || profile?.role === "admin";
-  const showContact = canSeeServiceContact(profile?.role);
-  const canEditAny = (s: ServiceRecord) => canEditRecord(profile?.role, profile?.id, s);
+  const canCreate = roles.some((r) => CAN_CREATE.includes(r));
+  const canAssign = hasRole("chief_engineer") || hasRole("admin");
+  const showContact = canSeeServiceContact(roles);
+  const canEditAny = (s: ServiceRecord) => canEditRecord(roles, profile?.id, s);
   const { data: services = [] } = useServices();
   const { data: settings } = useSettings();
   const defaultInterval = settingNumber(settings, "default_service_interval_months");
@@ -154,7 +154,7 @@ function ServicesPage() {
   const unscheduled = services.filter((s) => !s.next_due_date);
 
   const [tab, setTab] = useState<ServiceType | "unclassified">("commercial_industrial");
-  const canDelete = CAN_DELETE.includes(profile?.role ?? "");
+  const canDelete = roles.some((r) => CAN_DELETE.includes(r));
   const counts = {
     commercial_industrial: services.filter(
       (s) => s.machine_service_type === "commercial_industrial",
@@ -364,7 +364,7 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
   const { data: settings } = useSettings();
   const defaultInterval = settingNumber(settings, "default_service_interval_months");
   const machineTypes = useMachineTypeOptions();
-  const showContact = canSeeServiceContact(profile?.role);
+  const showContact = canSeeServiceContact(roles);
   const { data: fulfillments = [] } = useServiceFulfillments();
   const [search, setSearch] = useState("");
   const [f, setF] = useState({

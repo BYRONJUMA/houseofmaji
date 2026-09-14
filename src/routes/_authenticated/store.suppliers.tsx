@@ -46,7 +46,7 @@ export const Route = createFileRoute("/_authenticated/store/suppliers")({
 
 function SuppliersPage() {
   const { profile } = useAuth();
-  const canWrite = useCanWriteStore(profile?.role, profile?.id);
+  const canWrite = useCanWriteStore(roles, profile?.id);
   const { data: suppliers = [], isLoading } = useSuppliers();
   const mutate = useSupplierMutation();
   const [dialog, setDialog] = useState<{ supplier: Supplier | null } | null>(null);

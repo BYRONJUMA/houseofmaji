@@ -90,8 +90,8 @@ function withinRange(created: string, range: Range) {
 
 function LeadsPage() {
   const { profile } = useAuth();
-  const manager = isCrmManager(profile?.role);
-  const canWrite = canWriteCrm(profile?.role);
+  const manager = isCrmManager(roles);
+  const canWrite = canWriteCrm(roles);
   const { data: leads = [] } = useLeads();
   const { data: team = [] } = useTeam();
   const mutate = useCrmMutation("leads", ["crm-leads"]);

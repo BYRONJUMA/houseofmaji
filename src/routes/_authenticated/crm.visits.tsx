@@ -70,7 +70,7 @@ const statusBadge = (s: string) =>
 
 function VisitsPage() {
   const { profile } = useAuth();
-  const manager = isCrmManager(profile?.role);
+  const manager = isCrmManager(roles);
   const { data: visits = [] } = useSiteVisits();
   const { data: team = [] } = useTeam();
   const [creating, setCreating] = useState(false);
@@ -388,13 +388,13 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
   const items: ChecklistItem[] = Array.isArray(visit.checklist) ? visit.checklist : [];
   const canFile =
     visit.assigned_engineer_id === profile?.id ||
-    profile?.role === "chief_engineer" ||
-    profile?.role === "admin";
+    hasRole("chief_engineer") ||
+    hasRole("admin");
   const canDelete =
     visit.created_by === profile?.id ||
     visit.assigned_engineer_id === profile?.id ||
-    profile?.role === "chief_engineer" ||
-    profile?.role === "admin";
+    hasRole("chief_engineer") ||
+    hasRole("admin");
 
   const deleteVisit = async () => {
     try {

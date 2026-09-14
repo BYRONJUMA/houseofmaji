@@ -56,7 +56,7 @@ export const Route = createFileRoute("/_authenticated/store/$id")({
 function ProductDetailPage() {
   const { id } = Route.useParams();
   const { profile } = useAuth();
-  const canWrite = useCanWriteStore(profile?.role, profile?.id);
+  const canWrite = useCanWriteStore(roles, profile?.id);
   const { data: product, isLoading } = useStoreProduct(id);
   const { data: entries = [] } = useStoreEntries(id);
   const { data: suppliers = [] } = useSuppliers();

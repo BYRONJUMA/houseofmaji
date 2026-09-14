@@ -33,7 +33,7 @@ function Index() {
     if (!session) {
       navigate({ to: "/auth", replace: true });
     } else if (profile) {
-      navigate({ to: ROLE_HOME[profile.role] ?? "/auth", replace: true });
+      navigate({ to: ROLE_HOME[profile.role ?? ""] ?? "/auth", replace: true });
     }
   }, [loading, session, profile, navigate]);
 

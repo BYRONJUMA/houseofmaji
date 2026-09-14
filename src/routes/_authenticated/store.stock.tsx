@@ -58,7 +58,7 @@ export const Route = createFileRoute("/_authenticated/store/stock")({
 
 function StockDetailsPage() {
   const { profile } = useAuth();
-  const canWrite = useCanWriteStore(profile?.role, profile?.id);
+  const canWrite = useCanWriteStore(roles, profile?.id);
   const [location, setLocation] = useStoreLocation();
   const { data: products = [], isLoading } = useStoreProducts();
   const { data: settings } = useSettings();

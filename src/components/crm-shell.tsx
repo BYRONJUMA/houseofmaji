@@ -41,12 +41,12 @@ export function CrmShell({
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  const machines = hasMachinesAccess(profile?.role);
+  const machines = hasMachinesAccess(roles);
 
   const nav = [
     ...CRM_NAV,
-    ...(canManageTaxonomy(profile?.role) ? MANAGER_NAV : []),
-    ...(profile?.role === "admin" ? ADMIN_NAV : []),
+    ...(canManageTaxonomy(roles) ? MANAGER_NAV : []),
+    ...(hasRole("admin") ? ADMIN_NAV : []),
   ];
 
   const handleSignOut = async () => {
@@ -97,7 +97,7 @@ export function CrmShell({
             <div className="text-right leading-tight">
               <p className="text-sm font-semibold">{profile?.full_name || "—"}</p>
               <p className="text-xs text-muted-foreground">
-                {profile ? (ROLE_LABEL[profile.role] ?? profile.role) : ""}
+                {profile ? (ROLE_LABEL[profile.role ?? ""] ?? profile.role) : ""}
               </p>
             </div>
             <Button variant="outline" size="sm" onClick={handleSignOut}>
@@ -145,7 +145,7 @@ export function CrmShell({
               <div>
                 <p className="text-sm font-semibold">{profile?.full_name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {profile ? (ROLE_LABEL[profile.role] ?? profile.role) : ""}
+                  {profile ? (ROLE_LABEL[profile.role ?? ""] ?? profile.role) : ""}
                 </p>
               </div>
               <Button variant="outline" size="sm" onClick={handleSignOut}>

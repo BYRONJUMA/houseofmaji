@@ -62,7 +62,7 @@ export function EditOrderDetails({ fulfillment }: { fulfillment: EditableFulfill
     additional_notes: fulfillment.additional_notes ?? "",
   });
 
-  const allowed = canEditOrderDetails(profile?.role, profile?.id, fulfillment.sales_rep_id);
+  const allowed = canEditOrderDetails(roles, profile?.id, fulfillment.sales_rep_id);
   if (!allowed) return null;
 
   const reset = () => {

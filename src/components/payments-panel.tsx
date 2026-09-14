@@ -25,7 +25,7 @@ export function PaymentsPanel({
   const [amount, setAmount] = useState("");
   const [notes, setNotes] = useState("");
 
-  const canRecord = profile?.role === "sales_rep" || profile?.role === "chief_engineer";
+  const canRecord = hasRole("sales_rep") || hasRole("chief_engineer");
   const paid = totalPaid(payments);
   const pct = paidPercent(paid, agreedPrice);
 

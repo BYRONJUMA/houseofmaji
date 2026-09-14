@@ -58,8 +58,8 @@ function CommissionsPage() {
   const { profile } = useAuth();
   const navigate = useNavigate();
   const search = Route.useSearch();
-  const isAdmin = profile?.role === "admin";
-  const isChief = profile?.role === "chief_engineer";
+  const isAdmin = hasRole("admin");
+  const isChief = hasRole("chief_engineer");
   const seesAll = isAdmin || isChief;
 
   const canTogglePaid = isAdmin || isChief;

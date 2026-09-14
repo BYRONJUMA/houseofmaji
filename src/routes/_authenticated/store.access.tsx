@@ -34,7 +34,7 @@ export const Route = createFileRoute("/_authenticated/store/access")({
 function StoreAccessPage() {
   const navigate = useNavigate();
   const { profile, loading } = useAuth();
-  const notAdmin = !loading && !!profile && profile.role !== "admin";
+  const notAdmin = !loading && !!profile && !hasRole("admin");
   useEffect(() => {
     if (notAdmin) navigate({ to: "/store", replace: true });
   }, [notAdmin, navigate]);
@@ -79,7 +79,7 @@ function StoreAccessPage() {
                 <tr key={m.id} className="border-b border-border last:border-0">
                   <td className="px-4 py-3 font-medium">{m.full_name}</td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    {ROLE_LABEL[m.role] ?? m.role}
+                    {ROLE_LABEL[m.role ?? ""] ?? m.role}
                   </td>
                   <td className="px-4 py-3">
                     {byRole ? (

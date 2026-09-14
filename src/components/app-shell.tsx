@@ -38,7 +38,7 @@ export function AppShell({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const items = navFor(profile?.role);
+  const items = navFor(roles);
 
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
@@ -78,7 +78,7 @@ export function AppShell({
             <div className="text-right leading-tight">
               <p className="text-sm font-semibold">{profile?.full_name || "—"}</p>
               <p className="text-xs text-muted-foreground">
-                {profile ? ROLE_LABEL[profile.role] : ""}
+                {profile ? ROLE_LABEL[profile.role ?? ""] : ""}
               </p>
             </div>
             <Button variant="outline" size="sm" onClick={handleSignOut}>
@@ -118,7 +118,7 @@ export function AppShell({
               <div>
                 <p className="text-sm font-semibold">{profile?.full_name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {profile ? ROLE_LABEL[profile.role] : ""}
+                  {profile ? ROLE_LABEL[profile.role ?? ""] : ""}
                 </p>
               </div>
               <Button variant="outline" size="sm" onClick={handleSignOut}>

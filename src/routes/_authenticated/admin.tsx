@@ -38,7 +38,7 @@ function AdminPage() {
   const { stage } = Route.useSearch() as { stage?: Stage };
   const navigate = useNavigate();
   const { profile, loading } = useAuth();
-  const notAdmin = !loading && !!profile && profile.role !== "admin";
+  const notAdmin = !loading && !!profile && !hasRole("admin");
   useEffect(() => {
     if (notAdmin) navigate({ to: "/", replace: true });
   }, [notAdmin, navigate]);

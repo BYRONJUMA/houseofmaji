@@ -77,7 +77,7 @@ function AuthPage() {
 
   useEffect(() => {
     if (session && profile) {
-      navigate({ to: ROLE_HOME[profile.role] ?? "/", replace: true });
+      navigate({ to: ROLE_HOME[profile.role ?? ""] ?? "/", replace: true });
     }
   }, [session, profile, navigate]);
 
