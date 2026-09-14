@@ -132,6 +132,8 @@ export const SETTING_DEFAULTS: Record<string, string> = {
   service_interval_commercial_months: "6",
   service_interval_undersink_months: "12",
   low_stock_threshold: "50",
+  service_commission_undersink_kes: "200",
+  service_commission_commercial_kes: "500",
   company_name: "Machines",
   company_logo_url: "",
   score_points_showroom_visited: "5",

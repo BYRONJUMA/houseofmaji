@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth, personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { useSettings, settingNumber, useMachineTypeOptions } from "@/hooks/use-crm-extra";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatKES } from "@/lib/format";
 import {
   serviceIntervalFor,
   isoDate,
@@ -552,6 +552,8 @@ function ServiceRowMenu({
   const { data: settings } = useSettings();
   const commercialMonths = settingNumber(settings, "service_interval_commercial_months");
   const undersinkMonths = settingNumber(settings, "service_interval_undersink_months");
+  const undersinkCommission = settingNumber(settings, "service_commission_undersink_kes");
+  const commercialCommission = settingNumber(settings, "service_commission_commercial_kes");
   const mutate = useCrmMutation("services", ["crm-services"]);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -591,10 +593,32 @@ function ServiceRowMenu({
         .eq("id", record.id);
       if (error) throw error;
 
+      // Service commission for the assigned engineer, rate by machine service type.
+      let commissionNote = "";
+      if (!record.machine_service_type) {
+        commissionNote =
+          "This service has no machine type set — no commission will be recorded until one is chosen";
+      } else if (record.assigned_engineer_id) {
+        const amount =
+          record.machine_service_type === "undersink"
+            ? undersinkCommission
+            : commercialCommission;
+        const { error: commissionError } = await supabase.from("service_commissions").insert({
+          service_id: record.id,
+          user_id: record.assigned_engineer_id,
+          amount_kes: amount,
+        } as never);
+        if (commissionError) throw commissionError;
+        commissionNote = `${formatKES(amount)} commission recorded`;
+      }
+
       void qc.invalidateQueries({ queryKey: ["crm-services"] });
       void qc.invalidateQueries({ queryKey: ["service-visit-log", record.id] });
       void qc.invalidateQueries({ queryKey: ["fulfillment-services"] });
-      toast.success(`Visit logged — next service due ${formatDate(nextDue)}`);
+      void qc.invalidateQueries({ queryKey: ["commissions"] });
+      const baseMsg = `Visit logged — next service due ${formatDate(nextDue)}`;
+      if (!record.machine_service_type) toast.warning(`${baseMsg}. ${commissionNote}`);
+      else toast.success(commissionNote ? `${baseMsg} · ${commissionNote}` : baseMsg);
     } catch (e) {
       toast.error((e as Error).message);
     } finally {

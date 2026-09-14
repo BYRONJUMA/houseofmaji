@@ -1066,6 +1066,58 @@ export type Database = {
           },
         ]
       }
+      service_commissions: {
+        Row: {
+          amount_kes: number
+          computed_at: string
+          id: string
+          paid: boolean
+          paid_at: string | null
+          service_id: string
+          user_id: string
+        }
+        Insert: {
+          amount_kes: number
+          computed_at?: string
+          id?: string
+          paid?: boolean
+          paid_at?: string | null
+          service_id: string
+          user_id: string
+        }
+        Update: {
+          amount_kes?: number
+          computed_at?: string
+          id?: string
+          paid?: boolean
+          paid_at?: string | null
+          service_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_commissions_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_commissions_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services_secure"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_commissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_visit_log: {
         Row: {
           completed_at: string

@@ -49,6 +49,18 @@ const GENERAL: Field[] = [
     hint: "Inventory items below this quantity get the “Low” badge.",
     type: "number",
   },
+  {
+    key: "service_commission_undersink_kes",
+    label: "Undersink service commission (KES)",
+    hint: "Paid to the engineer who completes an undersink service visit.",
+    type: "number",
+  },
+  {
+    key: "service_commission_commercial_kes",
+    label: "Commercial / industrial service commission (KES)",
+    hint: "Paid to the engineer who completes a commercial or industrial service visit.",
+    type: "number",
+  },
   { key: "company_name", label: "Company name", hint: "Shown on reports and exports." },
   { key: "company_logo_url", label: "Company logo URL", hint: "Optional image URL for reports." },
 ];

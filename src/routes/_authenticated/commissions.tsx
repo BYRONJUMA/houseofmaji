@@ -202,7 +202,7 @@ function CommissionsPage() {
               onClick={(e) => {
                 e.preventDefault();
                 markAllPaid.mutate(
-                  unpaidVisible.map((r) => r.id),
+                  unpaidVisible.map((r) => ({ id: r.id, source: r.source })),
                   {
                     onSuccess: (n) => {
                       toast.success(`${n} commission${n === 1 ? "" : "s"} marked paid`);
@@ -247,13 +247,17 @@ function CommissionsPage() {
               {rows.map((r) => (
                 <tr
                   key={r.id}
-                  onClick={() =>
+                  onClick={() => {
+                    if (r.source === "service") {
+                      navigate({ to: "/services" });
+                      return;
+                    }
                     navigate({
                       to: "/fulfillment/$id",
                       params: { id: r.fulfillment_id },
                       search: { tab: undefined },
-                    })
-                  }
+                    });
+                  }}
                   className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
                 >
                   {seesAll && (
@@ -280,7 +284,7 @@ function CommissionsPage() {
                         onClick={(e) => {
                           e.stopPropagation();
                           togglePaid.mutate(
-                            { id: r.id, paid: !r.paid },
+                            { id: r.id, paid: !r.paid, source: r.source },
                             {
                               onError: (err: unknown) =>
                                 toast.error((err as Error).message ?? "Could not update"),
