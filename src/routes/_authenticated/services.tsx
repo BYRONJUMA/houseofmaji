@@ -48,6 +48,7 @@ import {
   type RoleInput,
 } from "@/lib/crm";
 import { useServices, useTeam, useCrmMutation, nameOf, type ServiceRecord } from "@/hooks/use-crm";
+import { useServiceVisitLog } from "@/hooks/use-service-visits";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/services")({
