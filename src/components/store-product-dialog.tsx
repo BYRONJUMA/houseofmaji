@@ -4,7 +4,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useStoreProductMutation, type StoreProduct } from "@/hooks/use-store";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  PRODUCT_TYPES,
+  TAX_CATEGORIES,
+  useStoreProductMutation,
+  type StoreProduct,
+} from "@/hooks/use-store";
+import { formatKES } from "@/lib/format";
 
 /** Create or edit a store product (name, sku/model, brand, category, unit). */
 export function StoreProductDialog({
