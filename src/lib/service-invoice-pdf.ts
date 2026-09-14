@@ -16,10 +16,7 @@ export type ServiceInvoicePdfData = {
 };
 
 export async function downloadServiceInvoicePdf(d: ServiceInvoicePdfData) {
-  const [{ jsPDF }, autoTableMod] = await Promise.all([
-    import("jspdf"),
-    import("jspdf-autotable"),
-  ]);
+  const [{ jsPDF }, autoTableMod] = await Promise.all([import("jspdf"), import("jspdf-autotable")]);
   const autoTable = autoTableMod.default;
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const marginX = 36;

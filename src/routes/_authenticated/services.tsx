@@ -863,6 +863,10 @@ function ServiceRowMenu({
       </AlertDialog>
 
       {historyOpen && <VisitHistoryDialog record={record} onClose={() => setHistoryOpen(false)} />}
+      {diagnosisOpen && (
+        <DiagnosisDialog record={record} onClose={() => setDiagnosisOpen(false)} />
+      )}
+      {invoiceOpen && <ServiceInvoiceDialog record={record} onClose={() => setInvoiceOpen(false)} />}
     </>
   );
 }

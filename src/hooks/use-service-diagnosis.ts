@@ -103,11 +103,14 @@ export function useSubmitDiagnosis() {
       notes: string;
       items: { product_id: string; quantity: number }[];
     }) => {
-      const { data, error } = await supabase.rpc("service_submit_diagnosis" as never, {
-        _service_id: v.serviceId,
-        _notes: v.notes,
-        _items: v.items,
-      } as never);
+      const { data, error } = await supabase.rpc(
+        "service_submit_diagnosis" as never,
+        {
+          _service_id: v.serviceId,
+          _notes: v.notes,
+          _items: v.items,
+        } as never,
+      );
       if (error) throw new Error(error.message);
       return (data ?? {}) as { invoice_no?: string; subtotal?: number };
     },
@@ -120,10 +123,13 @@ export function useClearInvoice() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (v: { invoiceId: string; method: ServicePaymentMethod }) => {
-      const { data, error } = await supabase.rpc("service_invoice_clear" as never, {
-        _invoice_id: v.invoiceId,
-        _payment_method: v.method,
-      } as never);
+      const { data, error } = await supabase.rpc(
+        "service_invoice_clear" as never,
+        {
+          _invoice_id: v.invoiceId,
+          _payment_method: v.method,
+        } as never,
+      );
       if (error) throw new Error(error.message);
       return (data ?? {}) as { invoice_no?: string };
     },

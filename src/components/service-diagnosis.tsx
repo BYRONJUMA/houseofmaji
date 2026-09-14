@@ -155,8 +155,8 @@ export function DiagnosisDialog({
             <span className="font-semibold tabular-nums">{formatKES(subtotal)}</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Saving raises an invoice for these parts. Stock is only deducted once a sales head clears
-            the invoice, and the service cannot be completed until then.
+            Saving raises an invoice for these parts. Stock is only deducted once a sales head
+            clears the invoice, and the service cannot be completed until then.
           </p>
           <Button onClick={save} disabled={submit.isPending}>
             Save diagnosis &amp; raise invoice
