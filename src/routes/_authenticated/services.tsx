@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth, personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { useSettings, settingNumber, useMachineTypeOptions } from "@/hooks/use-crm-extra";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatKES } from "@/lib/format";
 import {
   serviceIntervalFor,
   isoDate,
