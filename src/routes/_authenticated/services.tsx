@@ -560,57 +560,29 @@ function ServiceRowMenu({
   const [completing, setCompleting] = useState(false);
   const showComplete = canComplete && !!record.assigned_engineer_id;
 
-  /** Completing a visit closes the cycle and immediately schedules the next one. */
+  /**
+   * Completing a visit closes the cycle and immediately schedules the next one.
+   * The whole action runs in one locked database transaction, so a double-click or a
+   * second person completing the same cycle is rejected instead of duplicating work.
+   */
   const markComplete = async () => {
     setCompleting(true);
     try {
-      const now = new Date();
-      const lastServiceDate = isoDate(now);
-      const next = new Date(now);
-      next.setMonth(
-        next.getMonth() +
-          serviceIntervalFor(record.machine_service_type, commercialMonths, undersinkMonths),
-      );
-      const nextDue = isoDate(next);
-
-      const { error: logError } = await supabase.from("service_visit_log").insert({
-        service_id: record.id,
-        completed_at: now.toISOString(),
-        completed_by: profile?.id ?? null,
-        next_due_date_set_to: nextDue,
+      const { data, error } = await supabase.rpc("service_mark_complete" as never, {
+        _service_id: record.id,
+        _expected_next_due_date: record.next_due_date ?? null,
       } as never);
-      if (logError) throw logError;
-
-      const { error } = await supabase
-        .from("services")
-        .update({
-          completed: false,
-          completed_at: null,
-          last_service_date: lastServiceDate,
-          next_due_date: nextDue,
-          visit_count: (record.visit_count ?? 0) + 1,
-        } as never)
-        .eq("id", record.id);
       if (error) throw error;
 
-      // Service commission for the assigned engineer, rate by machine service type.
-      let commissionNote = "";
-      if (!record.machine_service_type) {
-        commissionNote =
-          "This service has no machine type set — no commission will be recorded until one is chosen";
-      } else if (record.assigned_engineer_id) {
-        const amount =
-          record.machine_service_type === "undersink"
-            ? undersinkCommission
-            : commercialCommission;
-        const { error: commissionError } = await supabase.from("service_commissions").insert({
-          service_id: record.id,
-          user_id: record.assigned_engineer_id,
-          amount_kes: amount,
-        } as never);
-        if (commissionError) throw commissionError;
-        commissionNote = `${formatKES(amount)} commission recorded`;
-      }
+      const result = (data ?? {}) as {
+        next_due_date?: string;
+        commission_recorded?: boolean;
+        amount_kes?: number;
+      };
+      const nextDue = result.next_due_date ?? "";
+      const commissionNote = result.commission_recorded
+        ? `${formatKES(Number(result.amount_kes ?? 0))} commission recorded`
+        : "This service has no machine type set — no commission will be recorded until one is chosen";
 
       void qc.invalidateQueries({ queryKey: ["crm-services"] });
       void qc.invalidateQueries({ queryKey: ["service-visit-log", record.id] });
