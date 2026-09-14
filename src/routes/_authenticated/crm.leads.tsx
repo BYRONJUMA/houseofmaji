@@ -917,14 +917,7 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
           source: f.source,
           budget_range: f.budget_range.trim() || null,
           stage: "new",
-          showroom_visited_at: opt.showroom_visited ? new Date().toISOString() : null,
-          water_test_or_site_visit_paid_at: opt.water_test_or_site_visit_paid
-            ? new Date().toISOString()
-            : null,
-          timeline_stated_at: opt.timeline_stated ? new Date().toISOString() : null,
           timeline_notes: opt.timeline_notes.trim() || null,
-          budget_confirmed_at: opt.budget_confirmed ? new Date().toISOString() : null,
-          location_confirmed_at: opt.location_confirmed ? new Date().toISOString() : null,
           rep_id: null,
         },
       },
