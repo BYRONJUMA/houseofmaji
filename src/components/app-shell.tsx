@@ -34,11 +34,20 @@ export function AppShell({
   children: ReactNode;
   showBack?: boolean;
 }) {
-  const { profile, signOut, roles } = useAuth();
+  const { profile, signOut, roles, loading } = useAuth();
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (st) => st.location.pathname });
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const items = navFor(roles);
+
+  // Users with no roles can only use their own profile page.
+  useEffect(() => {
+    if (loading || !profile) return;
+    if (roles.length === 0 && pathname !== "/account") {
+      navigate({ to: "/account", replace: true });
+    }
+  }, [loading, profile, roles, pathname, navigate]);
 
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
