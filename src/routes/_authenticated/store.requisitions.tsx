@@ -179,10 +179,10 @@ function RequisitionsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          {r.status === "pending" && (
+                          {r.status === "pending" && isChief && (
                             <>
-                              <DropdownMenuItem onClick={() => run("approve", r.id)}>
-                                Approve
+                              <DropdownMenuItem onClick={() => setAssigning(r)}>
+                                Assign engineer to collect
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 className="text-destructive"
@@ -192,12 +192,25 @@ function RequisitionsPage() {
                               </DropdownMenuItem>
                             </>
                           )}
-                          {r.status === "approved" && r.delivery_status === "pending_delivery" && (
-                            <DropdownMenuItem onClick={() => run("deliver", r.id)}>
-                              Mark delivered
+                          {r.status === "assigned_for_collection" &&
+                            (r.assigned_engineer_id === profile?.id ||
+                              roles.includes("admin")) && (
+                              <DropdownMenuItem onClick={() => run("collected", r.id)}>
+                                Materials collected
+                              </DropdownMenuItem>
+                            )}
+                          {r.status === "pending_confirmation" && isChief && (
+                            <DropdownMenuItem onClick={() => run("confirm", r.id)}>
+                              Confirm received
                             </DropdownMenuItem>
                           )}
-                          {r.status === "rejected" && (
+                          {(r.status === "completed" ||
+                            r.status === "rejected" ||
+                            (r.status === "pending" && !isChief) ||
+                            (r.status === "pending_confirmation" && !isChief) ||
+                            (r.status === "assigned_for_collection" &&
+                              r.assigned_engineer_id !== profile?.id &&
+                              !roles.includes("admin"))) && (
                             <DropdownMenuItem disabled>No actions</DropdownMenuItem>
                           )}
                         </DropdownMenuContent>
