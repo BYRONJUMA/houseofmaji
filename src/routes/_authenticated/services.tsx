@@ -44,7 +44,9 @@ import {
   BADGE_BAD,
   BADGE_NEUTRAL,
   canSeeServiceContact,
-, hasAnyRole, type RoleInput } from "@/lib/crm";
+  hasAnyRole,
+  type RoleInput,
+} from "@/lib/crm";
 import { useServices, useTeam, useCrmMutation, nameOf, type ServiceRecord } from "@/hooks/use-crm";
 import { cn } from "@/lib/utils";
 
