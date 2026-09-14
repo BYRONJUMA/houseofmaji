@@ -229,6 +229,44 @@ function RequisitionsPage() {
       )}
 
       {creating && <CreateRequisitionDialog onClose={() => setCreating(false)} />}
+
+      {assigning && (
+        <Dialog open onOpenChange={(o) => !o && setAssigning(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Assign engineer — {assigning.requisition_no}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-1.5">
+              <Label>Engineer collecting the materials</Label>
+              <Select
+                onValueChange={(v) =>
+                  action.mutate(
+                    { type: "assign", id: assigning.id, engineerId: v },
+                    {
+                      onSuccess: () => {
+                        toast.success("Engineer assigned and notified");
+                        setAssigning(null);
+                      },
+                      onError: (e: Error) => toast.error(e.message),
+                    },
+                  )
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose an engineer" />
+                </SelectTrigger>
+                <SelectContent>
+                  {engineers.map((e) => (
+                    <SelectItem key={e.id} value={e.id}>
+                      {e.full_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </StoreShell>
   );
 }
