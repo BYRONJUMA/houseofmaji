@@ -2093,6 +2093,10 @@ export type Database = {
       is_crm_manager: { Args: { _user_id: string }; Returns: boolean }
       lead_criterion_points: { Args: { _criterion: string }; Returns: number }
       max_lead_score: { Args: never; Returns: number }
+      service_mark_complete: {
+        Args: { _expected_next_due_date?: string; _service_id: string }
+        Returns: Json
+      }
       set_user_roles: {
         Args: {
           _roles: Database["public"]["Enums"]["app_role"][]
