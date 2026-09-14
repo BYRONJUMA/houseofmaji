@@ -1658,6 +1658,8 @@ export type Database = {
       }
       store_requisitions: {
         Row: {
+          assigned_at: string | null
+          assigned_engineer_id: string | null
           created_at: string
           created_by: string | null
           delivery_status: string
@@ -1670,6 +1672,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          assigned_at?: string | null
+          assigned_engineer_id?: string | null
           created_at?: string
           created_by?: string | null
           delivery_status?: string
@@ -1682,6 +1686,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          assigned_at?: string | null
+          assigned_engineer_id?: string | null
           created_at?: string
           created_by?: string | null
           delivery_status?: string
@@ -1694,6 +1700,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "store_requisitions_assigned_engineer_id_fkey"
+            columns: ["assigned_engineer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "store_requisitions_created_by_fkey"
             columns: ["created_by"]
@@ -2121,6 +2134,12 @@ export type Database = {
         Returns: number
       }
       store_purchase_approve: { Args: { _id: string }; Returns: undefined }
+      store_requisition_assign: {
+        Args: { _engineer_id: string; _id: string }
+        Returns: undefined
+      }
+      store_requisition_collected: { Args: { _id: string }; Returns: undefined }
+      store_requisition_confirm: { Args: { _id: string }; Returns: undefined }
       store_requisition_deliver: { Args: { _id: string }; Returns: undefined }
       store_set_quantity: {
         Args: {
