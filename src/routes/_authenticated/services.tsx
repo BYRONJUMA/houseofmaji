@@ -739,6 +739,11 @@ function ServiceRowMenu({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [completing, setCompleting] = useState(false);
+  const [diagnosisOpen, setDiagnosisOpen] = useState(false);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
+  const { data: invoices = [] } = useServiceInvoices();
+  const invoice = latestInvoice(invoices, record.id);
+  const invoiceBlocks = !!invoice && invoice.status !== "cleared";
   const showComplete = canComplete && !!record.assigned_engineer_id;
 
   /**
