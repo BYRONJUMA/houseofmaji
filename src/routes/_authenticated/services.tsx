@@ -2,7 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CheckCircle2, History as HistoryIcon, MoreVertical, Plus } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  History as HistoryIcon,
+  MoreVertical,
+  Plus,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -119,32 +126,46 @@ function daysUntil(next: string) {
   return Math.round((dueUtc - todayUtc) / 86_400_000);
 }
 
+type Zone = "good" | "warn" | "bad" | "none";
+
 function dueBadge(next: string | null) {
-  if (!next) return { cls: BADGE_NEUTRAL, text: "Not scheduled", showTick: false };
+  if (!next) return { cls: BADGE_NEUTRAL, text: "Not scheduled", zone: "none" as Zone };
   const days = daysUntil(next);
   if (days < 0) {
     const overdueDays = Math.abs(days);
     return {
       cls: BADGE_BAD,
       text: `${overdueDays} ${overdueDays === 1 ? "day" : "days"} overdue`,
-      showTick: false,
+      zone: "bad" as Zone,
     };
   }
-  if (days === 0) return { cls: BADGE_BAD, text: "Due today", showTick: false };
+  if (days === 0) return { cls: BADGE_BAD, text: "Due today", zone: "bad" as Zone };
   const text = `${days} ${days === 1 ? "day" : "days"} remaining`;
-  if (days <= 3) return { cls: BADGE_BAD, text, showTick: false };
-  if (days <= 5) return { cls: BADGE_WARN, text, showTick: false };
-  return { cls: BADGE_GOOD, text, showTick: true };
+  if (days <= 3) return { cls: BADGE_BAD, text, zone: "bad" as Zone };
+  if (days <= 5) return { cls: BADGE_WARN, text, zone: "warn" as Zone };
+  return { cls: BADGE_GOOD, text, zone: "good" as Zone };
 }
 
-function DueBadge({ next }: { next: string | null }) {
-  const badge = dueBadge(next);
+const ZONE_ICON: Record<Zone, { Icon: typeof CheckCircle2; cls: string }> = {
+  good: { Icon: CheckCircle2, cls: "text-success" },
+  warn: { Icon: Clock, cls: "text-warning" },
+  bad: { Icon: AlertCircle, cls: "text-destructive" },
+  none: { Icon: AlertCircle, cls: "text-muted-foreground" },
+};
+
+/** Large color-coded icon shown beside the client name. */
+function DueIcon({ next }: { next: string | null }) {
+  const b = dueBadge(next);
+  const { Icon, cls } = ZONE_ICON[b.zone];
   return (
-    <Badge className={badge.cls}>
-      {badge.showTick && <CheckCircle2 className="mr-1.5 h-5 w-5" aria-hidden="true" />}
-      {badge.text}
-    </Badge>
+    <Icon className={cn("h-6 w-6 shrink-0", cls)} aria-label={b.text} title={b.text} />
   );
+}
+
+/** Day-count text shown separately, near the record's other details. */
+function DueText({ next }: { next: string | null }) {
+  const b = dueBadge(next);
+  return <Badge className={b.cls}>{b.text}</Badge>;
 }
 
 export function useServiceFulfillments() {
