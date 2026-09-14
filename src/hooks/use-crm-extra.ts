@@ -107,6 +107,10 @@ export const useMachineTypes = () =>
 export const useMachineCapacities = () =>
   useQuery(rows<CapacityRow>("crm-machine-capacities", "machine_capacities", "label"));
 
+/** Managed store-product categories (populates the product Category dropdown). */
+export const useProductCategories = () =>
+  useQuery(rows<TaxonomyRow>("product-categories", "product_categories", "name"));
+
 /** Active machine type names — used to populate machine dropdowns. */
 export function useMachineTypeOptions() {
   const { data = [] } = useMachineTypes();
