@@ -94,7 +94,7 @@ export function StoreProductDialog({
             </p>
           )}
           <div className="space-y-1.5">
-            <Label>Product name</Label>
+            <Label>Product title</Label>
             <Input
               value={f.name}
               onChange={(e) => set("name", e.target.value)}
