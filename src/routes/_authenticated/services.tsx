@@ -110,12 +110,41 @@ function Tile({ label, value, hint }: { label: string; value: string; hint?: str
   );
 }
 
+function daysUntil(next: string) {
+  const [year, month, day] = next.slice(0, 10).split("-").map(Number);
+  if (!year || !month || !day) return daysBetween(new Date(), next);
+  const today = new Date();
+  const todayUtc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+  const dueUtc = Date.UTC(year, month - 1, day);
+  return Math.round((dueUtc - todayUtc) / 86_400_000);
+}
+
 function dueBadge(next: string | null) {
-  if (!next) return { cls: BADGE_NEUTRAL, text: "Not scheduled" };
-  const days = daysBetween(new Date(), next);
-  if (days < 0) return { cls: BADGE_BAD, text: `${Math.abs(days)}d overdue` };
-  if (days <= 30) return { cls: BADGE_WARN, text: `due in ${days}d` };
-  return { cls: BADGE_GOOD, text: `due in ${days}d` };
+  if (!next) return { cls: BADGE_NEUTRAL, text: "Not scheduled", showTick: false };
+  const days = daysUntil(next);
+  if (days < 0) {
+    const overdueDays = Math.abs(days);
+    return {
+      cls: BADGE_BAD,
+      text: `${overdueDays} ${overdueDays === 1 ? "day" : "days"} overdue`,
+      showTick: false,
+    };
+  }
+  if (days === 0) return { cls: BADGE_BAD, text: "Due today", showTick: false };
+  const text = `${days} ${days === 1 ? "day" : "days"} remaining`;
+  if (days <= 3) return { cls: BADGE_BAD, text, showTick: false };
+  if (days <= 5) return { cls: BADGE_WARN, text, showTick: false };
+  return { cls: BADGE_GOOD, text, showTick: true };
+}
+
+function DueBadge({ next }: { next: string | null }) {
+  const badge = dueBadge(next);
+  return (
+    <Badge className={badge.cls}>
+      {badge.showTick && <CheckCircle2 className="mr-1 h-3.5 w-3.5" aria-hidden="true" />}
+      {badge.text}
+    </Badge>
+  );
 }
 
 export function useServiceFulfillments() {
@@ -145,12 +174,10 @@ function ServicesPage() {
   const [editing, setEditing] = useState<ServiceRecord | null>(null);
   const mutate = useCrmMutation("services", ["crm-services"]);
 
-  const overdue = services.filter(
-    (s) => s.next_due_date && daysBetween(new Date(), s.next_due_date) < 0,
-  );
+  const overdue = services.filter((s) => s.next_due_date && daysUntil(s.next_due_date) < 0);
   const dueSoon = services.filter((s) => {
     if (!s.next_due_date) return false;
-    const d = daysBetween(new Date(), s.next_due_date);
+    const d = daysUntil(s.next_due_date);
     return d >= 0 && d <= 30;
   });
   const unscheduled = services.filter((s) => !s.next_due_date);
@@ -197,7 +224,6 @@ function ServicesPage() {
             <h2 className="mb-4 text-base font-semibold">Visit queue</h2>
             <div className="space-y-2">
               {[...overdue, ...dueSoon].map((s) => {
-                const b = dueBadge(s.next_due_date);
                 return (
                   <div
                     key={s.id}
@@ -212,7 +238,7 @@ function ServicesPage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge className={b.cls}>{b.text}</Badge>
+                      <DueBadge next={s.next_due_date} />
                       <span className="text-xs text-muted-foreground">
                         {nameOf(team, s.assigned_engineer_id)}
                       </span>
@@ -266,7 +292,6 @@ function ServicesPage() {
             </thead>
             <tbody>
               {visible.map((s) => {
-                const b = dueBadge(s.next_due_date);
                 return (
                   <tr
                     key={s.id}
@@ -289,7 +314,7 @@ function ServicesPage() {
                     <td className="px-3 py-2">{s.fulfillment_id ? "Linked" : "Manual"}</td>
                     <td className="px-3 py-2">{formatDate(s.last_service_date)}</td>
                     <td className="px-3 py-2">
-                      <Badge className={b.cls}>{b.text}</Badge>
+                      <DueBadge next={s.next_due_date} />
                     </td>
                     <td className="px-3 py-2">{nameOf(team, s.recorded_by)}</td>
                     <td className="px-3 py-2">
