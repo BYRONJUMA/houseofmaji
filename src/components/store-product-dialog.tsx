@@ -137,6 +137,69 @@ export function StoreProductDialog({
               />
             </div>
           </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="space-y-1.5">
+              <Label>Buying price (KES)</Label>
+              <Input
+                type="number"
+                min="0"
+                value={f.buying_price}
+                onChange={(e) => set("buying_price", e.target.value)}
+                placeholder="0"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Selling price (KES)</Label>
+              <Input
+                type="number"
+                min="0"
+                value={f.selling_price}
+                onChange={(e) => set("selling_price", e.target.value)}
+                placeholder="0"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Margin</Label>
+              <div className="flex h-9 items-center rounded-md border border-border bg-secondary px-3 text-sm font-semibold tabular-nums">
+                {margin == null || !Number.isFinite(margin) ? "—" : formatKES(margin)}
+              </div>
+            </div>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label>Tax category</Label>
+              <Select
+                value={f.tax_category_percent}
+                onValueChange={(v) => set("tax_category_percent", v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select tax category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {TAX_CATEGORIES.map((t) => (
+                    <SelectItem key={t.value} value={String(t.value)}>
+                      {t.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Product type</Label>
+              <Select value={f.product_type} onValueChange={(v) => set("product_type", v)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select product type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRODUCT_TYPES.map((t) => (
+                    <SelectItem key={t.value} value={t.value}>
+                      {t.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
         <Button onClick={submit} disabled={mutate.isPending}>
           {product ? "Save changes" : "Add product"}
