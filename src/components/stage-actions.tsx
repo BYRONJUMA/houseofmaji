@@ -38,6 +38,7 @@ export type StageActionFulfillment = {
 
 function useEngineerOptions(enabled: boolean) {
   const { profile } = useAuth();
+  const roleMap = useAllUserRoles();
   const { data = [] } = useQuery({
     queryKey: ["profiles"],
     enabled,
@@ -52,7 +53,6 @@ function useEngineerOptions(enabled: boolean) {
   });
   // the chief engineer can also take the job themselves
   return data.filter(
-    const roleMap = useAllUserRoles();
     (p) => personHasRole(roleMap, p, "engineer") || (profile?.id && p.id === profile.id),
   );
 }
