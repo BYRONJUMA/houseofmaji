@@ -882,7 +882,8 @@ function LeadDetail({
 }
 
 function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
-  const create = useCrmMutation("leads", ["crm-leads"]);
+  const { profile } = useAuth();
+  const qc = useQueryClient();
   const machineTypes = useMachineTypeOptions();
   const [f, setF] = useState({
     name: "",
@@ -903,13 +904,15 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
 
   const [dupe, setDupe] = useState<Lead | null>(null);
   const [checking, setChecking] = useState(false);
+  const [saving, setSaving] = useState(false);
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
 
-  const insert = () => {
-    create.mutate(
-      {
-        type: "insert",
-        values: {
+  const insert = async () => {
+    setSaving(true);
+    try {
+      const { data, error } = await supabase
+        .from("leads")
+        .insert({
           name: f.name.trim(),
           phone: f.phone.trim(),
           location: f.location.trim() || null,
@@ -919,16 +922,41 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
           stage: "new",
           timeline_notes: opt.timeline_notes.trim() || null,
           rep_id: null,
-        },
-      },
-      {
-        onSuccess: () => {
-          toast.success("Lead captured at stage New, unassigned");
-          onClose();
-        },
-        onError: (e: unknown) => toast.error((e as Error).message),
-      },
-    );
+        } as never)
+        .select("id")
+        .single();
+      if (error) throw error;
+
+      const criteria = (
+        [
+          ["showroom_visited", opt.showroom_visited],
+          ["water_test_or_site_visit_paid", opt.water_test_or_site_visit_paid],
+          ["timeline_stated", opt.timeline_stated],
+          ["budget_confirmed", opt.budget_confirmed],
+          ["location_confirmed", opt.location_confirmed],
+        ] as const
+      ).filter(([, on]) => on);
+
+      if (criteria.length > 0) {
+        const { error: scoreError } = await supabase.from("lead_scoring_events").insert(
+          criteria.map(([criterion]) => ({
+            lead_id: (data as { id: string }).id,
+            criterion,
+            points: LEAD_SCORING_CRITERIA.find((c) => c.key === criterion)?.points ?? 0,
+            recorded_by: profile?.id ?? null,
+          })) as never,
+        );
+        if (scoreError) throw scoreError;
+      }
+
+      qc.invalidateQueries({ queryKey: ["crm-leads"] });
+      toast.success("Lead captured at stage New, unassigned");
+      onClose();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const submit = async () => {
@@ -937,7 +965,7 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
       return;
     }
     if (!f.phone.trim()) {
-      insert();
+      void insert();
       return;
     }
     setChecking(true);
@@ -955,7 +983,7 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
         setDupe(existing);
         return;
       }
-      insert();
+      void insert();
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -1081,7 +1109,7 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
               <Button size="sm" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button size="sm" onClick={insert} disabled={create.isPending}>
+              <Button size="sm" onClick={() => void insert()} disabled={saving}>
                 Create anyway
               </Button>
             </div>
@@ -1089,7 +1117,7 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
         )}
 
         {!dupe && (
-          <Button onClick={() => void submit()} disabled={create.isPending || checking}>
+          <Button onClick={() => void submit()} disabled={saving || checking}>
             {checking ? "Checking for duplicates…" : "Add lead"}
           </Button>
         )}
