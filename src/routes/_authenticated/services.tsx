@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CheckCircle2, MoreVertical, Plus } from "lucide-react";
+import { CheckCircle2, History as HistoryIcon, MoreVertical, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -48,6 +48,7 @@ import {
   type RoleInput,
 } from "@/lib/crm";
 import { useServices, useTeam, useCrmMutation, nameOf, type ServiceRecord } from "@/hooks/use-crm";
+import { useServiceVisitLog } from "@/hooks/use-service-visits";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/services")({
@@ -203,15 +204,7 @@ function ServicesPage() {
                     className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-2.5"
                   >
                     <div>
-                      <p className="flex items-center gap-1.5 text-sm font-semibold">
-                        {s.completed && (
-                          <CheckCircle2
-                            className="h-4 w-4 text-success"
-                            aria-label="Service completed"
-                          />
-                        )}
-                        {s.client_name}
-                      </p>
+                      <p className="text-sm font-semibold">{s.client_name}</p>
                       <p className="text-xs text-muted-foreground">
                         {s.machine_type || "machine"}
                         {showContact ? ` · ${s.contact || "no contact"}` : ""} · due{" "}
@@ -283,17 +276,7 @@ function ServicesPage() {
                       canEditAny(s) && "cursor-pointer hover:bg-secondary/50",
                     )}
                   >
-                    <td className="px-3 py-2 font-medium">
-                      <span className="inline-flex items-center gap-1.5">
-                        {s.completed && (
-                          <CheckCircle2
-                            className="h-4 w-4 text-success"
-                            aria-label="Service completed"
-                          />
-                        )}
-                        {s.client_name}
-                      </span>
-                    </td>
+                    <td className="px-3 py-2 font-medium">{s.client_name}</td>
                     {showContact && <td className="px-3 py-2">{s.contact || "—"}</td>}
                     <td className="px-3 py-2">{s.machine_type || "—"}</td>
                     <td className="px-3 py-2">
@@ -564,23 +547,60 @@ function ServiceRowMenu({
   canDelete: boolean;
   canComplete: boolean;
 }) {
+  const { profile } = useAuth();
+  const qc = useQueryClient();
+  const { data: settings } = useSettings();
+  const commercialMonths = settingNumber(settings, "service_interval_commercial_months");
+  const undersinkMonths = settingNumber(settings, "service_interval_undersink_months");
   const mutate = useCrmMutation("services", ["crm-services"]);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const showComplete = canComplete && !!record.assigned_engineer_id && !record.completed;
-  if (!canDelete && !showComplete) return null;
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [completing, setCompleting] = useState(false);
+  const showComplete = canComplete && !!record.assigned_engineer_id;
 
-  const markComplete = () =>
-    mutate.mutate(
-      {
-        type: "update",
-        id: record.id,
-        values: { completed: true, completed_at: new Date().toISOString() },
-      },
-      {
-        onSuccess: () => toast.success("Service marked complete"),
-        onError: (e: unknown) => toast.error((e as Error).message),
-      },
-    );
+  /** Completing a visit closes the cycle and immediately schedules the next one. */
+  const markComplete = async () => {
+    setCompleting(true);
+    try {
+      const now = new Date();
+      const lastServiceDate = isoDate(now);
+      const next = new Date(now);
+      next.setMonth(
+        next.getMonth() +
+          serviceIntervalFor(record.machine_service_type, commercialMonths, undersinkMonths),
+      );
+      const nextDue = isoDate(next);
+
+      const { error: logError } = await supabase.from("service_visit_log").insert({
+        service_id: record.id,
+        completed_at: now.toISOString(),
+        completed_by: profile?.id ?? null,
+        next_due_date_set_to: nextDue,
+      } as never);
+      if (logError) throw logError;
+
+      const { error } = await supabase
+        .from("services")
+        .update({
+          completed: false,
+          completed_at: null,
+          last_service_date: lastServiceDate,
+          next_due_date: nextDue,
+          visit_count: (record.visit_count ?? 0) + 1,
+        } as never)
+        .eq("id", record.id);
+      if (error) throw error;
+
+      void qc.invalidateQueries({ queryKey: ["crm-services"] });
+      void qc.invalidateQueries({ queryKey: ["service-visit-log", record.id] });
+      void qc.invalidateQueries({ queryKey: ["fulfillment-services"] });
+      toast.success(`Visit logged — next service due ${formatDate(nextDue)}`);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setCompleting(false);
+    }
+  };
 
   return (
     <>
@@ -592,10 +612,13 @@ function ServiceRowMenu({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {showComplete && (
-            <DropdownMenuItem onClick={markComplete}>
+            <DropdownMenuItem disabled={completing} onClick={() => void markComplete()}>
               <CheckCircle2 className="mr-2 h-4 w-4" /> Mark complete
             </DropdownMenuItem>
           )}
+          <DropdownMenuItem onClick={() => setHistoryOpen(true)}>
+            <HistoryIcon className="mr-2 h-4 w-4" /> Visit history
+          </DropdownMenuItem>
           {canDelete && (
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
@@ -633,7 +656,55 @@ function ServiceRowMenu({
         </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {historyOpen && (
+        <VisitHistoryDialog record={record} onClose={() => setHistoryOpen(false)} />
+      )}
     </>
+  );
+}
+
+/** Past completed visits for one machine — the main record resets after each cycle. */
+function VisitHistoryDialog({
+  record,
+  onClose,
+}: {
+  record: ServiceRecord;
+  onClose: () => void;
+}) {
+  const { data: team = [] } = useTeam();
+  const { data: log = [], isLoading } = useServiceVisitLog(record.id);
+
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Visit history — {record.client_name}</DialogTitle>
+        </DialogHeader>
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground">Loading…</p>
+        ) : log.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-border px-3 py-6 text-center text-xs text-muted-foreground">
+            No completed visits recorded yet.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {log.map((v) => (
+              <div key={v.id} className="rounded-lg border border-border p-3 text-sm">
+                <p className="flex items-center gap-1.5 font-semibold">
+                  <CheckCircle2 className="h-4 w-4 text-success" aria-label="Visit completed" />
+                  Completed {formatDate(v.completed_at)}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  by {nameOf(team, v.completed_by)} · next visit scheduled for{" "}
+                  {formatDate(v.next_due_date_set_to)}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 
