@@ -197,7 +197,7 @@ function SettingsPage() {
         >
           Save settings
         </Button>
-      </CrmCard>
+      </div>
     </CrmShell>
   );
 }
