@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toCsv, downloadCsv, todayStamp } from "@/lib/csv";
 import { LEAD_STAGES, LEAD_STAGE_LABEL } from "@/lib/crm";
+import { LEAD_SCORING_CRITERIA } from "@/lib/lead-scoring";
 import { useAuth } from "@/hooks/use-auth";
 import { useMachineTypes } from "@/hooks/use-crm-extra";
 
@@ -75,6 +76,10 @@ function isYes(v: string) {
   if (!s) return false;
   return ["yes", "y", "true", "1", "x", "paid", "done", "confirmed", "visited"].includes(s);
 }
+
+const LEAD_CRITERION_POINTS: Record<string, number> = Object.fromEntries(
+  LEAD_SCORING_CRITERIA.map((c) => [c.key, c.points]),
+);
 
 const norm = (s: string) => s.trim().toLowerCase().replace(/[\s_\-.()/]+/g, "");
 
@@ -412,12 +417,51 @@ export function LeadsImportExport({
   const confirmImport = async () => {
     if (!preview) return;
     setSaving(true);
-    const { error } = await supabase.from("leads").insert(
-      importable.map((p) => ({
-        ...p.row,
-        rep_id: p.row.rep_id ?? (p.flags.some((f) => f.startsWith("Owner")) ? null : (profile?.id ?? null)),
-      })),
-    );
+    const rows = importable.map((p) => {
+      const {
+        showroom_visited_at,
+        water_test_or_site_visit_paid_at,
+        timeline_stated_at,
+        budget_confirmed_at,
+        location_confirmed_at,
+        ...rest
+      } = p.row;
+      return {
+        values: {
+          ...rest,
+          rep_id:
+            p.row.rep_id ??
+            (p.flags.some((f) => f.startsWith("Owner")) ? null : (profile?.id ?? null)),
+        },
+        criteria: (
+          [
+            ["showroom_visited", showroom_visited_at],
+            ["water_test_or_site_visit_paid", water_test_or_site_visit_paid_at],
+            ["timeline_stated", timeline_stated_at],
+            ["budget_confirmed", budget_confirmed_at],
+            ["location_confirmed", location_confirmed_at],
+          ] as const
+        )
+          .filter(([, at]) => !!at)
+          .map(([criterion]) => criterion),
+      };
+    });
+
+    const { data: inserted, error } = await supabase
+      .from("leads")
+      .insert(rows.map((r) => r.values))
+      .select("id");
+    if (!error && inserted) {
+      const events = inserted.flatMap((lead, i) =>
+        (rows[i]?.criteria ?? []).map((criterion) => ({
+          lead_id: lead.id,
+          criterion,
+          points: LEAD_CRITERION_POINTS[criterion] ?? 0,
+          recorded_by: profile?.id ?? null,
+        })),
+      );
+      if (events.length > 0) await supabase.from("lead_scoring_events").insert(events as never);
+    }
     setSaving(false);
     if (error) {
       toast.error(error.message);
