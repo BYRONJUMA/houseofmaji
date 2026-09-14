@@ -28,11 +28,19 @@ export const Route = createFileRoute("/_authenticated/crm/settings")({
   component: SettingsPage,
 });
 
-const FIELDS: { key: string; label: string; hint: string; type?: string }[] = [
+type Field = { key: string; label: string; hint: string; type?: string };
+
+const GENERAL: Field[] = [
   {
-    key: "default_service_interval_months",
-    label: "Default service interval (months)",
-    hint: "Used when a machine type has no specific interval, for Services follow-up dates.",
+    key: "service_interval_commercial_months",
+    label: "Commercial / industrial service interval (months)",
+    hint: "Months between visits for commercial and industrial machines.",
+    type: "number",
+  },
+  {
+    key: "service_interval_undersink_months",
+    label: "Undersink service interval (months)",
+    hint: "Months between visits for undersink machines.",
     type: "number",
   },
   {
@@ -44,6 +52,74 @@ const FIELDS: { key: string; label: string; hint: string; type?: string }[] = [
   { key: "company_name", label: "Company name", hint: "Shown on reports and exports." },
   { key: "company_logo_url", label: "Company logo URL", hint: "Optional image URL for reports." },
 ];
+
+const SCORING: Field[] = [
+  {
+    key: "score_points_showroom_visited",
+    label: "Points — visited the showroom",
+    hint: "",
+    type: "number",
+  },
+  {
+    key: "score_points_water_test_or_site_visit_paid",
+    label: "Points — paid for a water test / site visit",
+    hint: "",
+    type: "number",
+  },
+  {
+    key: "score_points_timeline_stated",
+    label: "Points — stated a purchase timeline",
+    hint: "",
+    type: "number",
+  },
+  {
+    key: "score_points_responded_within_agreed_period",
+    label: "Points — responded within the agreed period",
+    hint: "",
+    type: "number",
+  },
+  {
+    key: "score_points_budget_confirmed",
+    label: "Points — confirmed their budget",
+    hint: "",
+    type: "number",
+  },
+  {
+    key: "score_points_location_confirmed",
+    label: "Points — confirmed their location",
+    hint: "",
+    type: "number",
+  },
+];
+
+const THRESHOLDS: Field[] = [
+  {
+    key: "score_threshold_hot",
+    label: "Minimum score for Hot",
+    hint: "A lead reaching this score moves to Hot automatically.",
+    type: "number",
+  },
+  {
+    key: "score_threshold_warm",
+    label: "Minimum score for Warm",
+    hint: "A lead reaching this score moves to Warm automatically.",
+    type: "number",
+  },
+  {
+    key: "new_lead_timeout_days",
+    label: "New-lead timeout (days)",
+    hint: "How long a quiet new lead waits before it moves to Not Won.",
+    type: "number",
+  },
+  {
+    key: "new_lead_timeout_max_score",
+    label: "Timeout applies at or below this score",
+    hint: "Only quiet new leads scoring this or less are moved to Not Won.",
+    type: "number",
+  },
+];
+
+const FIELDS: Field[] = [...GENERAL, ...SCORING, ...THRESHOLDS];
 
 function SettingsPage() {
   const { profile, hasRole } = useAuth();
