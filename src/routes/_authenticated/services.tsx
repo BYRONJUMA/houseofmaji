@@ -801,8 +801,22 @@ function ServiceRowMenu({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {showComplete && (
-            <DropdownMenuItem disabled={completing} onClick={() => void markComplete()}>
-              <CheckCircle2 className="mr-2 h-4 w-4" /> Mark complete
+            <DropdownMenuItem
+              disabled={completing || invoiceBlocks}
+              onClick={() => void markComplete()}
+            >
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+              {invoiceBlocks ? "Mark complete (invoice pending)" : "Mark complete"}
+            </DropdownMenuItem>
+          )}
+          {canComplete && !invoice && (
+            <DropdownMenuItem onClick={() => setDiagnosisOpen(true)}>
+              <Stethoscope className="mr-2 h-4 w-4" /> Record diagnosis &amp; parts
+            </DropdownMenuItem>
+          )}
+          {invoice && (
+            <DropdownMenuItem onClick={() => setInvoiceOpen(true)}>
+              <ReceiptText className="mr-2 h-4 w-4" /> Service invoice ({invoice.invoice_no})
             </DropdownMenuItem>
           )}
           <DropdownMenuItem onClick={() => setHistoryOpen(true)}>
