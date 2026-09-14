@@ -629,10 +629,13 @@ function ServiceRowMenu({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {showComplete && (
-            <DropdownMenuItem onClick={markComplete}>
+            <DropdownMenuItem disabled={completing} onClick={() => void markComplete()}>
               <CheckCircle2 className="mr-2 h-4 w-4" /> Mark complete
             </DropdownMenuItem>
           )}
+          <DropdownMenuItem onClick={() => setHistoryOpen(true)}>
+            <History className="mr-2 h-4 w-4" /> Visit history
+          </DropdownMenuItem>
           {canDelete && (
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
