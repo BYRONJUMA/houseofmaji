@@ -114,7 +114,6 @@ function RequisitionsPage() {
     return "—";
   };
 
-
   return (
     <StoreShell
       title="Product requisitions"
@@ -160,9 +159,7 @@ function RequisitionsPage() {
                   <td className="px-4 py-3 text-muted-foreground">{formatDate(r.created_at)}</td>
                   <td className="px-4 py-3">{locationLabel(r.source_location)}</td>
                   <td className="px-4 py-3">{locationLabel(r.destination_location)}</td>
-                  <td className="px-4 py-3 text-right font-semibold tabular-nums">
-                    {qtyOf(r.id)}
-                  </td>
+                  <td className="px-4 py-3 text-right font-semibold tabular-nums">{qtyOf(r.id)}</td>
                   <td className="px-4 py-3 text-muted-foreground">{nameOf(team, r.created_by)}</td>
                   <td className="px-4 py-3">
                     <StatusPill tone={statusTone(r.status)}>
@@ -197,8 +194,7 @@ function RequisitionsPage() {
                             </>
                           )}
                           {r.status === "assigned_for_collection" &&
-                            (r.assigned_engineer_id === profile?.id ||
-                              roles.includes("admin")) && (
+                            (r.assigned_engineer_id === profile?.id || roles.includes("admin")) && (
                               <DropdownMenuItem onClick={() => run("collected", r.id)}>
                                 Materials collected
                               </DropdownMenuItem>
@@ -363,10 +359,7 @@ function CreateRequisitionDialog({ onClose }: { onClose: () => void }) {
             {lines.map((l, i) => (
               <div key={i} className="flex flex-wrap items-end gap-2">
                 <div className="min-w-[220px] flex-1">
-                  <Select
-                    value={l.product_id}
-                    onValueChange={(v) => setLine(i, { product_id: v })}
-                  >
+                  <Select value={l.product_id} onValueChange={(v) => setLine(i, { product_id: v })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Item name" />
                     </SelectTrigger>

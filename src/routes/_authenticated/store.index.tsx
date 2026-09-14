@@ -19,9 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { StoreProductDialog } from "@/components/store-product-dialog";
 import { useAuth } from "@/hooks/use-auth";
-import { useStoreLocation } from "@/hooks/use-store-location";
 import {
-  locationLabel,
   productTypeLabel,
   useCanWriteStore,
   useStoreProductMutation,
@@ -56,7 +54,6 @@ function StoreProductsPage() {
   const navigate = useNavigate();
   const { profile, roles } = useAuth();
   const canWrite = useCanWriteStore(roles, profile?.id);
-  const [location] = useStoreLocation();
   const { data: products = [], isLoading } = useStoreProducts();
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<StoreProduct | null>(null);
