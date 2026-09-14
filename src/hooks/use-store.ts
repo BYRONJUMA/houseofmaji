@@ -76,6 +76,21 @@ export type Supplier = {
   created_at: string;
 };
 
+export type RequisitionStatus =
+  | "pending"
+  | "assigned_for_collection"
+  | "pending_confirmation"
+  | "completed"
+  | "rejected";
+
+export const REQUISITION_STATUS_LABEL: Record<RequisitionStatus, string> = {
+  pending: "Pending",
+  assigned_for_collection: "Assigned for Collection",
+  pending_confirmation: "Pending Confirmation",
+  completed: "Completed",
+  rejected: "Rejected",
+};
+
 export type Requisition = {
   id: string;
   requisition_no: string;
@@ -83,7 +98,9 @@ export type Requisition = {
   destination_location: StoreLocation;
   description: string | null;
   created_by: string | null;
-  status: "pending" | "approved" | "rejected";
+  assigned_engineer_id: string | null;
+  assigned_at: string | null;
+  status: RequisitionStatus;
   delivery_status: "pending_delivery" | "delivered";
   created_at: string;
 };
