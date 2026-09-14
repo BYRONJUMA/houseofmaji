@@ -564,23 +564,60 @@ function ServiceRowMenu({
   canDelete: boolean;
   canComplete: boolean;
 }) {
+  const { profile } = useAuth();
+  const qc = useQueryClient();
+  const { data: settings } = useSettings();
+  const commercialMonths = settingNumber(settings, "service_interval_commercial_months");
+  const undersinkMonths = settingNumber(settings, "service_interval_undersink_months");
   const mutate = useCrmMutation("services", ["crm-services"]);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const showComplete = canComplete && !!record.assigned_engineer_id && !record.completed;
-  if (!canDelete && !showComplete) return null;
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [completing, setCompleting] = useState(false);
+  const showComplete = canComplete && !!record.assigned_engineer_id;
 
-  const markComplete = () =>
-    mutate.mutate(
-      {
-        type: "update",
-        id: record.id,
-        values: { completed: true, completed_at: new Date().toISOString() },
-      },
-      {
-        onSuccess: () => toast.success("Service marked complete"),
-        onError: (e: unknown) => toast.error((e as Error).message),
-      },
-    );
+  /** Completing a visit closes the cycle and immediately schedules the next one. */
+  const markComplete = async () => {
+    setCompleting(true);
+    try {
+      const now = new Date();
+      const lastServiceDate = isoDate(now);
+      const next = new Date(now);
+      next.setMonth(
+        next.getMonth() +
+          serviceIntervalFor(record.machine_service_type, commercialMonths, undersinkMonths),
+      );
+      const nextDue = isoDate(next);
+
+      const { error: logError } = await supabase.from("service_visit_log").insert({
+        service_id: record.id,
+        completed_at: now.toISOString(),
+        completed_by: profile?.id ?? null,
+        next_due_date_set_to: nextDue,
+      } as never);
+      if (logError) throw logError;
+
+      const { error } = await supabase
+        .from("services")
+        .update({
+          completed: false,
+          completed_at: null,
+          last_service_date: lastServiceDate,
+          next_due_date: nextDue,
+          visit_count: (record.visit_count ?? 0) + 1,
+        } as never)
+        .eq("id", record.id);
+      if (error) throw error;
+
+      void qc.invalidateQueries({ queryKey: ["crm-services"] });
+      void qc.invalidateQueries({ queryKey: ["service-visit-log", record.id] });
+      void qc.invalidateQueries({ queryKey: ["fulfillment-services"] });
+      toast.success(`Visit logged — next service due ${formatDate(nextDue)}`);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setCompleting(false);
+    }
+  };
 
   return (
     <>
