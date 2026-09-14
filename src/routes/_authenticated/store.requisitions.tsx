@@ -61,8 +61,8 @@ export const Route = createFileRoute("/_authenticated/store/requisitions")({
 });
 
 function RequisitionsPage() {
-  const { profile } = useAuth();
-  const canWrite = useCanWriteStore(profile?.role, profile?.id);
+  const { profile, roles } = useAuth();
+  const canWrite = useCanWriteStore(roles, profile?.id);
   const [location] = useStoreLocation();
   const { data: requisitions = [], isLoading } = useRequisitions();
   const { data: items = [] } = useRequisitionItems();

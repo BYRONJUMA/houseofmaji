@@ -55,8 +55,8 @@ export const Route = createFileRoute("/_authenticated/store/$id")({
 
 function ProductDetailPage() {
   const { id } = Route.useParams();
-  const { profile } = useAuth();
-  const canWrite = useCanWriteStore(profile?.role, profile?.id);
+  const { profile, roles } = useAuth();
+  const canWrite = useCanWriteStore(roles, profile?.id);
   const { data: product, isLoading } = useStoreProduct(id);
   const { data: entries = [] } = useStoreEntries(id);
   const { data: suppliers = [] } = useSuppliers();
@@ -247,7 +247,7 @@ function AddStockDialog({
   location: StoreLocation;
   onClose: () => void;
 }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const mutate = useStoreEntryMutation(productId);
   const { data: suppliers = [] } = useSuppliers();
   const [loc, setLoc] = useState<StoreLocation>(location);
@@ -373,7 +373,7 @@ function AdjustQuantityDialog({
   location: StoreLocation;
   onClose: () => void;
 }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const mutate = useStoreEntryMutation(product.id);
   const current = num(location === "in_house" ? product.in_house_qty : product.warehouse_qty);
   const [value, setValue] = useState(String(current));

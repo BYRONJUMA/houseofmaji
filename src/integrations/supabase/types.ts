@@ -803,19 +803,19 @@ export type Database = {
           created_at: string
           full_name: string
           id: string
-          role: Database["public"]["Enums"]["app_role"]
+          role: Database["public"]["Enums"]["app_role"] | null
         }
         Insert: {
           created_at?: string
           full_name?: string
           id: string
-          role?: Database["public"]["Enums"]["app_role"]
+          role?: Database["public"]["Enums"]["app_role"] | null
         }
         Update: {
           created_at?: string
           full_name?: string
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          role?: Database["public"]["Enums"]["app_role"] | null
         }
         Relationships: []
       }
@@ -1750,6 +1750,35 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          granted_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       whatsapp_recipients: {
         Row: {
           active: boolean
@@ -1952,6 +1981,7 @@ export type Database = {
       can_see_service_contact: { Args: { _user_id: string }; Returns: boolean }
       can_write_store: { Args: { _user_id: string }; Returns: boolean }
       expire_stale_leads: { Args: never; Returns: number }
+      has_any_role: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1961,6 +1991,18 @@ export type Database = {
       }
       is_crm_manager: { Args: { _user_id: string }; Returns: boolean }
       lead_criterion_points: { Args: { _criterion: string }; Returns: number }
+      max_lead_score: { Args: never; Returns: number }
+      set_user_roles: {
+        Args: {
+          _roles: Database["public"]["Enums"]["app_role"][]
+          _user_id: string
+        }
+        Returns: undefined
+      }
+      setting_number: {
+        Args: { _default: number; _key: string }
+        Returns: number
+      }
       store_purchase_approve: { Args: { _id: string }; Returns: undefined }
       store_requisition_deliver: { Args: { _id: string }; Returns: undefined }
       store_set_quantity: {

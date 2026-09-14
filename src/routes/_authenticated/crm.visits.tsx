@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { formatDate } from "@/lib/format";
 import { isCrmManager, label, BADGE_GOOD, BADGE_WARN, BADGE_NEUTRAL } from "@/lib/crm";
 import { useLeads, useTeam, useCrmMutation, nameOf } from "@/hooks/use-crm";
@@ -69,8 +69,8 @@ const statusBadge = (s: string) =>
   s === "completed" ? BADGE_GOOD : s === "pending_assignment" ? BADGE_NEUTRAL : BADGE_WARN;
 
 function VisitsPage() {
-  const { profile } = useAuth();
-  const manager = isCrmManager(profile?.role);
+  const { profile, hasRole, roles } = useAuth();
+  const manager = isCrmManager(roles);
   const { data: visits = [] } = useSiteVisits();
   const { data: team = [] } = useTeam();
   const [creating, setCreating] = useState(false);
@@ -79,7 +79,8 @@ function VisitsPage() {
   const [status, setStatus] = useState("all");
   const [engineer, setEngineer] = useState("all");
 
-  const engineers = team.filter((t) => t.role === "engineer" || t.role === "chief_engineer");
+  const roleMap = useAllUserRoles();
+  const engineers = team.filter((t) => personHasRole(roleMap, t, "engineer", "chief_engineer"));
 
   const filtered = useMemo(
     () =>
@@ -261,7 +262,7 @@ function VisitsPage() {
 }
 
 function NewVisitDialog({ onClose }: { onClose: () => void }) {
-  const { profile } = useAuth();
+  const { profile, hasRole, roles } = useAuth();
   const { data: leads = [] } = useLeads();
   const create = useCrmMutation("site_visits", ["crm-site-visits"]);
   const [f, setF] = useState({
@@ -376,7 +377,7 @@ function NewVisitDialog({ onClose }: { onClose: () => void }) {
 }
 
 function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void }) {
-  const { profile } = useAuth();
+  const { profile, hasRole, roles } = useAuth();
   const { data: team = [] } = useTeam();
   const update = useCrmMutation("site_visits", ["crm-site-visits"]);
   const remove = useCrmMutation("site_visits", ["crm-site-visits", "crm-visit-photos"]);
@@ -388,13 +389,13 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
   const items: ChecklistItem[] = Array.isArray(visit.checklist) ? visit.checklist : [];
   const canFile =
     visit.assigned_engineer_id === profile?.id ||
-    profile?.role === "chief_engineer" ||
-    profile?.role === "admin";
+    hasRole("chief_engineer") ||
+    hasRole("admin");
   const canDelete =
     visit.created_by === profile?.id ||
     visit.assigned_engineer_id === profile?.id ||
-    profile?.role === "chief_engineer" ||
-    profile?.role === "admin";
+    hasRole("chief_engineer") ||
+    hasRole("admin");
 
   const deleteVisit = async () => {
     try {

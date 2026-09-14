@@ -71,8 +71,8 @@ export function useProfiles() {
 }
 
 function ChiefPage() {
-  const { profile } = useAuth();
-  const canAct = profile?.role === "chief_engineer" || profile?.role === "admin";
+  const { profile, hasRole } = useAuth();
+  const canAct = hasRole("chief_engineer") || hasRole("admin");
   const { stage: stageFilter } = Route.useSearch() as { stage?: Stage };
   const { data: fulfillments = [], isLoading } = useFulfillments();
   const { data: profiles = [] } = useProfiles();
@@ -111,7 +111,8 @@ function ChiefPage() {
   const collected = totalPaid(payments);
 
   const perRole = profiles.reduce<Record<string, number>>((acc, p) => {
-    acc[p.role] = (acc[p.role] ?? 0) + 1;
+    const key = p.role ?? "none";
+    acc[key] = (acc[key] ?? 0) + 1;
     return acc;
   }, {});
 

@@ -1,23 +1,23 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Droplets, LogOut, Menu } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { ROLE_LABEL, ROLE_HOME } from "@/lib/stages";
+import { ROLE_LABEL, roleHome } from "@/lib/stages";
 import { isCrmMember } from "@/lib/crm";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { NotificationBell } from "@/components/notification-bell";
 import { BackButton } from "@/components/back-button";
 
-function navFor(role?: string) {
+function navFor(roles: string[]) {
   const items: { to: string; label: string }[] = [];
-  if (!role) return items;
-  items.push({ to: ROLE_HOME[role] ?? "/", label: "Dashboard" });
+  if (roles.length === 0) return [{ to: "/account", label: "My account" }];
+  items.push({ to: roleHome(roles), label: "Dashboard" });
   items.push({ to: "/commissions", label: "Commissions" });
   items.push({ to: "/services", label: "Services" });
   items.push({ to: "/store", label: "Store" });
   items.push({ to: "/account", label: "My account" });
-  if (isCrmMember(role)) items.push({ to: "/crm", label: "CRM" });
+  if (isCrmMember(roles)) items.push({ to: "/crm", label: "CRM" });
   return items;
 }
 
@@ -34,11 +34,20 @@ export function AppShell({
   children: ReactNode;
   showBack?: boolean;
 }) {
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, roles, loading } = useAuth();
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (st) => st.location.pathname });
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const items = navFor(profile?.role);
+  const items = navFor(roles);
+
+  // Users with no roles can only use their own profile page.
+  useEffect(() => {
+    if (loading || !profile) return;
+    if (roles.length === 0 && pathname !== "/account") {
+      navigate({ to: "/account", replace: true });
+    }
+  }, [loading, profile, roles, pathname, navigate]);
 
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
@@ -78,7 +87,7 @@ export function AppShell({
             <div className="text-right leading-tight">
               <p className="text-sm font-semibold">{profile?.full_name || "—"}</p>
               <p className="text-xs text-muted-foreground">
-                {profile ? ROLE_LABEL[profile.role] : ""}
+                {profile ? ROLE_LABEL[profile.role ?? ""] : ""}
               </p>
             </div>
             <Button variant="outline" size="sm" onClick={handleSignOut}>
@@ -118,7 +127,7 @@ export function AppShell({
               <div>
                 <p className="text-sm font-semibold">{profile?.full_name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {profile ? ROLE_LABEL[profile.role] : ""}
+                  {profile ? ROLE_LABEL[profile.role ?? ""] : ""}
                 </p>
               </div>
               <Button variant="outline" size="sm" onClick={handleSignOut}>

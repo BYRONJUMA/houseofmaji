@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { formatDate } from "@/lib/format";
 import {
   SCHOOL_STATUSES,
@@ -46,9 +46,9 @@ export const Route = createFileRoute("/_authenticated/crm/schools")({
 });
 
 function SchoolsPage() {
-  const { profile } = useAuth();
-  const manager = isCrmManager(profile?.role);
-  const canWrite = canWriteCrm(profile?.role);
+  const { profile, roles } = useAuth();
+  const manager = isCrmManager(roles);
+  const canWrite = canWriteCrm(roles);
   const { data: schools = [] } = useSchools();
   const { data: team = [] } = useTeam();
   const mutate = useCrmMutation("schools", ["crm-schools"]);
@@ -281,7 +281,7 @@ function SchoolDialog({
   team: { id: string; full_name: string; role: string }[];
   onClose: () => void;
 }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const mutate = useCrmMutation("schools", ["crm-schools"]);
   const [f, setF] = useState({
     school_name: school?.school_name ?? "",
@@ -294,7 +294,8 @@ function SchoolDialog({
     rep_id: school?.rep_id ?? profile?.id ?? "none",
   });
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
+  const roleMap = useAllUserRoles();
+  const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
 
   const submit = () => {
     if (!f.school_name.trim()) {

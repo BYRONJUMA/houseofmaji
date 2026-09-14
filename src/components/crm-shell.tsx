@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Droplets, LogOut, Menu, Wrench } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { ROLE_LABEL } from "@/lib/stages";
@@ -36,17 +36,23 @@ export function CrmShell({
   children: ReactNode;
   showBack?: boolean;
 }) {
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, hasRole, roles, loading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  const machines = hasMachinesAccess(profile?.role);
+  const machines = hasMachinesAccess(roles);
+
+  // Users with no roles can only use their own profile page.
+  useEffect(() => {
+    if (loading || !profile) return;
+    if (roles.length === 0) navigate({ to: "/account", replace: true });
+  }, [loading, profile, roles, navigate]);
 
   const nav = [
     ...CRM_NAV,
-    ...(canManageTaxonomy(profile?.role) ? MANAGER_NAV : []),
-    ...(profile?.role === "admin" ? ADMIN_NAV : []),
+    ...(canManageTaxonomy(roles) ? MANAGER_NAV : []),
+    ...(hasRole("admin") ? ADMIN_NAV : []),
   ];
 
   const handleSignOut = async () => {
@@ -97,7 +103,7 @@ export function CrmShell({
             <div className="text-right leading-tight">
               <p className="text-sm font-semibold">{profile?.full_name || "—"}</p>
               <p className="text-xs text-muted-foreground">
-                {profile ? (ROLE_LABEL[profile.role] ?? profile.role) : ""}
+                {profile ? (ROLE_LABEL[profile.role ?? ""] ?? profile.role) : ""}
               </p>
             </div>
             <Button variant="outline" size="sm" onClick={handleSignOut}>
@@ -145,7 +151,7 @@ export function CrmShell({
               <div>
                 <p className="text-sm font-semibold">{profile?.full_name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {profile ? (ROLE_LABEL[profile.role] ?? profile.role) : ""}
+                  {profile ? (ROLE_LABEL[profile.role ?? ""] ?? profile.role) : ""}
                 </p>
               </div>
               <Button variant="outline" size="sm" onClick={handleSignOut}>

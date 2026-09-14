@@ -26,9 +26,9 @@ export const Route = createFileRoute("/_authenticated/user/$id")({
 function UserDetailPage() {
   useMachinesGuard();
   const { id } = Route.useParams();
-  const { profile } = useAuth();
+  const { profile, hasRole } = useAuth();
   const navigate = useNavigate();
-  const isAdmin = profile?.role === "admin";
+  const isAdmin = hasRole("admin");
 
   const { data: user, isLoading } = useQuery({
     queryKey: ["profile", id],
@@ -105,7 +105,7 @@ function UserDetailPage() {
   return (
     <AppShell
       title={user.full_name || "Unnamed"}
-      subtitle={`${ROLE_LABEL[user.role] ?? user.role} · joined ${formatDate(user.created_at)}`}
+      subtitle={`${ROLE_LABEL[user.role ?? ""] ?? user.role} · joined ${formatDate(user.created_at)}`}
       showBack
       actions={
         isAdmin ? <AdminUserActions user={user} isSelf={user.id === profile?.id} /> : undefined

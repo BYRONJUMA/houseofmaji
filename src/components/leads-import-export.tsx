@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toCsv, downloadCsv, todayStamp } from "@/lib/csv";
-import { LEAD_STAGES, LEAD_STAGE_LABEL } from "@/lib/crm";
+import { LEAD_SCORING_CRITERIA, LEAD_STAGES, LEAD_STAGE_LABEL } from "@/lib/crm";
 import { useAuth } from "@/hooks/use-auth";
 import { useMachineTypes } from "@/hooks/use-crm-extra";
 
@@ -23,6 +23,12 @@ type LeadRow = {
   follow_up_due_at: string | null;
   deal_value: number | string | null;
   budget_range?: string | null;
+  showroom_visited_at?: string | null;
+  water_test_or_site_visit_paid_at?: string | null;
+  timeline_stated_at?: string | null;
+  timeline_notes?: string | null;
+  budget_confirmed_at?: string | null;
+  location_confirmed_at?: string | null;
   created_at: string;
 };
 
@@ -36,6 +42,12 @@ type Parsed = {
   source: string | null;
   follow_up_due_at: string | null;
   rep_id: string | null;
+  showroom_visited_at: string | null;
+  water_test_or_site_visit_paid_at: string | null;
+  timeline_stated_at: string | null;
+  timeline_notes: string | null;
+  budget_confirmed_at: string | null;
+  location_confirmed_at: string | null;
 };
 
 type PreviewRow = { line: number; row: Parsed; flags: string[]; skipped: boolean };
@@ -50,7 +62,23 @@ const HEADERS = [
   "Type of Machine",
   "Lead Source",
   "Next Follow-up Date",
+  "Visited Showroom",
+  "Paid Water Test Or Site Visit",
+  "Stated Timeline",
+  "Budget Confirmed",
+  "Location Confirmed",
 ];
+
+/** Truthy text in a spreadsheet cell: yes/y/true/1/x/paid/done/confirmed. */
+function isYes(v: string) {
+  const s = norm(v);
+  if (!s) return false;
+  return ["yes", "y", "true", "1", "x", "paid", "done", "confirmed", "visited"].includes(s);
+}
+
+const LEAD_CRITERION_POINTS: Record<string, number> = Object.fromEntries(
+  LEAD_SCORING_CRITERIA.map((c) => [c.key, c.points]),
+);
 
 const norm = (s: string) => s.trim().toLowerCase().replace(/[\s_\-.()/]+/g, "");
 
@@ -186,6 +214,11 @@ export function LeadsImportExport({
       l.machine_interest ?? "",
       l.source ?? "",
       l.follow_up_due_at ? l.follow_up_due_at.slice(0, 10) : "",
+      l.showroom_visited_at ? "Yes" : "",
+      l.water_test_or_site_visit_paid_at ? "Yes" : "",
+      l.timeline_notes ?? (l.timeline_stated_at ? "Yes" : ""),
+      l.budget_confirmed_at ? "Yes" : "",
+      l.location_confirmed_at ? "Yes" : "",
     ]);
     downloadCsv(`house-of-maji-leads-${todayStamp()}.csv`, toCsv(HEADERS, rows));
     toast.success(`Exported ${leads.length} leads`);
@@ -234,6 +267,17 @@ export function LeadsImportExport({
           "town",
         ],
         source: ["leadsource", "source", "leadorigin", "channel"],
+        showroom: ["visitedshowroom", "showroomvisit", "showroomvisited", "showroom"],
+        watertest: [
+          "paidwatertestorsitevisit",
+          "paidwatertest",
+          "watertestpaid",
+          "sitevisitpaid",
+          "watertest",
+        ],
+        timeline: ["statedtimeline", "timeline", "purchasetimeline", "timelinestated"],
+        budgetconfirmed: ["budgetconfirmed", "confirmedbudget"],
+        locationconfirmed: ["locationconfirmed", "confirmedlocation"],
         budget: [
           "budgetrange",
           "budget",
@@ -271,6 +315,12 @@ export function LeadsImportExport({
               source: null,
               follow_up_due_at: null,
               rep_id: null,
+              showroom_visited_at: null,
+              water_test_or_site_visit_paid_at: null,
+              timeline_stated_at: null,
+              timeline_notes: null,
+              budget_confirmed_at: null,
+              location_confirmed_at: null,
             },
             flags: ["Skipped — missing name and contact"],
             skipped: true,
@@ -318,6 +368,10 @@ export function LeadsImportExport({
         }
 
 
+        const nowIso = new Date().toISOString();
+        const timelineText = pick(r, A.timeline);
+        const stamp = (yes: boolean) => (yes ? nowIso : null);
+
         if (phone && recentPhones.has(phone)) flags.push("Duplicate phone (48h)");
         if (phone) recentPhones.add(phone);
 
@@ -333,6 +387,12 @@ export function LeadsImportExport({
             source: pick(r, A.source) || null,
             follow_up_due_at,
             rep_id,
+            showroom_visited_at: stamp(isYes(pick(r, A.showroom))),
+            water_test_or_site_visit_paid_at: stamp(isYes(pick(r, A.watertest))),
+            timeline_stated_at: timelineText ? nowIso : null,
+            timeline_notes: timelineText || null,
+            budget_confirmed_at: stamp(isYes(pick(r, A.budgetconfirmed))),
+            location_confirmed_at: stamp(isYes(pick(r, A.locationconfirmed))),
           },
           flags,
           skipped: false,
@@ -356,12 +416,51 @@ export function LeadsImportExport({
   const confirmImport = async () => {
     if (!preview) return;
     setSaving(true);
-    const { error } = await supabase.from("leads").insert(
-      importable.map((p) => ({
-        ...p.row,
-        rep_id: p.row.rep_id ?? (p.flags.some((f) => f.startsWith("Owner")) ? null : (profile?.id ?? null)),
-      })),
-    );
+    const rows = importable.map((p) => {
+      const {
+        showroom_visited_at,
+        water_test_or_site_visit_paid_at,
+        timeline_stated_at,
+        budget_confirmed_at,
+        location_confirmed_at,
+        ...rest
+      } = p.row;
+      return {
+        values: {
+          ...rest,
+          rep_id:
+            p.row.rep_id ??
+            (p.flags.some((f) => f.startsWith("Owner")) ? null : (profile?.id ?? null)),
+        },
+        criteria: (
+          [
+            ["showroom_visited", showroom_visited_at],
+            ["water_test_or_site_visit_paid", water_test_or_site_visit_paid_at],
+            ["timeline_stated", timeline_stated_at],
+            ["budget_confirmed", budget_confirmed_at],
+            ["location_confirmed", location_confirmed_at],
+          ] as const
+        )
+          .filter(([, at]) => !!at)
+          .map(([criterion]) => criterion),
+      };
+    });
+
+    const { data: inserted, error } = await supabase
+      .from("leads")
+      .insert(rows.map((r) => r.values))
+      .select("id");
+    if (!error && inserted) {
+      const events = inserted.flatMap((lead, i) =>
+        (rows[i]?.criteria ?? []).map((criterion) => ({
+          lead_id: lead.id,
+          criterion,
+          points: LEAD_CRITERION_POINTS[criterion] ?? 0,
+          recorded_by: profile?.id ?? null,
+        })),
+      );
+      if (events.length > 0) await supabase.from("lead_scoring_events").insert(events as never);
+    }
     setSaving(false);
     if (error) {
       toast.error(error.message);

@@ -23,8 +23,8 @@ export const Route = createFileRoute("/_authenticated/team")({
 
 function TeamPage() {
   const navigate = useNavigate();
-  const { profile, loading } = useAuth();
-  const notAdmin = !loading && !!profile && profile.role !== "admin";
+  const { profile, loading, hasRole, roles } = useAuth();
+  const notAdmin = !loading && !!profile && !hasRole("admin");
   useEffect(() => {
     if (notAdmin) navigate({ to: "/", replace: true });
   }, [notAdmin, navigate]);
@@ -53,7 +53,8 @@ function TeamPage() {
   const { data: equipment = [] } = useEquipment();
 
   const perRole = profiles.reduce<Record<string, number>>((acc, p) => {
-    acc[p.role] = (acc[p.role] ?? 0) + 1;
+    const key = p.role ?? "none";
+    acc[key] = (acc[key] ?? 0) + 1;
     return acc;
   }, {});
 
@@ -96,7 +97,7 @@ function TeamPage() {
                 <td className="px-4 py-3 font-medium">
                   {p.full_name}
                   <span className="ml-2 text-xs text-muted-foreground">
-                    {ROLE_LABEL[p.role] ?? p.role}
+                    {ROLE_LABEL[p.role ?? ""] ?? p.role}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{formatDate(p.created_at)}</td>

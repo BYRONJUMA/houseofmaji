@@ -37,8 +37,8 @@ const ROLE_LABEL: Record<string, string> = {
 function AdminPage() {
   const { stage } = Route.useSearch() as { stage?: Stage };
   const navigate = useNavigate();
-  const { profile, loading } = useAuth();
-  const notAdmin = !loading && !!profile && profile.role !== "admin";
+  const { profile, loading, hasRole } = useAuth();
+  const notAdmin = !loading && !!profile && !hasRole("admin");
   useEffect(() => {
     if (notAdmin) navigate({ to: "/", replace: true });
   }, [notAdmin, navigate]);
@@ -101,7 +101,8 @@ function AdminPage() {
       : 0;
 
   const perRole = profiles.reduce<Record<string, number>>((acc, p) => {
-    acc[p.role] = (acc[p.role] ?? 0) + 1;
+    const key = p.role ?? "none";
+    acc[key] = (acc[key] ?? 0) + 1;
     return acc;
   }, {});
 

@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useMachineTypeOptions } from "@/hooks/use-crm-extra";
 import { formatKES, formatDate } from "@/lib/format";
@@ -89,9 +89,9 @@ function withinRange(created: string, range: Range) {
 }
 
 function LeadsPage() {
-  const { profile } = useAuth();
-  const manager = isCrmManager(profile?.role);
-  const canWrite = canWriteCrm(profile?.role);
+  const { profile, roles } = useAuth();
+  const manager = isCrmManager(roles);
+  const canWrite = canWriteCrm(roles);
   const { data: leads = [] } = useLeads();
   const { data: team = [] } = useTeam();
   const mutate = useCrmMutation("leads", ["crm-leads"]);
@@ -105,7 +105,8 @@ function LeadsPage() {
   const [openLead, setOpenLead] = useState<Lead | null>(null);
   const [creating, setCreating] = useState(false);
 
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
+  const roleMap = useAllUserRoles();
+  const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -443,7 +444,8 @@ function KanbanBoard({
   onOpen: (l: Lead) => void;
   manager?: boolean;
 }) {
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
+  const roleMap = useAllUserRoles();
+  const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
   const [over, setOver] = useState<string | null>(null);
   return (
     <div className="flex gap-3 overflow-x-auto pb-2">
@@ -546,7 +548,8 @@ function ListView({
   onOpen: (l: Lead) => void;
   manager?: boolean;
 }) {
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
+  const roleMap = useAllUserRoles();
+  const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
   return (
     <div className="surface-card overflow-x-auto">
       <table className="w-full text-sm">
@@ -636,14 +639,15 @@ function LeadDetail({
   canWrite: boolean;
   onClose: () => void;
 }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const { data: activities = [] } = useLeadActivities(lead.id);
   const updateLead = useCrmMutation("leads", ["crm-leads"]);
   const logActivity = useCrmMutation("lead_activities", ["crm-lead-activities", "crm-leads"]);
   const [reached, setReached] = useState("yes");
   const [note, setNote] = useState("");
   const [nextDays, setNextDays] = useState("3");
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
+  const roleMap = useAllUserRoles();
+  const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
   const qc = useQueryClient();
   const remove = useMutation({
     mutationFn: async () => {
@@ -878,7 +882,8 @@ function LeadDetail({
 }
 
 function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
-  const create = useCrmMutation("leads", ["crm-leads"]);
+  const { profile } = useAuth();
+  const qc = useQueryClient();
   const machineTypes = useMachineTypeOptions();
   const [f, setF] = useState({
     name: "",
@@ -888,16 +893,26 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
     source: "walk_in",
     budget_range: "",
   });
+  const [opt, setOpt] = useState({
+    showroom_visited: false,
+    water_test_or_site_visit_paid: false,
+    timeline_stated: false,
+    timeline_notes: "",
+    budget_confirmed: false,
+    location_confirmed: false,
+  });
 
   const [dupe, setDupe] = useState<Lead | null>(null);
   const [checking, setChecking] = useState(false);
+  const [saving, setSaving] = useState(false);
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
 
-  const insert = () => {
-    create.mutate(
-      {
-        type: "insert",
-        values: {
+  const insert = async () => {
+    setSaving(true);
+    try {
+      const { data, error } = await supabase
+        .from("leads")
+        .insert({
           name: f.name.trim(),
           phone: f.phone.trim(),
           location: f.location.trim() || null,
@@ -905,18 +920,43 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
           source: f.source,
           budget_range: f.budget_range.trim() || null,
           stage: "new",
-
+          timeline_notes: opt.timeline_notes.trim() || null,
           rep_id: null,
-        },
-      },
-      {
-        onSuccess: () => {
-          toast.success("Lead captured at stage New, unassigned");
-          onClose();
-        },
-        onError: (e: unknown) => toast.error((e as Error).message),
-      },
-    );
+        } as never)
+        .select("id")
+        .single();
+      if (error) throw error;
+
+      const criteria = (
+        [
+          ["showroom_visited", opt.showroom_visited],
+          ["water_test_or_site_visit_paid", opt.water_test_or_site_visit_paid],
+          ["timeline_stated", opt.timeline_stated],
+          ["budget_confirmed", opt.budget_confirmed],
+          ["location_confirmed", opt.location_confirmed],
+        ] as const
+      ).filter(([, on]) => on);
+
+      if (criteria.length > 0) {
+        const { error: scoreError } = await supabase.from("lead_scoring_events").insert(
+          criteria.map(([criterion]) => ({
+            lead_id: (data as { id: string }).id,
+            criterion,
+            points: LEAD_SCORING_CRITERIA.find((c) => c.key === criterion)?.points ?? 0,
+            recorded_by: profile?.id ?? null,
+          })) as never,
+        );
+        if (scoreError) throw scoreError;
+      }
+
+      qc.invalidateQueries({ queryKey: ["crm-leads"] });
+      toast.success("Lead captured at stage New, unassigned");
+      onClose();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const submit = async () => {
@@ -925,7 +965,7 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
       return;
     }
     if (!f.phone.trim()) {
-      insert();
+      void insert();
       return;
     }
     setChecking(true);
@@ -943,7 +983,7 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
         setDupe(existing);
         return;
       }
-      insert();
+      void insert();
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -1021,6 +1061,43 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
           </div>
         </div>
 
+        <div className="space-y-3 rounded-xl border border-border bg-secondary/30 p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Optional — what you already know
+          </p>
+          {(
+            [
+              ["showroom_visited", "Visited the showroom"],
+              ["water_test_or_site_visit_paid", "Paid for a water test or site visit"],
+              ["budget_confirmed", "Budget confirmed"],
+              ["location_confirmed", "Location confirmed"],
+              ["timeline_stated", "Stated a purchase timeline"],
+            ] as const
+          ).map(([key, text]) => (
+            <label key={key} className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={opt[key]}
+                onCheckedChange={(v) => setOpt((p) => ({ ...p, [key]: v === true }))}
+              />
+              {text}
+            </label>
+          ))}
+          {opt.timeline_stated && (
+            <div className="space-y-1.5">
+              <Label>Timeline details</Label>
+              <Textarea
+                rows={2}
+                value={opt.timeline_notes}
+                onChange={(e) => setOpt((p) => ({ ...p, timeline_notes: e.target.value }))}
+                placeholder="e.g. wants to buy within 2 months"
+              />
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Leave these blank if you are not sure — they only add to the lead score when ticked.
+          </p>
+        </div>
+
         {dupe && (
           <div className="rounded-xl border border-warning/40 bg-warning/10 p-3 text-sm">
             <p className="font-semibold text-warning">Possible duplicate</p>
@@ -1032,7 +1109,7 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
               <Button size="sm" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button size="sm" onClick={insert} disabled={create.isPending}>
+              <Button size="sm" onClick={() => void insert()} disabled={saving}>
                 Create anyway
               </Button>
             </div>
@@ -1040,7 +1117,7 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
         )}
 
         {!dupe && (
-          <Button onClick={() => void submit()} disabled={create.isPending || checking}>
+          <Button onClick={() => void submit()} disabled={saving || checking}>
             {checking ? "Checking for duplicates…" : "Add lead"}
           </Button>
         )}
@@ -1051,7 +1128,7 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
 
 /** Lead quality score: 6 auditable criteria, each recorded in lead_scoring_events. */
 function LeadScoringPanel({ lead }: { lead: Lead }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const { data: events = [] } = useLeadScoringEvents(lead.id);
   const toggle = useToggleLeadCriterion();
   const team = useTeam().data ?? [];

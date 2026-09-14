@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { useSiteVisits } from "@/hooks/use-crm-extra";
 import { useCrmMutation, useTeam } from "@/hooks/use-crm";
 import { label } from "@/lib/crm";
@@ -23,9 +23,10 @@ export function SiteVisitsAwaitingAssignment() {
   const assign = useCrmMutation("site_visits", ["crm-site-visits"]);
   const [picks, setPicks] = useState<Record<string, string>>({});
 
+  const roleMap = useAllUserRoles();
   const pending = visits.filter((v) => v.status === "pending_assignment");
   const engineers = team.filter(
-    (t) => t.role === "engineer" || (profile?.id && t.id === profile.id),
+    (t) => personHasRole(roleMap, t, "engineer") || (profile?.id && t.id === profile.id),
   );
 
   const submit = (id: string) => {

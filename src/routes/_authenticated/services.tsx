@@ -32,11 +32,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { useSettings, settingNumber, useMachineTypeOptions } from "@/hooks/use-crm-extra";
 import { formatDate } from "@/lib/format";
 import {
-  serviceInterval,
+  serviceIntervalFor,
   isoDate,
   daysBetween,
   BADGE_GOOD,
@@ -44,6 +44,8 @@ import {
   BADGE_BAD,
   BADGE_NEUTRAL,
   canSeeServiceContact,
+  hasAnyRole,
+  type RoleInput,
 } from "@/lib/crm";
 import { useServices, useTeam, useCrmMutation, nameOf, type ServiceRecord } from "@/hooks/use-crm";
 import { cn } from "@/lib/utils";
@@ -78,8 +80,8 @@ const typeLabel = (t: string | null | undefined) =>
   SERVICE_TYPES.find((x) => x.value === t)?.label ?? "Unclassified";
 
 /** Who may edit/complete a specific service record. */
-function canEditRecord(role: string | undefined, uid: string | undefined, s: ServiceRecord) {
-  if (role === "admin" || role === "chief_engineer" || role === "sales_head") return true;
+function canEditRecord(role: RoleInput, uid: string | undefined, s: ServiceRecord) {
+  if (hasAnyRole(role, "admin", "chief_engineer", "sales_head")) return true;
   if (uid && s.recorded_by === uid) return true;
   return !!uid && s.assigned_engineer_id === uid;
 }
@@ -130,14 +132,13 @@ export function useServiceFulfillments() {
 }
 
 function ServicesPage() {
-  const { profile } = useAuth();
-  const canCreate = CAN_CREATE.includes(profile?.role ?? "");
-  const canAssign = profile?.role === "chief_engineer" || profile?.role === "admin";
-  const showContact = canSeeServiceContact(profile?.role);
-  const canEditAny = (s: ServiceRecord) => canEditRecord(profile?.role, profile?.id, s);
+  const { profile, hasRole, roles } = useAuth();
+  const canCreate = roles.some((r) => CAN_CREATE.includes(r));
+  const canAssign = hasRole("chief_engineer") || hasRole("admin");
+  const showContact = canSeeServiceContact(roles);
+  const canEditAny = (s: ServiceRecord) => canEditRecord(roles, profile?.id, s);
   const { data: services = [] } = useServices();
   const { data: settings } = useSettings();
-  const defaultInterval = settingNumber(settings, "default_service_interval_months");
   const { data: team = [] } = useTeam();
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<ServiceRecord | null>(null);
@@ -154,7 +155,7 @@ function ServicesPage() {
   const unscheduled = services.filter((s) => !s.next_due_date);
 
   const [tab, setTab] = useState<ServiceType | "unclassified">("commercial_industrial");
-  const canDelete = CAN_DELETE.includes(profile?.role ?? "");
+  const canDelete = roles.some((r) => CAN_DELETE.includes(r));
   const counts = {
     commercial_industrial: services.filter(
       (s) => s.machine_service_type === "commercial_industrial",
@@ -359,12 +360,13 @@ function ServicesPage() {
 }
 
 function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onClose: () => void }) {
-  const { profile } = useAuth();
+  const { profile, hasRole, roles } = useAuth();
   const mutate = useCrmMutation("services", ["crm-services"]);
   const { data: settings } = useSettings();
-  const defaultInterval = settingNumber(settings, "default_service_interval_months");
+  const commercialMonths = settingNumber(settings, "service_interval_commercial_months");
+  const undersinkMonths = settingNumber(settings, "service_interval_undersink_months");
   const machineTypes = useMachineTypeOptions();
-  const showContact = canSeeServiceContact(profile?.role);
+  const showContact = canSeeServiceContact(roles);
   const { data: fulfillments = [] } = useServiceFulfillments();
   const [search, setSearch] = useState("");
   const [f, setF] = useState({
@@ -417,7 +419,10 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
     let next = f.next_due_date;
     if (!next && f.last_service_date) {
       const d = new Date(f.last_service_date);
-      d.setMonth(d.getMonth() + serviceInterval(f.machine_type, defaultInterval));
+      d.setMonth(
+        d.getMonth() +
+          serviceIntervalFor(f.machine_service_type, commercialMonths, undersinkMonths),
+      );
       next = isoDate(d);
     }
     const values = {
@@ -633,10 +638,11 @@ function ServiceRowMenu({
 }
 
 function AssignEngineer({ record }: { record: ServiceRecord }) {
-  const { profile } = useAuth();
+  const { profile, hasRole, roles } = useAuth();
   const { data: team = [] } = useTeam();
   const mutate = useCrmMutation("services", ["crm-services"]);
-  const engineers = team.filter((t) => t.role === "engineer" || t.role === "chief_engineer");
+  const roleMap = useAllUserRoles();
+  const engineers = team.filter((t) => personHasRole(roleMap, t, "engineer", "chief_engineer"));
 
   const assign = (engineerId: string) => {
     mutate.mutate(

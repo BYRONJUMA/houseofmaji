@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { formatKES, formatDate } from "@/lib/format";
 import {
   isCrmManager,
@@ -60,9 +60,9 @@ export const Route = createFileRoute("/_authenticated/crm/sales")({
 });
 
 function SalesPage() {
-  const { profile } = useAuth();
-  const manager = isCrmManager(profile?.role);
-  const canWrite = canWriteCrm(profile?.role);
+  const { profile, roles } = useAuth();
+  const manager = isCrmManager(roles);
+  const canWrite = canWriteCrm(roles);
   const { data: invoices = [] } = useInvoices();
   const { data: targets = [] } = useTargets();
   const { data: team = [] } = useTeam();
@@ -98,7 +98,8 @@ function SalesPage() {
   const target = targets.find((t) => isoDate(monthStart(t.month)) === isoDate(from));
   const revenueTarget = num(target?.revenue_target);
   const dealsTarget = num(target?.deals_target);
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
+  const roleMap = useAllUserRoles();
+  const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
 
   const perRep = reps
     .map((r) => ({
@@ -331,7 +332,7 @@ function InvoiceDialog({
   onClose: () => void;
   team: { id: string; full_name: string; role: string }[];
 }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const create = useCrmMutation("invoices", ["crm-invoices"]);
   const [f, setF] = useState({
     invoice_no: "",
@@ -343,7 +344,8 @@ function InvoiceDialog({
     rep_id: profile?.id ?? "none",
   });
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
-  const reps = team.filter((t) => t.role === "sales_rep" || t.role === "sales_head");
+  const roleMap = useAllUserRoles();
+  const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
 
   const submit = () => {
     if (!f.invoice_no.trim() || !f.client_name.trim() || !f.amount) {

@@ -34,8 +34,8 @@ export const Route = createFileRoute("/_authenticated/crm/machines")({
 type Row = { id: string; active: boolean } & Record<string, unknown>;
 
 function MachinesPage() {
-  const { profile } = useAuth();
-  const allowed = canManageTaxonomy(profile?.role);
+  const { profile, roles } = useAuth();
+  const allowed = canManageTaxonomy(roles);
   const cats = useMachineCategories();
   const types = useMachineTypes();
   const caps = useMachineCapacities();

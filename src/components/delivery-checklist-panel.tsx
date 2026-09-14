@@ -43,12 +43,12 @@ export function DeliveryChecklistPanel({
   fulfillment: Fulfillment;
   names: Record<string, string>;
 }) {
-  const { profile } = useAuth();
+  const { profile, hasRole } = useAuth();
   const { data: checklist, isLoading } = useDeliveryChecklist(fulfillment.id);
   const save = useSaveChecklist(fulfillment.id);
 
   const canEdit =
-    profile?.role === "engineer" || profile?.role === "chief_engineer" || profile?.role === "admin";
+    hasRole("engineer") || hasRole("chief_engineer") || hasRole("admin");
   const available = ["assembling", "delivery", "installed"].includes(fulfillment.current_stage);
   const capacity =
     fulfillment.capacity_lph != null
@@ -323,7 +323,7 @@ export function DeliveryChecklistPanel({
             title="Approved By (Chief Engineer)"
             name={checklist?.chief_signoff_name ?? ""}
             at={checklist?.chief_signoff_at ?? null}
-            disabled={profile?.role !== "chief_engineer" && profile?.role !== "admin"}
+            disabled={!hasRole("chief_engineer") && !hasRole("admin")}
             defaultName={profile?.full_name ?? ""}
             onSign={(name) =>
               patch({ chief_signoff_name: name, chief_signoff_at: new Date().toISOString() })

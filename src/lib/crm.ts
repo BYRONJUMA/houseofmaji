@@ -121,6 +121,21 @@ export const SERVICE_INTERVAL_MONTHS: Record<string, number> = {
   Softener: 12,
 };
 
+/**
+ * Months between service visits for a record, from the two configurable
+ * intervals. Unclassified records use the shorter of the two so nothing
+ * silently drifts overdue.
+ */
+export function serviceIntervalFor(
+  serviceType: string | null | undefined,
+  commercialMonths: number,
+  undersinkMonths: number,
+) {
+  if (serviceType === "commercial_industrial") return commercialMonths;
+  if (serviceType === "undersink") return undersinkMonths;
+  return Math.min(commercialMonths, undersinkMonths);
+}
+
 export function serviceInterval(
   machineType?: string | null,
   fallback: number = DEFAULT_SERVICE_INTERVAL_MONTHS,
@@ -129,19 +144,29 @@ export function serviceInterval(
   return SERVICE_INTERVAL_MONTHS[machineType] ?? fallback;
 }
 
-export const isCrmManager = (role?: string | null) => role === "admin" || role === "sales_head";
+/** A single role, or every role a person holds — permissions are the union. */
+export type RoleInput = string | null | undefined | string[];
+
+export const roleList = (v: RoleInput) => (Array.isArray(v) ? v : v ? [v] : []);
+
+/** Does this person hold at least one of the given roles? */
+export const hasAnyRole = (v: RoleInput, ...wanted: string[]) => {
+  const list = roleList(v);
+  return wanted.some((w) => list.includes(w));
+};
+
+export const isCrmManager = (v?: RoleInput) => hasAnyRole(v, "admin", "sales_head");
 /** Roles allowed to manage the machine taxonomy lists. */
-export const canManageTaxonomy = (role?: string | null) =>
-  role === "admin" || role === "sales_head" || role === "chief_engineer";
+export const canManageTaxonomy = (v?: RoleInput) =>
+  hasAnyRole(v, "admin", "sales_head", "chief_engineer");
 /** Roles allowed to see client contact details on service records. */
-export const canSeeServiceContact = (role?: string | null) =>
-  role === "admin" || role === "sales_head" || role === "chief_engineer";
+export const canSeeServiceContact = (v?: RoleInput) =>
+  hasAnyRole(v, "admin", "sales_head", "chief_engineer");
 /** Roles that can open the CRM section (chief engineer has read-only context access). */
-export const isCrmMember = (role?: string | null) =>
-  role === "admin" || role === "sales_head" || role === "sales_rep" || role === "chief_engineer";
+export const isCrmMember = (v?: RoleInput) =>
+  hasAnyRole(v, "admin", "sales_head", "sales_rep", "chief_engineer");
 /** Roles allowed to create/edit CRM sales-side records. */
-export const canWriteCrm = (role?: string | null) =>
-  role === "admin" || role === "sales_head" || role === "sales_rep";
+export const canWriteCrm = (v?: RoleInput) => hasAnyRole(v, "admin", "sales_head", "sales_rep");
 
 /* ------------------------------ dates ------------------------------ */
 

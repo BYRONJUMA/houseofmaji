@@ -47,7 +47,7 @@ function AccountPage() {
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-wide text-muted-foreground">Role</dt>
-                <dd className="font-medium">{ROLE_LABEL[profile.role] ?? profile.role}</dd>
+                <dd className="font-medium">{ROLE_LABEL[profile.role ?? ""] ?? profile.role}</dd>
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-wide text-muted-foreground">Joined</dt>

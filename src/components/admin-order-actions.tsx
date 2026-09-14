@@ -1,3 +1,4 @@
+import { personHasRole, useAllUserRoles } from "@/hooks/use-auth";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Trash2 } from "lucide-react";
@@ -47,7 +48,7 @@ export type AdminFulfillment = {
   current_stage: string;
 };
 
-type Person = { id: string; full_name: string; role: string };
+type Person = { id: string; full_name: string; role: string | null };
 
 const NONE = "__none__";
 
@@ -63,7 +64,8 @@ export function AdminOrderActions({
   const [confirming, setConfirming] = useState(false);
   const [form, setForm] = useState(fulfillment);
 
-  const engineers = people.filter((p) => p.role === "engineer" || p.role === "chief_engineer");
+  const roleMap = useAllUserRoles();
+  const engineers = people.filter((p) => personHasRole(roleMap, p, "engineer", "chief_engineer"));
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["fulfillments"] });

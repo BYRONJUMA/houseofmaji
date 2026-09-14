@@ -6,7 +6,7 @@ import { useAllPayments, totalPaid } from "@/hooks/use-payments";
 import { useLeads, useInvoices, useServices, useTeam } from "@/hooks/use-crm";
 import { useSiteVisits } from "@/hooks/use-crm-extra";
 import { formatKES } from "@/lib/format";
-import { STAGES, STAGE_LABEL, STAGE_DOT, ROLE_LABEL, ROLE_HOME, type Stage } from "@/lib/stages";
+import { STAGES, STAGE_LABEL, STAGE_DOT, ROLE_LABEL, roleHome, type Stage } from "@/lib/stages";
 import { LEAD_STAGES, LEAD_STAGE_LABEL, LEAD_STAGE_BADGE, daysBetween, num } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 
@@ -49,8 +49,8 @@ function Tile({
  * once they click through, which is enforced by the destination pages.
  */
 export function UnifiedSummary({ title = "Business summary" }: { title?: string }) {
-  const { profile } = useAuth();
-  const machinesHome = ROLE_HOME[profile?.role ?? ""] ?? "/";
+  const { profile, roles } = useAuth();
+  const machinesHome = roleHome(roles);
 
   const { data: fulfillments = [] } = useQuery({
     queryKey: ["summary-fulfillments"],
