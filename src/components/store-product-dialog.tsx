@@ -134,11 +134,29 @@ export function StoreProductDialog({
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>Category</Label>
-              <Input
-                value={f.category}
-                onChange={(e) => set("category", e.target.value)}
-                placeholder="Optional"
-              />
+              <Select value={current} onValueChange={(v) => set("category", v)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {catOptions.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c === legacyCat ? `${c} (not in list)` : c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {catOptions.length === 0 && (
+                <p className="text-xs text-muted-foreground">
+                  No categories yet — an admin can add them in Settings.
+                </p>
+              )}
+              {legacyCat && (
+                <p className="text-xs text-warning">
+                  This product’s category isn’t in the managed list — pick a real category to fix
+                  it.
+                </p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label>Unit</Label>
