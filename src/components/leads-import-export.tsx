@@ -23,6 +23,12 @@ type LeadRow = {
   follow_up_due_at: string | null;
   deal_value: number | string | null;
   budget_range?: string | null;
+  showroom_visited_at?: string | null;
+  water_test_or_site_visit_paid_at?: string | null;
+  timeline_stated_at?: string | null;
+  timeline_notes?: string | null;
+  budget_confirmed_at?: string | null;
+  location_confirmed_at?: string | null;
   created_at: string;
 };
 
@@ -36,6 +42,12 @@ type Parsed = {
   source: string | null;
   follow_up_due_at: string | null;
   rep_id: string | null;
+  showroom_visited_at: string | null;
+  water_test_or_site_visit_paid_at: string | null;
+  timeline_stated_at: string | null;
+  timeline_notes: string | null;
+  budget_confirmed_at: string | null;
+  location_confirmed_at: string | null;
 };
 
 type PreviewRow = { line: number; row: Parsed; flags: string[]; skipped: boolean };
@@ -50,7 +62,19 @@ const HEADERS = [
   "Type of Machine",
   "Lead Source",
   "Next Follow-up Date",
+  "Visited Showroom",
+  "Paid Water Test Or Site Visit",
+  "Stated Timeline",
+  "Budget Confirmed",
+  "Location Confirmed",
 ];
+
+/** Truthy text in a spreadsheet cell: yes/y/true/1/x/paid/done/confirmed. */
+function isYes(v: string) {
+  const s = norm(v);
+  if (!s) return false;
+  return ["yes", "y", "true", "1", "x", "paid", "done", "confirmed", "visited"].includes(s);
+}
 
 const norm = (s: string) => s.trim().toLowerCase().replace(/[\s_\-.()/]+/g, "");
 
@@ -186,6 +210,11 @@ export function LeadsImportExport({
       l.machine_interest ?? "",
       l.source ?? "",
       l.follow_up_due_at ? l.follow_up_due_at.slice(0, 10) : "",
+      l.showroom_visited_at ? "Yes" : "",
+      l.water_test_or_site_visit_paid_at ? "Yes" : "",
+      l.timeline_notes ?? (l.timeline_stated_at ? "Yes" : ""),
+      l.budget_confirmed_at ? "Yes" : "",
+      l.location_confirmed_at ? "Yes" : "",
     ]);
     downloadCsv(`house-of-maji-leads-${todayStamp()}.csv`, toCsv(HEADERS, rows));
     toast.success(`Exported ${leads.length} leads`);
@@ -234,6 +263,17 @@ export function LeadsImportExport({
           "town",
         ],
         source: ["leadsource", "source", "leadorigin", "channel"],
+        showroom: ["visitedshowroom", "showroomvisit", "showroomvisited", "showroom"],
+        watertest: [
+          "paidwatertestorsitevisit",
+          "paidwatertest",
+          "watertestpaid",
+          "sitevisitpaid",
+          "watertest",
+        ],
+        timeline: ["statedtimeline", "timeline", "purchasetimeline", "timelinestated"],
+        budgetconfirmed: ["budgetconfirmed", "confirmedbudget"],
+        locationconfirmed: ["locationconfirmed", "confirmedlocation"],
         budget: [
           "budgetrange",
           "budget",
@@ -271,6 +311,12 @@ export function LeadsImportExport({
               source: null,
               follow_up_due_at: null,
               rep_id: null,
+              showroom_visited_at: null,
+              water_test_or_site_visit_paid_at: null,
+              timeline_stated_at: null,
+              timeline_notes: null,
+              budget_confirmed_at: null,
+              location_confirmed_at: null,
             },
             flags: ["Skipped — missing name and contact"],
             skipped: true,
@@ -318,6 +364,10 @@ export function LeadsImportExport({
         }
 
 
+        const nowIso = new Date().toISOString();
+        const timelineText = pick(r, A.timeline);
+        const stamp = (yes: boolean) => (yes ? nowIso : null);
+
         if (phone && recentPhones.has(phone)) flags.push("Duplicate phone (48h)");
         if (phone) recentPhones.add(phone);
 
@@ -333,6 +383,12 @@ export function LeadsImportExport({
             source: pick(r, A.source) || null,
             follow_up_due_at,
             rep_id,
+            showroom_visited_at: stamp(isYes(pick(r, A.showroom))),
+            water_test_or_site_visit_paid_at: stamp(isYes(pick(r, A.watertest))),
+            timeline_stated_at: timelineText ? nowIso : null,
+            timeline_notes: timelineText || null,
+            budget_confirmed_at: stamp(isYes(pick(r, A.budgetconfirmed))),
+            location_confirmed_at: stamp(isYes(pick(r, A.locationconfirmed))),
           },
           flags,
           skipped: false,
