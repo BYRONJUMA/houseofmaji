@@ -237,6 +237,7 @@ function ServicesPage() {
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<ServiceRecord | null>(null);
   const mutate = useCrmMutation("services", ["crm-services"]);
+  const { status } = Route.useSearch();
 
   const overdue = services.filter((s) => s.next_due_date && daysUntil(s.next_due_date) < 0);
   const dueSoon = services.filter((s) => {
@@ -245,6 +246,13 @@ function ServicesPage() {
     return d >= 0 && d <= 30;
   });
   const unscheduled = services.filter((s) => !s.next_due_date);
+
+  // Zone counts drive the clickable summary tiles.
+  const redCount = services.filter((s) => zoneOf(s) === "bad").length;
+  const orangeCount = services.filter((s) => zoneOf(s) === "warn").length;
+  const greenCount = services.filter((s) => zoneOf(s) === "good").length;
+  const unscheduledCount = unscheduled.length;
+  const statusActive = status;
 
   const [tab, setTab] = useState<ServiceType | "unclassified">("commercial_industrial");
   const canDelete = roles.some((r) => CAN_DELETE.includes(r));
@@ -255,9 +263,22 @@ function ServicesPage() {
     undersink: services.filter((s) => s.machine_service_type === "undersink").length,
     unclassified: services.filter((s) => !s.machine_service_type).length,
   };
-  const visible = services.filter((s) =>
-    tab === "unclassified" ? !s.machine_service_type : s.machine_service_type === tab,
-  );
+  const visible = services.filter((s) => {
+    const byTab = tab === "unclassified" ? !s.machine_service_type : s.machine_service_type === tab;
+    const byStatus = status === "all" ? true : zoneOf(s) === STATUS_ZONE[status];
+    return byTab && byStatus;
+  });
+
+  const statusLabel =
+    status === "all"
+      ? null
+      : status === "red"
+        ? "due ≤3 days / overdue"
+        : status === "orange"
+          ? "due in 4–5 days"
+          : status === "green"
+            ? "on track (>5 days)"
+            : "not scheduled";
 
   return (
     <AppShell
