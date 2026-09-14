@@ -22,6 +22,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useStoreLocation } from "@/hooks/use-store-location";
 import {
   locationLabel,
+  productTypeLabel,
   useCanWriteStore,
   useStoreProductMutation,
   useStoreProducts,
