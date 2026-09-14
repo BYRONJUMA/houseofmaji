@@ -50,9 +50,18 @@ export function StoreProductDialog({
   const hasMargin = f.buying_price.trim() !== "" && f.selling_price.trim() !== "";
   const margin = hasMargin ? selling - buying : null;
 
+  const activeCats = categories.filter((c) => c.active).map((c) => c.name);
+  const current = f.category.trim();
+  const legacyCat = current && !activeCats.includes(current) ? current : null;
+  const catOptions = legacyCat ? [legacyCat, ...activeCats] : activeCats;
+
   const submit = () => {
     if (!f.name.trim()) {
       toast.error("Product title is required");
+      return;
+    }
+    if (!current) {
+      toast.error("Category is required");
       return;
     }
     if (!f.product_type) {
