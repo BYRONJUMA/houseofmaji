@@ -634,7 +634,7 @@ function ServiceRowMenu({
             </DropdownMenuItem>
           )}
           <DropdownMenuItem onClick={() => setHistoryOpen(true)}>
-            <History className="mr-2 h-4 w-4" /> Visit history
+            <HistoryIcon className="mr-2 h-4 w-4" /> Visit history
           </DropdownMenuItem>
           {canDelete && (
             <DropdownMenuItem
