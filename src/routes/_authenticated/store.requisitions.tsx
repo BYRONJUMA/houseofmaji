@@ -145,8 +145,8 @@ function RequisitionsPage() {
                 <th className="px-4 py-3 text-right">Quantity</th>
                 <th className="px-4 py-3">Created by</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Delivery</th>
-                {canWrite && <th className="px-4 py-3 text-right">Actions</th>}
+                <th className="px-4 py-3">Next action by</th>
+                {showActions && <th className="px-4 py-3 text-right">Actions</th>}
               </tr>
             </thead>
             <tbody>
