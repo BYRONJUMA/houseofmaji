@@ -552,6 +552,8 @@ function ServiceRowMenu({
   const { data: settings } = useSettings();
   const commercialMonths = settingNumber(settings, "service_interval_commercial_months");
   const undersinkMonths = settingNumber(settings, "service_interval_undersink_months");
+  const undersinkCommission = settingNumber(settings, "service_commission_undersink_kes");
+  const commercialCommission = settingNumber(settings, "service_commission_commercial_kes");
   const mutate = useCrmMutation("services", ["crm-services"]);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
