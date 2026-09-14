@@ -161,24 +161,12 @@ function RequisitionsPage() {
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{nameOf(team, r.created_by)}</td>
                   <td className="px-4 py-3">
-                    <StatusPill
-                      tone={
-                        r.status === "approved" ? "good" : r.status === "rejected" ? "bad" : "neutral"
-                      }
-                    >
-                      {r.status === "approved"
-                        ? "Approved"
-                        : r.status === "rejected"
-                          ? "Rejected"
-                          : "Pending"}
+                    <StatusPill tone={statusTone(r.status)}>
+                      {REQUISITION_STATUS_LABEL[r.status]}
                     </StatusPill>
                   </td>
-                  <td className="px-4 py-3">
-                    <StatusPill tone={r.delivery_status === "delivered" ? "good" : "neutral"}>
-                      {r.delivery_status === "delivered" ? "Delivered" : "Pending delivery"}
-                    </StatusPill>
-                  </td>
-                  {canWrite && (
+                  <td className="px-4 py-3 text-muted-foreground">{responsible(r)}</td>
+                  {showActions && (
                     <td className="px-4 py-3 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
