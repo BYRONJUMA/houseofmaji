@@ -157,28 +157,46 @@ function SettingsPage() {
     );
   }
 
+  const group = (fields: Field[]) =>
+    fields.map((f) => (
+      <div key={f.key} className="space-y-1.5">
+        <Label>{f.label}</Label>
+        <Input
+          type={f.type ?? "text"}
+          value={valueOf(f.key)}
+          onChange={(e) => setDraft((p) => ({ ...p, [f.key]: e.target.value }))}
+        />
+        {f.hint && <p className="text-xs text-muted-foreground">{f.hint}</p>}
+      </div>
+    ));
+
   return (
     <CrmShell title="Settings" subtitle="System-wide configuration" showBack>
-      <CrmCard title="General" className="max-w-2xl">
-        <div className="space-y-4">
-          {FIELDS.map((f) => (
-            <div key={f.key} className="space-y-1.5">
-              <Label>{f.label}</Label>
-              <Input
-                type={f.type ?? "text"}
-                value={valueOf(f.key)}
-                onChange={(e) => setDraft((p) => ({ ...p, [f.key]: e.target.value }))}
-              />
-              <p className="text-xs text-muted-foreground">{f.hint}</p>
-            </div>
-          ))}
-          <Button
-            onClick={() => save.mutate(FIELDS.map((f) => ({ key: f.key, value: valueOf(f.key) })))}
-            disabled={save.isPending}
-          >
-            Save settings
-          </Button>
-        </div>
+      <div className="max-w-2xl space-y-6">
+        <CrmCard title="General">
+          <div className="space-y-4">{group(GENERAL)}</div>
+        </CrmCard>
+
+        <CrmCard title="Lead scoring points">
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Points a lead earns for each step. Changes apply to scoring from now on — scores
+              already recorded stay as they are.
+            </p>
+            {group(SCORING)}
+          </div>
+        </CrmCard>
+
+        <CrmCard title="Stage thresholds & new-lead timeout">
+          <div className="space-y-4">{group(THRESHOLDS)}</div>
+        </CrmCard>
+
+        <Button
+          onClick={() => save.mutate(FIELDS.map((f) => ({ key: f.key, value: valueOf(f.key) })))}
+          disabled={save.isPending}
+        >
+          Save settings
+        </Button>
       </CrmCard>
     </CrmShell>
   );
