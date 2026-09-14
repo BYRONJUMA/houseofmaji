@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Droplets, LogOut, Menu, Wrench } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { ROLE_LABEL } from "@/lib/stages";
@@ -36,12 +36,18 @@ export function CrmShell({
   children: ReactNode;
   showBack?: boolean;
 }) {
-  const { profile, signOut, hasRole, roles } = useAuth();
+  const { profile, signOut, hasRole, roles, loading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
   const machines = hasMachinesAccess(roles);
+
+  // Users with no roles can only use their own profile page.
+  useEffect(() => {
+    if (loading || !profile) return;
+    if (roles.length === 0) navigate({ to: "/account", replace: true });
+  }, [loading, profile, roles, navigate]);
 
   const nav = [
     ...CRM_NAV,
