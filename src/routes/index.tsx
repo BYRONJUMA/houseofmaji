@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Droplets } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { ROLE_HOME } from "@/lib/stages";
+import { roleHome } from "@/lib/stages";
 
 export const Route = createFileRoute("/")({
   ssr: false,
@@ -33,7 +33,7 @@ function Index() {
     if (!session) {
       navigate({ to: "/auth", replace: true });
     } else if (profile) {
-      navigate({ to: ROLE_HOME[profile.role ?? ""] ?? "/auth", replace: true });
+      navigate({ to: roleHome(roles), replace: true });
     }
   }, [loading, session, profile, navigate]);
 

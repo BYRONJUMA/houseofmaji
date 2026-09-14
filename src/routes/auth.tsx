@@ -4,7 +4,7 @@ import { Droplets, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { ROLE_HOME, ROLE_LABEL } from "@/lib/stages";
+import { roleHome, ROLE_LABEL } from "@/lib/stages";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -73,11 +73,11 @@ function PasswordField({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { session, profile } = useAuth();
+  const { session, profile, roles } = useAuth();
 
   useEffect(() => {
     if (session && profile) {
-      navigate({ to: ROLE_HOME[profile.role ?? ""] ?? "/", replace: true });
+      navigate({ to: roleHome(roles), replace: true });
     }
   }, [session, profile, navigate]);
 
@@ -198,6 +198,7 @@ function AuthPage() {
                           {ROLE_LABEL[r]}
                         </SelectItem>
                       ))}
+                      <SelectItem value="none">None / Equipment tracking only</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
