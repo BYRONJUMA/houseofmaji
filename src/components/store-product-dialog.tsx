@@ -90,7 +90,8 @@ export function StoreProductDialog({
         <div className="grid gap-3">
           {product?.product_code && (
             <p className="text-xs text-muted-foreground">
-              Product code <span className="font-semibold text-foreground">#{product.product_code}</span>
+              Product code{" "}
+              <span className="font-semibold text-foreground">#{product.product_code}</span>
             </p>
           )}
           <div className="space-y-1.5">
