@@ -85,7 +85,7 @@ function MachinesPage() {
   );
 }
 
-function ListEditor({
+export function ListEditor({
   title,
   table,
   queryKey,
