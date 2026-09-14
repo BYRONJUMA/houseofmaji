@@ -25,7 +25,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { session, profile, loading } = useAuth();
+  const { session, profile, roles, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ function Index() {
     } else if (profile) {
       navigate({ to: roleHome(roles), replace: true });
     }
-  }, [loading, session, profile, navigate]);
+  }, [loading, session, profile, roles, navigate]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 text-center">
