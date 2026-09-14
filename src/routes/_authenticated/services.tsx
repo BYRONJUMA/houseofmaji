@@ -58,7 +58,15 @@ import { useServices, useTeam, useCrmMutation, nameOf, type ServiceRecord } from
 import { useServiceVisitLog } from "@/hooks/use-service-visits";
 import { cn } from "@/lib/utils";
 
+const STATUS_FILTERS = ["all", "red", "orange", "green", "unscheduled"] as const;
+type StatusFilter = (typeof STATUS_FILTERS)[number];
+
 export const Route = createFileRoute("/_authenticated/services")({
+  validateSearch: (input: Record<string, unknown>) => ({
+    status: STATUS_FILTERS.includes(input.status as StatusFilter)
+      ? (input.status as StatusFilter)
+      : "all",
+  }),
   head: () => ({
     meta: [
       { title: "Service Visits — Machines" },
