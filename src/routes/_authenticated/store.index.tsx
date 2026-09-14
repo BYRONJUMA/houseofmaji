@@ -110,6 +110,9 @@ function StoreProductsPage() {
                 <th className="px-4 py-3">Brand</th>
                 <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Unit</th>
+                <th className="px-4 py-3">Type</th>
+                <th className="px-4 py-3 text-right">Buying</th>
+                <th className="px-4 py-3 text-right">Selling</th>
                 <th className="px-4 py-3 text-right">{locationLabel(location)} Qty</th>
                 {canWrite && <th className="px-4 py-3 text-right">Manage</th>}
               </tr>
