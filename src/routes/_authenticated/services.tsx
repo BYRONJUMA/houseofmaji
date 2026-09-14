@@ -36,7 +36,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSettings, settingNumber, useMachineTypeOptions } from "@/hooks/use-crm-extra";
 import { formatDate } from "@/lib/format";
 import {
-  serviceInterval,
+  serviceIntervalFor,
   isoDate,
   daysBetween,
   BADGE_GOOD,
@@ -139,7 +139,6 @@ function ServicesPage() {
   const canEditAny = (s: ServiceRecord) => canEditRecord(roles, profile?.id, s);
   const { data: services = [] } = useServices();
   const { data: settings } = useSettings();
-  const defaultInterval = settingNumber(settings, "default_service_interval_months");
   const { data: team = [] } = useTeam();
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<ServiceRecord | null>(null);
@@ -364,7 +363,8 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
   const { profile, hasRole, roles } = useAuth();
   const mutate = useCrmMutation("services", ["crm-services"]);
   const { data: settings } = useSettings();
-  const defaultInterval = settingNumber(settings, "default_service_interval_months");
+  const commercialMonths = settingNumber(settings, "service_interval_commercial_months");
+  const undersinkMonths = settingNumber(settings, "service_interval_undersink_months");
   const machineTypes = useMachineTypeOptions();
   const showContact = canSeeServiceContact(roles);
   const { data: fulfillments = [] } = useServiceFulfillments();
@@ -419,7 +419,10 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
     let next = f.next_due_date;
     if (!next && f.last_service_date) {
       const d = new Date(f.last_service_date);
-      d.setMonth(d.getMonth() + serviceInterval(f.machine_type, defaultInterval));
+      d.setMonth(
+        d.getMonth() +
+          serviceIntervalFor(f.machine_service_type, commercialMonths, undersinkMonths),
+      );
       next = isoDate(d);
     }
     const values = {

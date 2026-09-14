@@ -129,10 +129,21 @@ export function useSettings() {
 }
 
 export const SETTING_DEFAULTS: Record<string, string> = {
-  default_service_interval_months: "6",
+  service_interval_commercial_months: "6",
+  service_interval_undersink_months: "12",
   low_stock_threshold: "50",
   company_name: "Machines",
   company_logo_url: "",
+  score_points_showroom_visited: "5",
+  score_points_water_test_or_site_visit_paid: "5",
+  score_points_timeline_stated: "3",
+  score_points_responded_within_agreed_period: "3",
+  score_points_budget_confirmed: "2",
+  score_points_location_confirmed: "2",
+  score_threshold_hot: "15",
+  score_threshold_warm: "8",
+  new_lead_timeout_days: "14",
+  new_lead_timeout_max_score: "7",
 };
 
 export function settingNumber(map: Record<string, string> | undefined, key: string) {

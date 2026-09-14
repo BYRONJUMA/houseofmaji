@@ -121,6 +121,21 @@ export const SERVICE_INTERVAL_MONTHS: Record<string, number> = {
   Softener: 12,
 };
 
+/**
+ * Months between service visits for a record, from the two configurable
+ * intervals. Unclassified records use the shorter of the two so nothing
+ * silently drifts overdue.
+ */
+export function serviceIntervalFor(
+  serviceType: string | null | undefined,
+  commercialMonths: number,
+  undersinkMonths: number,
+) {
+  if (serviceType === "commercial_industrial") return commercialMonths;
+  if (serviceType === "undersink") return undersinkMonths;
+  return Math.min(commercialMonths, undersinkMonths);
+}
+
 export function serviceInterval(
   machineType?: string | null,
   fallback: number = DEFAULT_SERVICE_INTERVAL_MONTHS,
