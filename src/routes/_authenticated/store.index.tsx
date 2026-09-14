@@ -29,6 +29,7 @@ import {
   type StoreProduct,
 } from "@/hooks/use-store";
 import { num } from "@/lib/crm";
+import { formatKES } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/store/")({
   head: () => ({
