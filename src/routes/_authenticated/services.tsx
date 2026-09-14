@@ -589,10 +589,14 @@ function ServiceRowMenu({
       void qc.invalidateQueries({ queryKey: ["fulfillment-services"] });
       void qc.invalidateQueries({ queryKey: ["commissions"] });
       const baseMsg = `Visit logged — next service due ${formatDate(nextDue)}`;
-      if (!record.machine_service_type) toast.warning(`${baseMsg}. ${commissionNote}`);
-      else toast.success(commissionNote ? `${baseMsg} · ${commissionNote}` : baseMsg);
+      if (!result.commission_recorded) toast.warning(`${baseMsg}. ${commissionNote}`);
+      else toast.success(`${baseMsg} · ${commissionNote}`);
+      void qc.invalidateQueries({ queryKey: ["crm-services"] });
     } catch (e) {
-      toast.error((e as Error).message);
+      const msg = (e as Error).message;
+      toast.error(msg);
+      if (msg.startsWith("Already marked complete"))
+        void qc.invalidateQueries({ queryKey: ["crm-services"] });
     } finally {
       setCompleting(false);
     }
