@@ -33,15 +33,28 @@ export function StoreProductDialog({
   const [f, setF] = useState({
     name: product?.name ?? "",
     sku: product?.sku ?? "",
-    brand: product?.brand ?? "",
+    brand: product?.brand ?? "House of Maji",
     category: product?.category ?? "",
     unit: product?.unit ?? "",
+    buying_price: product?.buying_price != null ? String(product.buying_price) : "",
+    selling_price: product?.selling_price != null ? String(product.selling_price) : "",
+    tax_category_percent: String(product?.tax_category_percent ?? 16),
+    product_type: product?.product_type ?? "finished_product",
   });
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
 
+  const buying = Number(f.buying_price);
+  const selling = Number(f.selling_price);
+  const hasMargin = f.buying_price.trim() !== "" && f.selling_price.trim() !== "";
+  const margin = hasMargin ? selling - buying : null;
+
   const submit = () => {
     if (!f.name.trim()) {
-      toast.error("Product name is required");
+      toast.error("Product title is required");
+      return;
+    }
+    if (!f.product_type) {
+      toast.error("Product type is required");
       return;
     }
     const values: Record<string, unknown> = {
@@ -50,6 +63,10 @@ export function StoreProductDialog({
       brand: f.brand.trim() || null,
       category: f.category.trim() || null,
       unit: f.unit.trim() || null,
+      buying_price: f.buying_price.trim() === "" ? null : Number(f.buying_price),
+      selling_price: f.selling_price.trim() === "" ? null : Number(f.selling_price),
+      tax_category_percent: Number(f.tax_category_percent) || 16,
+      product_type: f.product_type,
     };
     if (!product) values.created_by = createdBy ?? null;
     mutate.mutate(
