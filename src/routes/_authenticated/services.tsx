@@ -158,7 +158,9 @@ function DueIcon({ next }: { next: string | null }) {
   const b = dueBadge(next);
   const { Icon, cls } = ZONE_ICON[b.zone];
   return (
-    <Icon className={cn("h-6 w-6 shrink-0", cls)} aria-label={b.text} title={b.text} />
+    <span title={b.text}>
+      <Icon className={cn("h-6 w-6 shrink-0", cls)} aria-label={b.text} />
+    </span>
   );
 }
 
@@ -253,12 +255,15 @@ function ServicesPage() {
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="text-sm font-semibold">{s.client_name}</p>
-                        <DueBadge next={s.next_due_date} />
+                        <DueIcon next={s.next_due_date} />
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {s.machine_type || "machine"}
-                        {showContact ? ` · ${s.contact || "no contact"}` : ""} · due{" "}
-                        {formatDate(s.next_due_date)}
+                      <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <span>
+                          {s.machine_type || "machine"}
+                          {showContact ? ` · ${s.contact || "no contact"}` : ""} · due{" "}
+                          {formatDate(s.next_due_date)}
+                        </span>
+                        <DueText next={s.next_due_date} />
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -327,7 +332,7 @@ function ServicesPage() {
                     <td className="px-3 py-2 font-medium">
                       <div className="flex items-center gap-2">
                         {s.client_name}
-                        <DueBadge next={s.next_due_date} />
+                        <DueIcon next={s.next_due_date} />
                       </div>
                     </td>
                     {showContact && <td className="px-3 py-2">{s.contact || "—"}</td>}
@@ -342,7 +347,16 @@ function ServicesPage() {
                     <td className="px-3 py-2">{s.fulfillment_id ? "Linked" : "Manual"}</td>
                     <td className="px-3 py-2">{formatDate(s.last_service_date)}</td>
                     <td className="px-3 py-2">
-                      {s.next_due_date ? formatDate(s.next_due_date) : "—"}
+                      {s.next_due_date ? (
+                        <div className="flex flex-wrap items-center gap-2">
+                          <DueText next={s.next_due_date} />
+                          <span className="text-xs text-muted-foreground">
+                            {formatDate(s.next_due_date)}
+                          </span>
+                        </div>
+                      ) : (
+                        <DueText next={s.next_due_date} />
+                      )}
                     </td>
                     <td className="px-3 py-2">{nameOf(team, s.recorded_by)}</td>
                     <td className="px-3 py-2">
