@@ -9,6 +9,8 @@ import {
   History as HistoryIcon,
   MoreVertical,
   Plus,
+  ReceiptText,
+  Stethoscope,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
