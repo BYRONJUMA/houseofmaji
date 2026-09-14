@@ -72,3 +72,11 @@ export const ROLE_HOME: Record<string, string> = {
   engineer: "/engineer",
   admin: "/admin",
 };
+
+/** Landing page for a person, using their highest-priority role. */
+export function roleHome(roles: string[]) {
+  for (const r of ["admin", "chief_engineer", "sales_head", "engineer", "sales_rep"]) {
+    if (roles.includes(r)) return ROLE_HOME[r]!;
+  }
+  return "/account";
+}

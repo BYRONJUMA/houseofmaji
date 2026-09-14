@@ -34,7 +34,7 @@ export function AdminUserActions({
   user,
   isSelf,
 }: {
-  user: { id: string; full_name: string; role: string };
+  user: { id: string; full_name: string; role: string | null };
   isSelf: boolean;
 }) {
   const qc = useQueryClient();
@@ -147,7 +147,7 @@ function EditUserDialog({
   onClose,
   onSaved,
 }: {
-  user: { id: string; full_name: string; role: string };
+  user: { id: string; full_name: string; role: string | null };
   onClose: () => void;
   onSaved: () => void;
 }) {

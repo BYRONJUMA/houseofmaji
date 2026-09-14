@@ -47,7 +47,7 @@ export type AdminFulfillment = {
   current_stage: string;
 };
 
-type Person = { id: string; full_name: string; role: string };
+type Person = { id: string; full_name: string; role: string | null };
 
 const NONE = "__none__";
 

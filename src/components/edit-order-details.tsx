@@ -4,6 +4,7 @@ import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { hasAnyRole, type RoleInput } from "@/lib/crm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,13 +36,13 @@ export type EditableFulfillment = {
 };
 
 export function canEditOrderDetails(
-  role: string | undefined,
+  role: RoleInput,
   userId: string | undefined,
   salesRepId: string | null,
 ) {
-  if (!role || !userId) return false;
-  if (role === "admin" || role === "chief_engineer") return true;
-  return role === "sales_rep" && !!salesRepId && salesRepId === userId;
+  if (!userId) return false;
+  if (hasAnyRole(role, "admin", "chief_engineer")) return true;
+  return hasAnyRole(role, "sales_rep") && !!salesRepId && salesRepId === userId;
 }
 
 export function EditOrderDetails({ fulfillment }: { fulfillment: EditableFulfillment }) {

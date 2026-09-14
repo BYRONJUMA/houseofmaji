@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { hasAnyRole, type RoleInput } from "@/lib/crm";
 
 export type StoreLocation = "in_house" | "warehouse";
 
@@ -170,9 +171,9 @@ export function useStoreAccessList() {
 }
 
 /** Admin + chief engineer always; anyone explicitly granted store access too. */
-export function useCanWriteStore(role?: string | null, userId?: string | null) {
+export function useCanWriteStore(role?: RoleInput, userId?: string | null) {
   const { data: access = [] } = useStoreAccessList();
-  if (role === "admin" || role === "chief_engineer") return true;
+  if (hasAnyRole(role, "admin", "chief_engineer")) return true;
   return !!userId && access.some((a) => a.user_id === userId);
 }
 

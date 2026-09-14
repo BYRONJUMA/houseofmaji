@@ -78,8 +78,8 @@ const typeLabel = (t: string | null | undefined) =>
   SERVICE_TYPES.find((x) => x.value === t)?.label ?? "Unclassified";
 
 /** Who may edit/complete a specific service record. */
-function canEditRecord(role: string | undefined, uid: string | undefined, s: ServiceRecord) {
-  if (role === "admin" || role === "chief_engineer" || role === "sales_head") return true;
+function canEditRecord(role: RoleInput, uid: string | undefined, s: ServiceRecord) {
+  if (hasAnyRole(role, "admin", "chief_engineer", "sales_head")) return true;
   if (uid && s.recorded_by === uid) return true;
   return !!uid && s.assigned_engineer_id === uid;
 }

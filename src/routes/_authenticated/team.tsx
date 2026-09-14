@@ -53,7 +53,8 @@ function TeamPage() {
   const { data: equipment = [] } = useEquipment();
 
   const perRole = profiles.reduce<Record<string, number>>((acc, p) => {
-    acc[p.role] = (acc[p.role] ?? 0) + 1;
+    const key = p.role ?? "none";
+    acc[key] = (acc[key] ?? 0) + 1;
     return acc;
   }, {});
 

@@ -2,22 +2,22 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Droplets, LogOut, Menu } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { ROLE_LABEL, ROLE_HOME } from "@/lib/stages";
+import { ROLE_LABEL, roleHome } from "@/lib/stages";
 import { isCrmMember } from "@/lib/crm";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { NotificationBell } from "@/components/notification-bell";
 import { BackButton } from "@/components/back-button";
 
-function navFor(role?: string) {
+function navFor(roles: string[]) {
   const items: { to: string; label: string }[] = [];
-  if (!role) return items;
-  items.push({ to: ROLE_HOME[role] ?? "/", label: "Dashboard" });
+  if (roles.length === 0) return [{ to: "/account", label: "My account" }];
+  items.push({ to: roleHome(roles), label: "Dashboard" });
   items.push({ to: "/commissions", label: "Commissions" });
   items.push({ to: "/services", label: "Services" });
   items.push({ to: "/store", label: "Store" });
   items.push({ to: "/account", label: "My account" });
-  if (isCrmMember(role)) items.push({ to: "/crm", label: "CRM" });
+  if (isCrmMember(roles)) items.push({ to: "/crm", label: "CRM" });
   return items;
 }
 
