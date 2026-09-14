@@ -31,7 +31,7 @@ export const Route = createFileRoute("/_authenticated/crm/machines")({
   component: MachinesPage,
 });
 
-type Row = { id: string; active: boolean } & Record<string, unknown>;
+export type Row = { id: string; active: boolean } & Record<string, unknown>;
 
 function MachinesPage() {
   const { profile, roles } = useAuth();
