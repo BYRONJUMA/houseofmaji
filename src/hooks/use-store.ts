@@ -14,6 +14,19 @@ export const locationLabel = (l: string) => (l === "warehouse" ? "Warehouse" : "
 export const otherLocation = (l: StoreLocation): StoreLocation =>
   l === "in_house" ? "warehouse" : "in_house";
 
+export type StoreProductType = "finished_product" | "raw_material" | "service";
+
+export const PRODUCT_TYPES: { value: StoreProductType; label: string }[] = [
+  { value: "finished_product", label: "Finished Product" },
+  { value: "raw_material", label: "Raw Material" },
+  { value: "service", label: "Service" },
+];
+
+export const productTypeLabel = (t: string | null | undefined) =>
+  PRODUCT_TYPES.find((p) => p.value === t)?.label ?? "—";
+
+export const TAX_CATEGORIES: { value: number; label: string }[] = [{ value: 16, label: "VAT 16%" }];
+
 export type StoreProduct = {
   id: string;
   name: string;
@@ -22,6 +35,10 @@ export type StoreProduct = {
   brand: string | null;
   category: string | null;
   unit: string | null;
+  buying_price: number | null;
+  selling_price: number | null;
+  tax_category_percent: number | null;
+  product_type: StoreProductType;
   in_house_qty: number;
   warehouse_qty: number;
   created_by: string | null;

@@ -1555,6 +1555,7 @@ export type Database = {
       store_products: {
         Row: {
           brand: string | null
+          buying_price: number | null
           category: string | null
           created_at: string
           created_by: string | null
@@ -1562,13 +1563,17 @@ export type Database = {
           in_house_qty: number
           name: string
           product_code: string | null
+          product_type: Database["public"]["Enums"]["store_product_type"]
+          selling_price: number | null
           sku: string | null
+          tax_category_percent: number
           unit: string | null
           updated_at: string
           warehouse_qty: number
         }
         Insert: {
           brand?: string | null
+          buying_price?: number | null
           category?: string | null
           created_at?: string
           created_by?: string | null
@@ -1576,13 +1581,17 @@ export type Database = {
           in_house_qty?: number
           name: string
           product_code?: string | null
+          product_type?: Database["public"]["Enums"]["store_product_type"]
+          selling_price?: number | null
           sku?: string | null
+          tax_category_percent?: number
           unit?: string | null
           updated_at?: string
           warehouse_qty?: number
         }
         Update: {
           brand?: string | null
+          buying_price?: number | null
           category?: string | null
           created_at?: string
           created_by?: string | null
@@ -1590,7 +1599,10 @@ export type Database = {
           in_house_qty?: number
           name?: string
           product_code?: string | null
+          product_type?: Database["public"]["Enums"]["store_product_type"]
+          selling_price?: number | null
           sku?: string | null
+          tax_category_percent?: number
           unit?: string | null
           updated_at?: string
           warehouse_qty?: number
@@ -2137,6 +2149,7 @@ export type Database = {
       commission_role: "sales" | "assembly" | "installation"
       machine_service_type: "commercial_industrial" | "undersink"
       store_location: "in_house" | "warehouse"
+      store_product_type: "finished_product" | "raw_material" | "service"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2274,6 +2287,7 @@ export const Constants = {
       commission_role: ["sales", "assembly", "installation"],
       machine_service_type: ["commercial_industrial", "undersink"],
       store_location: ["in_house", "warehouse"],
+      store_product_type: ["finished_product", "raw_material", "service"],
     },
   },
 } as const
