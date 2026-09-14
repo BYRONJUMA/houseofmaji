@@ -888,6 +888,14 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
     source: "walk_in",
     budget_range: "",
   });
+  const [opt, setOpt] = useState({
+    showroom_visited: false,
+    water_test_or_site_visit_paid: false,
+    timeline_stated: false,
+    timeline_notes: "",
+    budget_confirmed: false,
+    location_confirmed: false,
+  });
 
   const [dupe, setDupe] = useState<Lead | null>(null);
   const [checking, setChecking] = useState(false);
@@ -905,7 +913,14 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
           source: f.source,
           budget_range: f.budget_range.trim() || null,
           stage: "new",
-
+          showroom_visited_at: opt.showroom_visited ? new Date().toISOString() : null,
+          water_test_or_site_visit_paid_at: opt.water_test_or_site_visit_paid
+            ? new Date().toISOString()
+            : null,
+          timeline_stated_at: opt.timeline_stated ? new Date().toISOString() : null,
+          timeline_notes: opt.timeline_notes.trim() || null,
+          budget_confirmed_at: opt.budget_confirmed ? new Date().toISOString() : null,
+          location_confirmed_at: opt.location_confirmed ? new Date().toISOString() : null,
           rep_id: null,
         },
       },
@@ -1019,6 +1034,43 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        <div className="space-y-3 rounded-xl border border-border bg-secondary/30 p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Optional — what you already know
+          </p>
+          {(
+            [
+              ["showroom_visited", "Visited the showroom"],
+              ["water_test_or_site_visit_paid", "Paid for a water test or site visit"],
+              ["budget_confirmed", "Budget confirmed"],
+              ["location_confirmed", "Location confirmed"],
+              ["timeline_stated", "Stated a purchase timeline"],
+            ] as const
+          ).map(([key, text]) => (
+            <label key={key} className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={opt[key]}
+                onCheckedChange={(v) => setOpt((p) => ({ ...p, [key]: v === true }))}
+              />
+              {text}
+            </label>
+          ))}
+          {opt.timeline_stated && (
+            <div className="space-y-1.5">
+              <Label>Timeline details</Label>
+              <Textarea
+                rows={2}
+                value={opt.timeline_notes}
+                onChange={(e) => setOpt((p) => ({ ...p, timeline_notes: e.target.value }))}
+                placeholder="e.g. wants to buy within 2 months"
+              />
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Leave these blank if you are not sure — they only add to the lead score when ticked.
+          </p>
         </div>
 
         {dupe && (
