@@ -63,12 +63,19 @@ export const Route = createFileRoute("/_authenticated/store/requisitions")({
 function RequisitionsPage() {
   const { profile, roles } = useAuth();
   const canWrite = useCanWriteStore(roles, profile?.id);
+  const isChief = roles.includes("chief_engineer") || roles.includes("admin");
   const [location] = useStoreLocation();
   const { data: requisitions = [], isLoading } = useRequisitions();
   const { data: items = [] } = useRequisitionItems();
   const { data: team = [] } = useTeam();
+  const roleMap = useAllUserRoles();
   const action = useRequisitionAction();
   const [creating, setCreating] = useState(false);
+  const [assigning, setAssigning] = useState<Requisition | null>(null);
+
+  const engineers = team.filter((t) =>
+    personHasRole(roleMap, t, "engineer", "chief_engineer", "admin"),
+  );
 
   const rows = requisitions.filter(
     (r) => r.source_location === location || r.destination_location === location,
@@ -76,21 +83,33 @@ function RequisitionsPage() {
   const qtyOf = (id: string) =>
     items.filter((i) => i.requisition_id === id).reduce((s, i) => s + num(i.quantity), 0);
 
-  const run = (type: "approve" | "reject" | "deliver", id: string) =>
+  const run = (type: "reject" | "collected" | "confirm", id: string) =>
     action.mutate(
       { type, id },
       {
         onSuccess: () =>
           toast.success(
-            type === "approve"
-              ? "Requisition approved"
-              : type === "reject"
-                ? "Requisition rejected"
-                : "Marked delivered — stock moved",
+            type === "reject"
+              ? "Requisition rejected"
+              : type === "collected"
+                ? "Marked collected — awaiting chief engineer confirmation"
+                : "Receipt confirmed — stock moved",
           ),
         onError: (e: Error) => toast.error(e.message),
       },
     );
+
+  const statusTone = (s: Requisition["status"]) =>
+    s === "completed" ? "good" : s === "rejected" ? "bad" : "neutral";
+
+  const responsible = (r: Requisition) => {
+    if (r.status === "pending") return "Awaiting chief engineer assignment";
+    if (r.status === "assigned_for_collection")
+      return `${nameOf(team, r.assigned_engineer_id)} — collecting`;
+    if (r.status === "pending_confirmation") return "Awaiting chief engineer confirmation";
+    return "—";
+  };
+
 
   return (
     <StoreShell
