@@ -7,8 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toCsv, downloadCsv, todayStamp } from "@/lib/csv";
-import { LEAD_STAGES, LEAD_STAGE_LABEL } from "@/lib/crm";
-import { LEAD_SCORING_CRITERIA } from "@/lib/lead-scoring";
+import { LEAD_SCORING_CRITERIA, LEAD_STAGES, LEAD_STAGE_LABEL } from "@/lib/crm";
 import { useAuth } from "@/hooks/use-auth";
 import { useMachineTypes } from "@/hooks/use-crm-extra";
 
