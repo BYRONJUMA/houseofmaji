@@ -26,6 +26,7 @@ import {
   useStoreProducts,
   type StoreProduct,
 } from "@/hooks/use-store";
+import { useProductCategories } from "@/hooks/use-crm-extra";
 import { num } from "@/lib/crm";
 import { formatKES } from "@/lib/format";
 
