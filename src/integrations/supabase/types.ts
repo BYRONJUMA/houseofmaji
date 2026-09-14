@@ -1118,6 +1118,168 @@ export type Database = {
           },
         ]
       }
+      service_diagnoses: {
+        Row: {
+          created_at: string
+          diagnosis_notes: string
+          engineer_id: string | null
+          id: string
+          service_id: string
+        }
+        Insert: {
+          created_at?: string
+          diagnosis_notes: string
+          engineer_id?: string | null
+          id?: string
+          service_id: string
+        }
+        Update: {
+          created_at?: string
+          diagnosis_notes?: string
+          engineer_id?: string | null
+          id?: string
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_diagnoses_engineer_id_fkey"
+            columns: ["engineer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_diagnoses_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_diagnoses_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services_secure"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_diagnosis_items: {
+        Row: {
+          created_at: string
+          diagnosis_id: string
+          id: string
+          product_id: string
+          quantity: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          diagnosis_id: string
+          id?: string
+          product_id: string
+          quantity: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          diagnosis_id?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_diagnosis_items_diagnosis_id_fkey"
+            columns: ["diagnosis_id"]
+            isOneToOne: false
+            referencedRelation: "service_diagnoses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_diagnosis_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "store_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_invoices: {
+        Row: {
+          cleared_at: string | null
+          cleared_by: string | null
+          created_at: string
+          diagnosis_id: string
+          id: string
+          invoice_no: string
+          payment_method:
+            | Database["public"]["Enums"]["service_payment_method"]
+            | null
+          service_id: string
+          status: string
+          subtotal: number
+        }
+        Insert: {
+          cleared_at?: string | null
+          cleared_by?: string | null
+          created_at?: string
+          diagnosis_id: string
+          id?: string
+          invoice_no: string
+          payment_method?:
+            | Database["public"]["Enums"]["service_payment_method"]
+            | null
+          service_id: string
+          status?: string
+          subtotal?: number
+        }
+        Update: {
+          cleared_at?: string | null
+          cleared_by?: string | null
+          created_at?: string
+          diagnosis_id?: string
+          id?: string
+          invoice_no?: string
+          payment_method?:
+            | Database["public"]["Enums"]["service_payment_method"]
+            | null
+          service_id?: string
+          status?: string
+          subtotal?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_invoices_cleared_by_fkey"
+            columns: ["cleared_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_invoices_diagnosis_id_fkey"
+            columns: ["diagnosis_id"]
+            isOneToOne: false
+            referencedRelation: "service_diagnoses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_invoices_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_invoices_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services_secure"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_visit_log: {
         Row: {
           completed_at: string
@@ -2118,8 +2280,19 @@ export type Database = {
       is_crm_manager: { Args: { _user_id: string }; Returns: boolean }
       lead_criterion_points: { Args: { _criterion: string }; Returns: number }
       max_lead_score: { Args: never; Returns: number }
+      service_invoice_clear: {
+        Args: {
+          _invoice_id: string
+          _payment_method: Database["public"]["Enums"]["service_payment_method"]
+        }
+        Returns: Json
+      }
       service_mark_complete: {
         Args: { _expected_next_due_date?: string; _service_id: string }
+        Returns: Json
+      }
+      service_submit_diagnosis: {
+        Args: { _items: Json; _notes: string; _service_id: string }
         Returns: Json
       }
       set_user_roles: {
@@ -2167,6 +2340,7 @@ export type Database = {
         | "sales_head"
       commission_role: "sales" | "assembly" | "installation"
       machine_service_type: "commercial_industrial" | "undersink"
+      service_payment_method: "cash" | "mpesa" | "bank_transfer" | "other"
       store_location: "in_house" | "warehouse"
       store_product_type: "finished_product" | "raw_material" | "service"
     }
@@ -2305,6 +2479,7 @@ export const Constants = {
       ],
       commission_role: ["sales", "assembly", "installation"],
       machine_service_type: ["commercial_industrial", "undersink"],
+      service_payment_method: ["cash", "mpesa", "bank_transfer", "other"],
       store_location: ["in_house", "warehouse"],
       store_product_type: ["finished_product", "raw_material", "service"],
     },

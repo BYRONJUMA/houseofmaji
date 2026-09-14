@@ -9,6 +9,8 @@ import {
   History as HistoryIcon,
   MoreVertical,
   Plus,
+  ReceiptText,
+  Stethoscope,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
@@ -56,6 +58,12 @@ import {
 } from "@/lib/crm";
 import { useServices, useTeam, useCrmMutation, nameOf, type ServiceRecord } from "@/hooks/use-crm";
 import { useServiceVisitLog } from "@/hooks/use-service-visits";
+import { useServiceInvoices } from "@/hooks/use-service-diagnosis";
+import {
+  DiagnosisDialog,
+  ServiceInvoiceDialog,
+  latestInvoice,
+} from "@/components/service-diagnosis";
 import { cn } from "@/lib/utils";
 
 const STATUS_FILTERS = ["all", "red", "orange", "green", "unscheduled"] as const;
@@ -733,6 +741,11 @@ function ServiceRowMenu({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [completing, setCompleting] = useState(false);
+  const [diagnosisOpen, setDiagnosisOpen] = useState(false);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
+  const { data: invoices = [] } = useServiceInvoices();
+  const invoice = latestInvoice(invoices, record.id);
+  const invoiceBlocks = !!invoice && invoice.status !== "cleared";
   const showComplete = canComplete && !!record.assigned_engineer_id;
 
   /**
@@ -790,8 +803,22 @@ function ServiceRowMenu({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {showComplete && (
-            <DropdownMenuItem disabled={completing} onClick={() => void markComplete()}>
-              <CheckCircle2 className="mr-2 h-4 w-4" /> Mark complete
+            <DropdownMenuItem
+              disabled={completing || invoiceBlocks}
+              onClick={() => void markComplete()}
+            >
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+              {invoiceBlocks ? "Mark complete (invoice pending)" : "Mark complete"}
+            </DropdownMenuItem>
+          )}
+          {canComplete && !invoice && (
+            <DropdownMenuItem onClick={() => setDiagnosisOpen(true)}>
+              <Stethoscope className="mr-2 h-4 w-4" /> Record diagnosis &amp; parts
+            </DropdownMenuItem>
+          )}
+          {invoice && (
+            <DropdownMenuItem onClick={() => setInvoiceOpen(true)}>
+              <ReceiptText className="mr-2 h-4 w-4" /> Service invoice ({invoice.invoice_no})
             </DropdownMenuItem>
           )}
           <DropdownMenuItem onClick={() => setHistoryOpen(true)}>
@@ -836,6 +863,10 @@ function ServiceRowMenu({
       </AlertDialog>
 
       {historyOpen && <VisitHistoryDialog record={record} onClose={() => setHistoryOpen(false)} />}
+      {diagnosisOpen && (
+        <DiagnosisDialog record={record} onClose={() => setDiagnosisOpen(false)} />
+      )}
+      {invoiceOpen && <ServiceInvoiceDialog record={record} onClose={() => setInvoiceOpen(false)} />}
     </>
   );
 }
