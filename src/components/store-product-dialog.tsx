@@ -17,6 +17,7 @@ import {
   useStoreProductMutation,
   type StoreProduct,
 } from "@/hooks/use-store";
+import { useProductCategories } from "@/hooks/use-crm-extra";
 import { formatKES } from "@/lib/format";
 
 /** Create or edit a store product (name, sku/model, brand, category, unit). */
