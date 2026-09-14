@@ -110,9 +110,18 @@ function Tile({ label, value, hint }: { label: string; value: string; hint?: str
   );
 }
 
+function daysUntil(next: string) {
+  const [year, month, day] = next.slice(0, 10).split("-").map(Number);
+  if (!year || !month || !day) return daysBetween(new Date(), next);
+  const today = new Date();
+  const todayUtc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+  const dueUtc = Date.UTC(year, month - 1, day);
+  return Math.round((dueUtc - todayUtc) / 86_400_000);
+}
+
 function dueBadge(next: string | null) {
   if (!next) return { cls: BADGE_NEUTRAL, text: "Not scheduled", showTick: false };
-  const days = daysBetween(new Date(), next);
+  const days = daysUntil(next);
   if (days < 0) {
     const overdueDays = Math.abs(days);
     return {
@@ -166,11 +175,11 @@ function ServicesPage() {
   const mutate = useCrmMutation("services", ["crm-services"]);
 
   const overdue = services.filter(
-    (s) => s.next_due_date && daysBetween(new Date(), s.next_due_date) < 0,
+    (s) => s.next_due_date && daysUntil(s.next_due_date) < 0,
   );
   const dueSoon = services.filter((s) => {
     if (!s.next_due_date) return false;
-    const d = daysBetween(new Date(), s.next_due_date);
+    const d = daysUntil(s.next_due_date);
     return d >= 0 && d <= 30;
   });
   const unscheduled = services.filter((s) => !s.next_due_date);
