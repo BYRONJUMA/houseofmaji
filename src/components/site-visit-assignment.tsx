@@ -25,6 +25,7 @@ export function SiteVisitsAwaitingAssignment() {
 
   const pending = visits.filter((v) => v.status === "pending_assignment");
   const engineers = team.filter(
+    const roleMap = useAllUserRoles();
     (t) => personHasRole(roleMap, t, "engineer") || (profile?.id && t.id === profile.id),
   );
 

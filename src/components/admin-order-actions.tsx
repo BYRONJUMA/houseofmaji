@@ -64,6 +64,7 @@ export function AdminOrderActions({
   const [confirming, setConfirming] = useState(false);
   const [form, setForm] = useState(fulfillment);
 
+  const roleMap = useAllUserRoles();
   const engineers = people.filter((p) => personHasRole(roleMap, p, "engineer", "chief_engineer"));
 
   const invalidate = () => {

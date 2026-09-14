@@ -294,6 +294,7 @@ function SchoolDialog({
     rep_id: school?.rep_id ?? profile?.id ?? "none",
   });
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
+  const roleMap = useAllUserRoles();
   const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
 
   const submit = () => {

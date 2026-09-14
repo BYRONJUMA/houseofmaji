@@ -98,6 +98,7 @@ function SalesPage() {
   const target = targets.find((t) => isoDate(monthStart(t.month)) === isoDate(from));
   const revenueTarget = num(target?.revenue_target);
   const dealsTarget = num(target?.deals_target);
+  const roleMap = useAllUserRoles();
   const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
 
   const perRep = reps
@@ -343,6 +344,7 @@ function InvoiceDialog({
     rep_id: profile?.id ?? "none",
   });
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
+  const roleMap = useAllUserRoles();
   const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
 
   const submit = () => {

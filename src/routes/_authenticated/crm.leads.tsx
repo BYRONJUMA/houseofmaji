@@ -105,6 +105,7 @@ function LeadsPage() {
   const [openLead, setOpenLead] = useState<Lead | null>(null);
   const [creating, setCreating] = useState(false);
 
+  const roleMap = useAllUserRoles();
   const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
 
   const filtered = useMemo(() => {
@@ -443,6 +444,7 @@ function KanbanBoard({
   onOpen: (l: Lead) => void;
   manager?: boolean;
 }) {
+  const roleMap = useAllUserRoles();
   const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
   const [over, setOver] = useState<string | null>(null);
   return (
@@ -546,6 +548,7 @@ function ListView({
   onOpen: (l: Lead) => void;
   manager?: boolean;
 }) {
+  const roleMap = useAllUserRoles();
   const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
   return (
     <div className="surface-card overflow-x-auto">
@@ -643,6 +646,7 @@ function LeadDetail({
   const [reached, setReached] = useState("yes");
   const [note, setNote] = useState("");
   const [nextDays, setNextDays] = useState("3");
+  const roleMap = useAllUserRoles();
   const reps = team.filter((t) => personHasRole(roleMap, t, "sales_rep", "sales_head"));
   const qc = useQueryClient();
   const remove = useMutation({

@@ -641,6 +641,7 @@ function AssignEngineer({ record }: { record: ServiceRecord }) {
   const { profile, hasRole, roles } = useAuth();
   const { data: team = [] } = useTeam();
   const mutate = useCrmMutation("services", ["crm-services"]);
+  const roleMap = useAllUserRoles();
   const engineers = team.filter((t) => personHasRole(roleMap, t, "engineer", "chief_engineer"));
 
   const assign = (engineerId: string) => {

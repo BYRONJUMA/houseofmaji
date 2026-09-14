@@ -79,6 +79,7 @@ function VisitsPage() {
   const [status, setStatus] = useState("all");
   const [engineer, setEngineer] = useState("all");
 
+  const roleMap = useAllUserRoles();
   const engineers = team.filter((t) => personHasRole(roleMap, t, "engineer", "chief_engineer"));
 
   const filtered = useMemo(
