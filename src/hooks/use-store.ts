@@ -22,6 +22,10 @@ export type StoreProduct = {
   brand: string | null;
   category: string | null;
   unit: string | null;
+  buying_price: number | null;
+  selling_price: number | null;
+  tax_category_percent: number | null;
+  product_type: StoreProductType;
   in_house_qty: number;
   warehouse_qty: number;
   created_by: string | null;
