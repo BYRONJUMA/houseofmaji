@@ -202,7 +202,7 @@ function CommissionsPage() {
               onClick={(e) => {
                 e.preventDefault();
                 markAllPaid.mutate(
-                  unpaidVisible.map((r) => r.id),
+                  unpaidVisible.map((r) => ({ id: r.id, source: r.source })),
                   {
                     onSuccess: (n) => {
                       toast.success(`${n} commission${n === 1 ? "" : "s"} marked paid`);
