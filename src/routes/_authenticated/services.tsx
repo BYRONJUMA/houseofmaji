@@ -2,7 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CheckCircle2, History as HistoryIcon, MoreVertical, Plus } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  History as HistoryIcon,
+  MoreVertical,
+  Plus,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -119,32 +126,48 @@ function daysUntil(next: string) {
   return Math.round((dueUtc - todayUtc) / 86_400_000);
 }
 
+type Zone = "good" | "warn" | "bad" | "none";
+
 function dueBadge(next: string | null) {
-  if (!next) return { cls: BADGE_NEUTRAL, text: "Not scheduled", showTick: false };
+  if (!next) return { cls: BADGE_NEUTRAL, text: "Not scheduled", zone: "none" as Zone };
   const days = daysUntil(next);
   if (days < 0) {
     const overdueDays = Math.abs(days);
     return {
       cls: BADGE_BAD,
       text: `${overdueDays} ${overdueDays === 1 ? "day" : "days"} overdue`,
-      showTick: false,
+      zone: "bad" as Zone,
     };
   }
-  if (days === 0) return { cls: BADGE_BAD, text: "Due today", showTick: false };
+  if (days === 0) return { cls: BADGE_BAD, text: "Due today", zone: "bad" as Zone };
   const text = `${days} ${days === 1 ? "day" : "days"} remaining`;
-  if (days <= 3) return { cls: BADGE_BAD, text, showTick: false };
-  if (days <= 5) return { cls: BADGE_WARN, text, showTick: false };
-  return { cls: BADGE_GOOD, text, showTick: true };
+  if (days <= 3) return { cls: BADGE_BAD, text, zone: "bad" as Zone };
+  if (days <= 5) return { cls: BADGE_WARN, text, zone: "warn" as Zone };
+  return { cls: BADGE_GOOD, text, zone: "good" as Zone };
 }
 
-function DueBadge({ next }: { next: string | null }) {
-  const badge = dueBadge(next);
+const ZONE_ICON: Record<Zone, { Icon: typeof CheckCircle2; cls: string }> = {
+  good: { Icon: CheckCircle2, cls: "text-success" },
+  warn: { Icon: Clock, cls: "text-warning" },
+  bad: { Icon: AlertCircle, cls: "text-destructive" },
+  none: { Icon: AlertCircle, cls: "text-muted-foreground" },
+};
+
+/** Large color-coded icon shown beside the client name. */
+function DueIcon({ next }: { next: string | null }) {
+  const b = dueBadge(next);
+  const { Icon, cls } = ZONE_ICON[b.zone];
   return (
-    <Badge className={badge.cls}>
-      {badge.showTick && <CheckCircle2 className="mr-1.5 h-5 w-5" aria-hidden="true" />}
-      {badge.text}
-    </Badge>
+    <span title={b.text}>
+      <Icon className={cn("h-6 w-6 shrink-0", cls)} aria-label={b.text} />
+    </span>
   );
+}
+
+/** Day-count text shown separately, near the record's other details. */
+function DueText({ next }: { next: string | null }) {
+  const b = dueBadge(next);
+  return <Badge className={b.cls}>{b.text}</Badge>;
 }
 
 export function useServiceFulfillments() {
@@ -232,12 +255,15 @@ function ServicesPage() {
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="text-sm font-semibold">{s.client_name}</p>
-                        <DueBadge next={s.next_due_date} />
+                        <DueIcon next={s.next_due_date} />
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {s.machine_type || "machine"}
-                        {showContact ? ` · ${s.contact || "no contact"}` : ""} · due{" "}
-                        {formatDate(s.next_due_date)}
+                      <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <span>
+                          {s.machine_type || "machine"}
+                          {showContact ? ` · ${s.contact || "no contact"}` : ""} · due{" "}
+                          {formatDate(s.next_due_date)}
+                        </span>
+                        <DueText next={s.next_due_date} />
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -306,7 +332,7 @@ function ServicesPage() {
                     <td className="px-3 py-2 font-medium">
                       <div className="flex items-center gap-2">
                         {s.client_name}
-                        <DueBadge next={s.next_due_date} />
+                        <DueIcon next={s.next_due_date} />
                       </div>
                     </td>
                     {showContact && <td className="px-3 py-2">{s.contact || "—"}</td>}
@@ -321,7 +347,16 @@ function ServicesPage() {
                     <td className="px-3 py-2">{s.fulfillment_id ? "Linked" : "Manual"}</td>
                     <td className="px-3 py-2">{formatDate(s.last_service_date)}</td>
                     <td className="px-3 py-2">
-                      {s.next_due_date ? formatDate(s.next_due_date) : "—"}
+                      {s.next_due_date ? (
+                        <div className="flex flex-wrap items-center gap-2">
+                          <DueText next={s.next_due_date} />
+                          <span className="text-xs text-muted-foreground">
+                            {formatDate(s.next_due_date)}
+                          </span>
+                        </div>
+                      ) : (
+                        <DueText next={s.next_due_date} />
+                      )}
                     </td>
                     <td className="px-3 py-2">{nameOf(team, s.recorded_by)}</td>
                     <td className="px-3 py-2">
