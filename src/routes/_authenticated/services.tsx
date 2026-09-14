@@ -673,7 +673,55 @@ function ServiceRowMenu({
         </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {historyOpen && (
+        <VisitHistoryDialog record={record} onClose={() => setHistoryOpen(false)} />
+      )}
     </>
+  );
+}
+
+/** Past completed visits for one machine — the main record resets after each cycle. */
+function VisitHistoryDialog({
+  record,
+  onClose,
+}: {
+  record: ServiceRecord;
+  onClose: () => void;
+}) {
+  const { data: team = [] } = useTeam();
+  const { data: log = [], isLoading } = useServiceVisitLog(record.id);
+
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Visit history — {record.client_name}</DialogTitle>
+        </DialogHeader>
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground">Loading…</p>
+        ) : log.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-border px-3 py-6 text-center text-xs text-muted-foreground">
+            No completed visits recorded yet.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {log.map((v) => (
+              <div key={v.id} className="rounded-lg border border-border p-3 text-sm">
+                <p className="flex items-center gap-1.5 font-semibold">
+                  <CheckCircle2 className="h-4 w-4 text-success" aria-label="Visit completed" />
+                  Completed {formatDate(v.completed_at)}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  by {nameOf(team, v.completed_by)} · next visit scheduled for{" "}
+                  {formatDate(v.next_due_date_set_to)}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 
