@@ -55,7 +55,7 @@ export const Route = createFileRoute("/_authenticated/commissions")({
 
 function CommissionsPage() {
   useMachinesGuard();
-  const { profile } = useAuth();
+  const { profile, hasRole } = useAuth();
   const navigate = useNavigate();
   const search = Route.useSearch();
   const isAdmin = hasRole("admin");

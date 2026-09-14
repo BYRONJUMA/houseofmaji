@@ -51,7 +51,7 @@ export const Route = createFileRoute("/_authenticated/store/stocktake")({
 });
 
 function StockTakePage() {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const canWrite = useCanWriteStore(roles, profile?.id);
   const [location] = useStoreLocation();
   const { data: products = [], isLoading } = useStoreProducts();

@@ -45,7 +45,7 @@ export const Route = createFileRoute("/_authenticated/store/suppliers")({
 });
 
 function SuppliersPage() {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const canWrite = useCanWriteStore(roles, profile?.id);
   const { data: suppliers = [], isLoading } = useSuppliers();
   const mutate = useSupplierMutation();
@@ -158,7 +158,7 @@ function SupplierDialog({
   supplier: Supplier | null;
   onClose: () => void;
 }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const mutate = useSupplierMutation();
   const [f, setF] = useState({
     name: supplier?.name ?? "",

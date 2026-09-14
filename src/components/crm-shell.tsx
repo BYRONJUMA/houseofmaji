@@ -36,7 +36,7 @@ export function CrmShell({
   children: ReactNode;
   showBack?: boolean;
 }) {
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, hasRole, roles } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);

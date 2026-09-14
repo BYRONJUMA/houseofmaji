@@ -89,7 +89,7 @@ function withinRange(created: string, range: Range) {
 }
 
 function LeadsPage() {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const manager = isCrmManager(roles);
   const canWrite = canWriteCrm(roles);
   const { data: leads = [] } = useLeads();
@@ -636,7 +636,7 @@ function LeadDetail({
   canWrite: boolean;
   onClose: () => void;
 }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const { data: activities = [] } = useLeadActivities(lead.id);
   const updateLead = useCrmMutation("leads", ["crm-leads"]);
   const logActivity = useCrmMutation("lead_activities", ["crm-lead-activities", "crm-leads"]);
@@ -1051,7 +1051,7 @@ function NewLeadDialog({ onClose }: { onClose: () => void; team?: unknown }) {
 
 /** Lead quality score: 6 auditable criteria, each recorded in lead_scoring_events. */
 function LeadScoringPanel({ lead }: { lead: Lead }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const { data: events = [] } = useLeadScoringEvents(lead.id);
   const toggle = useToggleLeadCriterion();
   const team = useTeam().data ?? [];

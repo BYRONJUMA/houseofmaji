@@ -45,7 +45,7 @@ export function canEditOrderDetails(
 }
 
 export function EditOrderDetails({ fulfillment }: { fulfillment: EditableFulfillment }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);

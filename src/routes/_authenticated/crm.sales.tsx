@@ -60,7 +60,7 @@ export const Route = createFileRoute("/_authenticated/crm/sales")({
 });
 
 function SalesPage() {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const manager = isCrmManager(roles);
   const canWrite = canWriteCrm(roles);
   const { data: invoices = [] } = useInvoices();
@@ -331,7 +331,7 @@ function InvoiceDialog({
   onClose: () => void;
   team: { id: string; full_name: string; role: string }[];
 }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const create = useCrmMutation("invoices", ["crm-invoices"]);
   const [f, setF] = useState({
     invoice_no: "",

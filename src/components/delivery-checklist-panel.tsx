@@ -43,7 +43,7 @@ export function DeliveryChecklistPanel({
   fulfillment: Fulfillment;
   names: Record<string, string>;
 }) {
-  const { profile } = useAuth();
+  const { profile, hasRole } = useAuth();
   const { data: checklist, isLoading } = useDeliveryChecklist(fulfillment.id);
   const save = useSaveChecklist(fulfillment.id);
 

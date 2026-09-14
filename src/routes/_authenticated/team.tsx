@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/team")({
 
 function TeamPage() {
   const navigate = useNavigate();
-  const { profile, loading } = useAuth();
+  const { profile, loading, hasRole, roles } = useAuth();
   const notAdmin = !loading && !!profile && !hasRole("admin");
   useEffect(() => {
     if (notAdmin) navigate({ to: "/", replace: true });

@@ -46,7 +46,7 @@ const FIELDS: { key: string; label: string; hint: string; type?: string }[] = [
 ];
 
 function SettingsPage() {
-  const { profile } = useAuth();
+  const { profile, hasRole } = useAuth();
   const isAdmin = hasRole("admin");
   const { data: settings } = useSettings();
   const qc = useQueryClient();

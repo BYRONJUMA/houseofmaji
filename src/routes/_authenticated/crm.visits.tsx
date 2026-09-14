@@ -69,7 +69,7 @@ const statusBadge = (s: string) =>
   s === "completed" ? BADGE_GOOD : s === "pending_assignment" ? BADGE_NEUTRAL : BADGE_WARN;
 
 function VisitsPage() {
-  const { profile } = useAuth();
+  const { profile, hasRole, roles } = useAuth();
   const manager = isCrmManager(roles);
   const { data: visits = [] } = useSiteVisits();
   const { data: team = [] } = useTeam();
@@ -261,7 +261,7 @@ function VisitsPage() {
 }
 
 function NewVisitDialog({ onClose }: { onClose: () => void }) {
-  const { profile } = useAuth();
+  const { profile, hasRole, roles } = useAuth();
   const { data: leads = [] } = useLeads();
   const create = useCrmMutation("site_visits", ["crm-site-visits"]);
   const [f, setF] = useState({
@@ -376,7 +376,7 @@ function NewVisitDialog({ onClose }: { onClose: () => void }) {
 }
 
 function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void }) {
-  const { profile } = useAuth();
+  const { profile, hasRole, roles } = useAuth();
   const { data: team = [] } = useTeam();
   const update = useCrmMutation("site_visits", ["crm-site-visits"]);
   const remove = useCrmMutation("site_visits", ["crm-site-visits", "crm-visit-photos"]);

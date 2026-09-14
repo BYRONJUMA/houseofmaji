@@ -71,7 +71,7 @@ export function useProfiles() {
 }
 
 function ChiefPage() {
-  const { profile } = useAuth();
+  const { profile, hasRole } = useAuth();
   const canAct = hasRole("chief_engineer") || hasRole("admin");
   const { stage: stageFilter } = Route.useSearch() as { stage?: Stage };
   const { data: fulfillments = [], isLoading } = useFulfillments();

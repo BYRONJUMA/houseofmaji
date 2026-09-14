@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_authenticated/user/$id")({
 function UserDetailPage() {
   useMachinesGuard();
   const { id } = Route.useParams();
-  const { profile } = useAuth();
+  const { profile, hasRole } = useAuth();
   const navigate = useNavigate();
   const isAdmin = hasRole("admin");
 

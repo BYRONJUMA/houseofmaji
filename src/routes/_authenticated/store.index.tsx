@@ -52,7 +52,7 @@ export const Route = createFileRoute("/_authenticated/store/")({
 
 function StoreProductsPage() {
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const canWrite = useCanWriteStore(roles, profile?.id);
   const [location] = useStoreLocation();
   const { data: products = [], isLoading } = useStoreProducts();

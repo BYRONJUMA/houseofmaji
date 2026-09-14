@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_authenticated/store/access")({
 
 function StoreAccessPage() {
   const navigate = useNavigate();
-  const { profile, loading } = useAuth();
+  const { profile, loading, hasRole } = useAuth();
   const notAdmin = !loading && !!profile && !hasRole("admin");
   useEffect(() => {
     if (notAdmin) navigate({ to: "/store", replace: true });

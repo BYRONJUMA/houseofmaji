@@ -61,7 +61,7 @@ export const Route = createFileRoute("/_authenticated/store/purchases")({
 });
 
 function PurchaseOrdersPage() {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const canWrite = useCanWriteStore(roles, profile?.id);
   const [location] = useStoreLocation();
   const { data: orders = [], isLoading } = usePurchaseOrders();

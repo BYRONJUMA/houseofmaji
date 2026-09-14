@@ -77,7 +77,7 @@ export function StoreShell({
   actions?: ReactNode;
   children: ReactNode;
 }) {
-  const { profile } = useAuth();
+  const { profile, hasRole, roles } = useAuth();
   const canWrite = useCanWriteStore(roles, profile?.id);
   const tabs = hasRole("admin") ? [...TABS, { to: "/store/access", label: "Access" }] : TABS;
 

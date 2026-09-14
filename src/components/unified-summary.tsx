@@ -49,7 +49,7 @@ function Tile({
  * once they click through, which is enforced by the destination pages.
  */
 export function UnifiedSummary({ title = "Business summary" }: { title?: string }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const machinesHome = ROLE_HOME[profile?.role ?? ""] ?? "/";
 
   const { data: fulfillments = [] } = useQuery({

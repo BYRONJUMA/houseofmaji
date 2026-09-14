@@ -46,7 +46,7 @@ export const Route = createFileRoute("/_authenticated/crm/schools")({
 });
 
 function SchoolsPage() {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const manager = isCrmManager(roles);
   const canWrite = canWriteCrm(roles);
   const { data: schools = [] } = useSchools();
@@ -281,7 +281,7 @@ function SchoolDialog({
   team: { id: string; full_name: string; role: string }[];
   onClose: () => void;
 }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const mutate = useCrmMutation("schools", ["crm-schools"]);
   const [f, setF] = useState({
     school_name: school?.school_name ?? "",

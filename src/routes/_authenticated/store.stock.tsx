@@ -57,7 +57,7 @@ export const Route = createFileRoute("/_authenticated/store/stock")({
 });
 
 function StockDetailsPage() {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const canWrite = useCanWriteStore(roles, profile?.id);
   const [location, setLocation] = useStoreLocation();
   const { data: products = [], isLoading } = useStoreProducts();
@@ -283,7 +283,7 @@ function CreateStockDialog({
   location: StoreLocation;
   onClose: () => void;
 }) {
-  const { profile } = useAuth();
+  const { profile, roles } = useAuth();
   const createProduct = useStoreProductMutation();
   const setQty = useSetQuantity();
   const [f, setF] = useState({ name: "", brand: "", category: "", unit: "", quantity: "" });

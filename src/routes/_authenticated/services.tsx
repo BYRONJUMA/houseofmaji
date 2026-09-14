@@ -130,7 +130,7 @@ export function useServiceFulfillments() {
 }
 
 function ServicesPage() {
-  const { profile } = useAuth();
+  const { profile, hasRole, roles } = useAuth();
   const canCreate = roles.some((r) => CAN_CREATE.includes(r));
   const canAssign = hasRole("chief_engineer") || hasRole("admin");
   const showContact = canSeeServiceContact(roles);
@@ -359,7 +359,7 @@ function ServicesPage() {
 }
 
 function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onClose: () => void }) {
-  const { profile } = useAuth();
+  const { profile, hasRole, roles } = useAuth();
   const mutate = useCrmMutation("services", ["crm-services"]);
   const { data: settings } = useSettings();
   const defaultInterval = settingNumber(settings, "default_service_interval_months");
@@ -633,7 +633,7 @@ function ServiceRowMenu({
 }
 
 function AssignEngineer({ record }: { record: ServiceRecord }) {
-  const { profile } = useAuth();
+  const { profile, hasRole, roles } = useAuth();
   const { data: team = [] } = useTeam();
   const mutate = useCrmMutation("services", ["crm-services"]);
   const engineers = team.filter((t) => t.role === "engineer" || t.role === "chief_engineer");

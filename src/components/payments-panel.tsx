@@ -19,7 +19,7 @@ export function PaymentsPanel({
   agreedPrice: number | string;
   names: Record<string, string>;
 }) {
-  const { profile } = useAuth();
+  const { profile, hasRole } = useAuth();
   const qc = useQueryClient();
   const { data: payments = [], isLoading } = usePayments(fulfillmentId);
   const [amount, setAmount] = useState("");
