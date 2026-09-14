@@ -247,13 +247,17 @@ function CommissionsPage() {
               {rows.map((r) => (
                 <tr
                   key={r.id}
-                  onClick={() =>
+                  onClick={() => {
+                    if (r.source === "service") {
+                      navigate({ to: "/services" });
+                      return;
+                    }
                     navigate({
                       to: "/fulfillment/$id",
                       params: { id: r.fulfillment_id },
                       search: { tab: undefined },
-                    })
-                  }
+                    });
+                  }}
                   className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-secondary"
                 >
                   {seesAll && (
