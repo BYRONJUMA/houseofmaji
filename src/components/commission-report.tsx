@@ -122,7 +122,7 @@ export function MyCommissionsCard({
                   key={r.id}
                   onClick={() => {
                     if (r.source === "service") {
-                      navigate({ to: "/services" });
+                      navigate({ to: "/services", search: { status: "all" } });
                       return;
                     }
                     navigate({

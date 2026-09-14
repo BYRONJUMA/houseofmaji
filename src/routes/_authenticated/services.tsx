@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -58,7 +58,15 @@ import { useServices, useTeam, useCrmMutation, nameOf, type ServiceRecord } from
 import { useServiceVisitLog } from "@/hooks/use-service-visits";
 import { cn } from "@/lib/utils";
 
+const STATUS_FILTERS = ["all", "red", "orange", "green", "unscheduled"] as const;
+type StatusFilter = (typeof STATUS_FILTERS)[number];
+
 export const Route = createFileRoute("/_authenticated/services")({
+  validateSearch: (input: Record<string, unknown>) => ({
+    status: STATUS_FILTERS.includes(input.status as StatusFilter)
+      ? (input.status as StatusFilter)
+      : "all",
+  }),
   head: () => ({
     meta: [
       { title: "Service Visits — Machines" },
@@ -107,13 +115,46 @@ function Badge({ className, children }: { className?: string; children: React.Re
   );
 }
 
-function Tile({ label, value, hint }: { label: string; value: string; hint?: string }) {
+/** Map the URL status filter to a due-zone. */
+const STATUS_ZONE: Record<StatusFilter, Zone | "all"> = {
+  all: "all",
+  red: "bad",
+  orange: "warn",
+  green: "good",
+  unscheduled: "none",
+};
+
+function zoneOf(s: ServiceRecord): Zone {
+  return dueBadge(s.next_due_date).zone;
+}
+
+function StatTile({
+  label,
+  value,
+  hint,
+  status,
+  active,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  status: StatusFilter;
+  active: boolean;
+}) {
   return (
-    <div className="surface-card p-4">
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 text-2xl font-bold tabular-nums">{value}</p>
-      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
-    </div>
+    <Link
+      to="/services"
+      search={{ status }}
+      aria-current={active ? "true" : undefined}
+      className={cn(
+        "surface-card p-4 text-left transition-all hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+        active && "border-primary/60 ring-1 ring-primary/30",
+      )}
+    >
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mt-2 text-2xl font-bold tracking-tight tabular-nums">{value}</p>
+      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
+    </Link>
   );
 }
 
@@ -196,6 +237,7 @@ function ServicesPage() {
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<ServiceRecord | null>(null);
   const mutate = useCrmMutation("services", ["crm-services"]);
+  const { status } = Route.useSearch();
 
   const overdue = services.filter((s) => s.next_due_date && daysUntil(s.next_due_date) < 0);
   const dueSoon = services.filter((s) => {
@@ -204,6 +246,13 @@ function ServicesPage() {
     return d >= 0 && d <= 30;
   });
   const unscheduled = services.filter((s) => !s.next_due_date);
+
+  // Zone counts drive the clickable summary tiles.
+  const redCount = services.filter((s) => zoneOf(s) === "bad").length;
+  const orangeCount = services.filter((s) => zoneOf(s) === "warn").length;
+  const greenCount = services.filter((s) => zoneOf(s) === "good").length;
+  const unscheduledCount = unscheduled.length;
+  const statusActive = status;
 
   const [tab, setTab] = useState<ServiceType | "unclassified">("commercial_industrial");
   const canDelete = roles.some((r) => CAN_DELETE.includes(r));
@@ -214,9 +263,22 @@ function ServicesPage() {
     undersink: services.filter((s) => s.machine_service_type === "undersink").length,
     unclassified: services.filter((s) => !s.machine_service_type).length,
   };
-  const visible = services.filter((s) =>
-    tab === "unclassified" ? !s.machine_service_type : s.machine_service_type === tab,
-  );
+  const visible = services.filter((s) => {
+    const byTab = tab === "unclassified" ? !s.machine_service_type : s.machine_service_type === tab;
+    const byStatus = status === "all" ? true : zoneOf(s) === STATUS_ZONE[status];
+    return byTab && byStatus;
+  });
+
+  const statusLabel =
+    status === "all"
+      ? null
+      : status === "red"
+        ? "due ≤3 days / overdue"
+        : status === "orange"
+          ? "due in 4–5 days"
+          : status === "green"
+            ? "on track (>5 days)"
+            : "not scheduled";
 
   return (
     <AppShell
@@ -235,12 +297,58 @@ function ServicesPage() {
       }
     >
       <div className="space-y-5">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <Tile label="Machines on schedule" value={String(services.length)} />
-          <Tile label="Overdue" value={String(overdue.length)} hint="past next due date" />
-          <Tile label="Due in 30 days" value={String(dueSoon.length)} />
-          <Tile label="Not scheduled" value={String(unscheduled.length)} />
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
+          <StatTile
+            label="Machines on schedule"
+            value={String(services.length)}
+            hint="all machines"
+            status="all"
+            active={statusActive === "all"}
+          />
+          <StatTile
+            label="Overdue / due soon"
+            value={String(redCount)}
+            hint="≤3 days or past due"
+            status="red"
+            active={statusActive === "red"}
+          />
+          <StatTile
+            label="Due soon"
+            value={String(orangeCount)}
+            hint="4–5 days remaining"
+            status="orange"
+            active={statusActive === "orange"}
+          />
+          <StatTile
+            label="On track"
+            value={String(greenCount)}
+            hint=">5 days remaining"
+            status="green"
+            active={statusActive === "green"}
+          />
+          <StatTile
+            label="Not scheduled"
+            value={String(unscheduledCount)}
+            hint="needs a due date"
+            status="unscheduled"
+            active={statusActive === "unscheduled"}
+          />
         </div>
+
+        {status !== "all" && (
+          <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 py-2 text-sm">
+            <span className="text-muted-foreground">
+              Filtered: <span className="font-semibold text-foreground">{statusLabel}</span>
+            </span>
+            <Link
+              to="/services"
+              search={{ status: "all" }}
+              className="ml-auto rounded-md border border-border px-2 py-1 text-xs font-medium transition-colors hover:border-primary/50 hover:bg-secondary"
+            >
+              Clear filter
+            </Link>
+          </div>
+        )}
 
         {canCreate && (overdue.length > 0 || dueSoon.length > 0) && (
           <section className="surface-card p-4 sm:p-5">
