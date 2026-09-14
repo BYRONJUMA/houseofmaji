@@ -138,6 +138,7 @@ function SettingsPage() {
   const { profile, hasRole } = useAuth();
   const isAdmin = hasRole("admin");
   const { data: settings } = useSettings();
+  const productCats = useProductCategories();
   const qc = useQueryClient();
   const [draft, setDraft] = useState<Record<string, string>>({});
 
