@@ -458,8 +458,8 @@ function ServiceDialog({ record, onClose }: { record: ServiceRecord | null; onCl
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              Linking pulls client details and machine type from the order. Leave unlinked for
-              older machines.
+              Linking pulls client details and machine type from the order. Leave unlinked for older
+              machines.
             </p>
           </div>
           <div className="space-y-1.5 sm:col-span-2">
@@ -568,10 +568,13 @@ function ServiceRowMenu({
   const markComplete = async () => {
     setCompleting(true);
     try {
-      const { data, error } = await supabase.rpc("service_mark_complete" as never, {
-        _service_id: record.id,
-        _expected_next_due_date: record.next_due_date ?? null,
-      } as never);
+      const { data, error } = await supabase.rpc(
+        "service_mark_complete" as never,
+        {
+          _service_id: record.id,
+          _expected_next_due_date: record.next_due_date ?? null,
+        } as never,
+      );
       if (error) throw error;
 
       const result = (data ?? {}) as {
@@ -632,46 +635,38 @@ function ServiceRowMenu({
 
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete service record?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This will permanently delete this service record — are you sure?
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={() =>
-              mutate.mutate(
-                { type: "delete", id: record.id },
-                {
-                  onSuccess: () => toast.success("Service record deleted"),
-                  onError: (e: unknown) => toast.error((e as Error).message),
-                },
-              )
-            }
-          >
-            Delete
-          </AlertDialogAction>
-        </AlertDialogFooter>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete service record?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this service record — are you sure?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() =>
+                mutate.mutate(
+                  { type: "delete", id: record.id },
+                  {
+                    onSuccess: () => toast.success("Service record deleted"),
+                    onError: (e: unknown) => toast.error((e as Error).message),
+                  },
+                )
+              }
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {historyOpen && (
-        <VisitHistoryDialog record={record} onClose={() => setHistoryOpen(false)} />
-      )}
+      {historyOpen && <VisitHistoryDialog record={record} onClose={() => setHistoryOpen(false)} />}
     </>
   );
 }
 
 /** Past completed visits for one machine — the main record resets after each cycle. */
-function VisitHistoryDialog({
-  record,
-  onClose,
-}: {
-  record: ServiceRecord;
-  onClose: () => void;
-}) {
+function VisitHistoryDialog({ record, onClose }: { record: ServiceRecord; onClose: () => void }) {
   const { data: team = [] } = useTeam();
   const { data: log = [], isLoading } = useServiceVisitLog(record.id);
 
