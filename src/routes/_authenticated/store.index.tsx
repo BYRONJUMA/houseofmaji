@@ -132,6 +132,15 @@ function StoreProductsPage() {
                   <td className="px-4 py-3 text-muted-foreground">{p.brand || "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.category || "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.unit || "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {productTypeLabel(p.product_type)}
+                  </td>
+                  <td className="px-4 py-3 text-right tabular-nums text-muted-foreground">
+                    {p.buying_price == null ? "—" : formatKES(p.buying_price)}
+                  </td>
+                  <td className="px-4 py-3 text-right tabular-nums">
+                    {p.selling_price == null ? "—" : formatKES(p.selling_price)}
+                  </td>
                   <td className="px-4 py-3 text-right font-semibold tabular-nums">
                     {num(location === "in_house" ? p.in_house_qty : p.warehouse_qty)}
                   </td>
