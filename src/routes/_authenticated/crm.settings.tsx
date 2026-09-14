@@ -205,6 +205,21 @@ function SettingsPage() {
           <div className="space-y-4">{group(THRESHOLDS)}</div>
         </CrmCard>
 
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Product categories populate the Category dropdown on store products. Renaming or
+            deactivating an entry takes effect immediately; deactivated entries stay on existing
+            products but can no longer be picked.
+          </p>
+          <ListEditor
+            title="Product categories"
+            table="product_categories"
+            queryKey="product-categories"
+            field="name"
+            rows={(productCats.data ?? []) as unknown as Row[]}
+          />
+        </div>
+
         <Button
           onClick={() => save.mutate(FIELDS.map((f) => ({ key: f.key, value: valueOf(f.key) })))}
           disabled={save.isPending}
