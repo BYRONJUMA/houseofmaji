@@ -174,9 +174,7 @@ function ServicesPage() {
   const [editing, setEditing] = useState<ServiceRecord | null>(null);
   const mutate = useCrmMutation("services", ["crm-services"]);
 
-  const overdue = services.filter(
-    (s) => s.next_due_date && daysUntil(s.next_due_date) < 0,
-  );
+  const overdue = services.filter((s) => s.next_due_date && daysUntil(s.next_due_date) < 0);
   const dueSoon = services.filter((s) => {
     if (!s.next_due_date) return false;
     const d = daysUntil(s.next_due_date);
