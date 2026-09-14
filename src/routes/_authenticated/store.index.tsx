@@ -19,9 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { StoreProductDialog } from "@/components/store-product-dialog";
 import { useAuth } from "@/hooks/use-auth";
-import { useStoreLocation } from "@/hooks/use-store-location";
 import {
-  locationLabel,
   productTypeLabel,
   useCanWriteStore,
   useStoreProductMutation,
@@ -56,7 +54,6 @@ function StoreProductsPage() {
   const navigate = useNavigate();
   const { profile, roles } = useAuth();
   const canWrite = useCanWriteStore(roles, profile?.id);
-  const [location] = useStoreLocation();
   const { data: products = [], isLoading } = useStoreProducts();
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<StoreProduct | null>(null);
@@ -74,7 +71,7 @@ function StoreProductsPage() {
   return (
     <StoreShell
       title="Store products"
-      subtitle="Product definitions — stock levels live on the Stock details page"
+      subtitle="One shared catalog across both stores — stock levels live on the Stock details page"
       actions={
         canWrite && (
           <Button onClick={() => setAdding(true)}>
@@ -115,7 +112,8 @@ function StoreProductsPage() {
                 <th className="px-4 py-3">Type</th>
                 <th className="px-4 py-3 text-right">Buying</th>
                 <th className="px-4 py-3 text-right">Selling</th>
-                <th className="px-4 py-3 text-right">{locationLabel(location)} Qty</th>
+                <th className="px-4 py-3 text-right">In-House Qty</th>
+                <th className="px-4 py-3 text-right">Warehouse Qty</th>
                 {canWrite && <th className="px-4 py-3 text-right">Manage</th>}
               </tr>
             </thead>
@@ -144,7 +142,10 @@ function StoreProductsPage() {
                     {p.selling_price == null ? "—" : formatKES(p.selling_price)}
                   </td>
                   <td className="px-4 py-3 text-right font-semibold tabular-nums">
-                    {num(location === "in_house" ? p.in_house_qty : p.warehouse_qty)}
+                    {num(p.in_house_qty)}
+                  </td>
+                  <td className="px-4 py-3 text-right font-semibold tabular-nums">
+                    {num(p.warehouse_qty)}
                   </td>
                   {canWrite && (
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>

@@ -76,6 +76,21 @@ export type Supplier = {
   created_at: string;
 };
 
+export type RequisitionStatus =
+  | "pending"
+  | "assigned_for_collection"
+  | "pending_confirmation"
+  | "completed"
+  | "rejected";
+
+export const REQUISITION_STATUS_LABEL: Record<RequisitionStatus, string> = {
+  pending: "Pending",
+  assigned_for_collection: "Assigned for Collection",
+  pending_confirmation: "Pending Confirmation",
+  completed: "Completed",
+  rejected: "Rejected",
+};
+
 export type Requisition = {
   id: string;
   requisition_no: string;
@@ -83,7 +98,9 @@ export type Requisition = {
   destination_location: StoreLocation;
   description: string | null;
   created_by: string | null;
-  status: "pending" | "approved" | "rejected";
+  assigned_engineer_id: string | null;
+  assigned_at: string | null;
+  status: RequisitionStatus;
   delivery_status: "pending_delivery" | "delivered";
   created_at: string;
 };
@@ -382,21 +399,39 @@ export function useCreateRequisition() {
 export function useRequisitionAction() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (op: { type: "approve" | "reject" | "deliver"; id: string }) => {
-      if (op.type === "deliver") {
-        const { error } = await supabase.rpc("store_requisition_deliver", { _id: op.id });
+    mutationFn: async (
+      op:
+        | { type: "assign"; id: string; engineerId: string }
+        | { type: "collected" | "confirm" | "reject"; id: string },
+    ) => {
+      if (op.type === "assign") {
+        const { error } = await supabase.rpc("store_requisition_assign", {
+          _id: op.id,
+          _engineer_id: op.engineerId,
+        });
+        if (error) throw new Error(error.message);
+        return true;
+      }
+      if (op.type === "collected") {
+        const { error } = await supabase.rpc("store_requisition_collected", { _id: op.id });
+        if (error) throw new Error(error.message);
+        return true;
+      }
+      if (op.type === "confirm") {
+        const { error } = await supabase.rpc("store_requisition_confirm", { _id: op.id });
         if (error) throw new Error(error.message);
         return true;
       }
       const { error } = await supabase
         .from("store_requisitions")
-        .update({ status: op.type === "approve" ? "approved" : "rejected" } as never)
+        .update({ status: "rejected" } as never)
         .eq("id", op.id);
       if (error) throw new Error(error.message);
       return true;
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["store-requisitions"] });
+      void qc.invalidateQueries({ queryKey: ["notifications"] });
       invalidateStore(qc);
     },
   });

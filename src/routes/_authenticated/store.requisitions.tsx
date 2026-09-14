@@ -22,18 +22,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAuth } from "@/hooks/use-auth";
+import { personHasRole, useAllUserRoles, useAuth } from "@/hooks/use-auth";
 import { nameOf, useTeam } from "@/hooks/use-crm";
 import { useStoreLocation } from "@/hooks/use-store-location";
 import {
   locationLabel,
   otherLocation,
+  REQUISITION_STATUS_LABEL,
   useCanWriteStore,
   useCreateRequisition,
   useRequisitionAction,
   useRequisitionItems,
   useRequisitions,
   useStoreProducts,
+  type Requisition,
   type StoreLocation,
 } from "@/hooks/use-store";
 import { formatDate } from "@/lib/format";
@@ -63,12 +65,19 @@ export const Route = createFileRoute("/_authenticated/store/requisitions")({
 function RequisitionsPage() {
   const { profile, roles } = useAuth();
   const canWrite = useCanWriteStore(roles, profile?.id);
+  const isChief = roles.includes("chief_engineer") || roles.includes("admin");
   const [location] = useStoreLocation();
   const { data: requisitions = [], isLoading } = useRequisitions();
   const { data: items = [] } = useRequisitionItems();
   const { data: team = [] } = useTeam();
+  const roleMap = useAllUserRoles();
   const action = useRequisitionAction();
   const [creating, setCreating] = useState(false);
+  const [assigning, setAssigning] = useState<Requisition | null>(null);
+
+  const engineers = team.filter((t) =>
+    personHasRole(roleMap, t, "engineer", "chief_engineer", "admin"),
+  );
 
   const rows = requisitions.filter(
     (r) => r.source_location === location || r.destination_location === location,
@@ -76,21 +85,34 @@ function RequisitionsPage() {
   const qtyOf = (id: string) =>
     items.filter((i) => i.requisition_id === id).reduce((s, i) => s + num(i.quantity), 0);
 
-  const run = (type: "approve" | "reject" | "deliver", id: string) =>
+  const run = (type: "reject" | "collected" | "confirm", id: string) =>
     action.mutate(
       { type, id },
       {
         onSuccess: () =>
           toast.success(
-            type === "approve"
-              ? "Requisition approved"
-              : type === "reject"
-                ? "Requisition rejected"
-                : "Marked delivered — stock moved",
+            type === "reject"
+              ? "Requisition rejected"
+              : type === "collected"
+                ? "Marked collected — awaiting chief engineer confirmation"
+                : "Receipt confirmed — stock moved",
           ),
         onError: (e: Error) => toast.error(e.message),
       },
     );
+
+  const showActions = canWrite || rows.some((r) => r.assigned_engineer_id === profile?.id);
+
+  const statusTone = (s: Requisition["status"]) =>
+    s === "completed" ? "good" : s === "rejected" ? "bad" : "neutral";
+
+  const responsible = (r: Requisition) => {
+    if (r.status === "pending") return "Awaiting chief engineer assignment";
+    if (r.status === "assigned_for_collection")
+      return `${nameOf(team, r.assigned_engineer_id)} — collecting`;
+    if (r.status === "pending_confirmation") return "Awaiting chief engineer confirmation";
+    return "—";
+  };
 
   return (
     <StoreShell
@@ -126,8 +148,8 @@ function RequisitionsPage() {
                 <th className="px-4 py-3 text-right">Quantity</th>
                 <th className="px-4 py-3">Created by</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Delivery</th>
-                {canWrite && <th className="px-4 py-3 text-right">Actions</th>}
+                <th className="px-4 py-3">Next action by</th>
+                {showActions && <th className="px-4 py-3 text-right">Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -137,29 +159,15 @@ function RequisitionsPage() {
                   <td className="px-4 py-3 text-muted-foreground">{formatDate(r.created_at)}</td>
                   <td className="px-4 py-3">{locationLabel(r.source_location)}</td>
                   <td className="px-4 py-3">{locationLabel(r.destination_location)}</td>
-                  <td className="px-4 py-3 text-right font-semibold tabular-nums">
-                    {qtyOf(r.id)}
-                  </td>
+                  <td className="px-4 py-3 text-right font-semibold tabular-nums">{qtyOf(r.id)}</td>
                   <td className="px-4 py-3 text-muted-foreground">{nameOf(team, r.created_by)}</td>
                   <td className="px-4 py-3">
-                    <StatusPill
-                      tone={
-                        r.status === "approved" ? "good" : r.status === "rejected" ? "bad" : "neutral"
-                      }
-                    >
-                      {r.status === "approved"
-                        ? "Approved"
-                        : r.status === "rejected"
-                          ? "Rejected"
-                          : "Pending"}
+                    <StatusPill tone={statusTone(r.status)}>
+                      {REQUISITION_STATUS_LABEL[r.status]}
                     </StatusPill>
                   </td>
-                  <td className="px-4 py-3">
-                    <StatusPill tone={r.delivery_status === "delivered" ? "good" : "neutral"}>
-                      {r.delivery_status === "delivered" ? "Delivered" : "Pending delivery"}
-                    </StatusPill>
-                  </td>
-                  {canWrite && (
+                  <td className="px-4 py-3 text-muted-foreground">{responsible(r)}</td>
+                  {showActions && (
                     <td className="px-4 py-3 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -172,10 +180,10 @@ function RequisitionsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          {r.status === "pending" && (
+                          {r.status === "pending" && isChief && (
                             <>
-                              <DropdownMenuItem onClick={() => run("approve", r.id)}>
-                                Approve
+                              <DropdownMenuItem onClick={() => setAssigning(r)}>
+                                Assign engineer to collect
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 className="text-destructive"
@@ -185,12 +193,24 @@ function RequisitionsPage() {
                               </DropdownMenuItem>
                             </>
                           )}
-                          {r.status === "approved" && r.delivery_status === "pending_delivery" && (
-                            <DropdownMenuItem onClick={() => run("deliver", r.id)}>
-                              Mark delivered
+                          {r.status === "assigned_for_collection" &&
+                            (r.assigned_engineer_id === profile?.id || roles.includes("admin")) && (
+                              <DropdownMenuItem onClick={() => run("collected", r.id)}>
+                                Materials collected
+                              </DropdownMenuItem>
+                            )}
+                          {r.status === "pending_confirmation" && isChief && (
+                            <DropdownMenuItem onClick={() => run("confirm", r.id)}>
+                              Confirm received
                             </DropdownMenuItem>
                           )}
-                          {r.status === "rejected" && (
+                          {(r.status === "completed" ||
+                            r.status === "rejected" ||
+                            (r.status === "pending" && !isChief) ||
+                            (r.status === "pending_confirmation" && !isChief) ||
+                            (r.status === "assigned_for_collection" &&
+                              r.assigned_engineer_id !== profile?.id &&
+                              !roles.includes("admin"))) && (
                             <DropdownMenuItem disabled>No actions</DropdownMenuItem>
                           )}
                         </DropdownMenuContent>
@@ -205,6 +225,44 @@ function RequisitionsPage() {
       )}
 
       {creating && <CreateRequisitionDialog onClose={() => setCreating(false)} />}
+
+      {assigning && (
+        <Dialog open onOpenChange={(o) => !o && setAssigning(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Assign engineer — {assigning.requisition_no}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-1.5">
+              <Label>Engineer collecting the materials</Label>
+              <Select
+                onValueChange={(v) =>
+                  action.mutate(
+                    { type: "assign", id: assigning.id, engineerId: v },
+                    {
+                      onSuccess: () => {
+                        toast.success("Engineer assigned and notified");
+                        setAssigning(null);
+                      },
+                      onError: (e: Error) => toast.error(e.message),
+                    },
+                  )
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose an engineer" />
+                </SelectTrigger>
+                <SelectContent>
+                  {engineers.map((e) => (
+                    <SelectItem key={e.id} value={e.id}>
+                      {e.full_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </StoreShell>
   );
 }
@@ -301,10 +359,7 @@ function CreateRequisitionDialog({ onClose }: { onClose: () => void }) {
             {lines.map((l, i) => (
               <div key={i} className="flex flex-wrap items-end gap-2">
                 <div className="min-w-[220px] flex-1">
-                  <Select
-                    value={l.product_id}
-                    onValueChange={(v) => setLine(i, { product_id: v })}
-                  >
+                  <Select value={l.product_id} onValueChange={(v) => setLine(i, { product_id: v })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Item name" />
                     </SelectTrigger>
