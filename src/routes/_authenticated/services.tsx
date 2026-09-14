@@ -56,6 +56,12 @@ import {
 } from "@/lib/crm";
 import { useServices, useTeam, useCrmMutation, nameOf, type ServiceRecord } from "@/hooks/use-crm";
 import { useServiceVisitLog } from "@/hooks/use-service-visits";
+import { useServiceInvoices } from "@/hooks/use-service-diagnosis";
+import {
+  DiagnosisDialog,
+  ServiceInvoiceDialog,
+  latestInvoice,
+} from "@/components/service-diagnosis";
 import { cn } from "@/lib/utils";
 
 const STATUS_FILTERS = ["all", "red", "orange", "green", "unscheduled"] as const;
