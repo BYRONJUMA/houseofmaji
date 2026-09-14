@@ -133,7 +133,16 @@ function StoreProductsPage() {
                   <td className="px-4 py-3 font-medium">{p.name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.sku || "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.brand || "—"}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{p.category || "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <span>{p.category || "—"}</span>
+                      {!p.category || !knownCats.has(p.category) ? (
+                        <span className="rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+                          Set category
+                        </span>
+                      ) : null}
+                    </span>
+                  </td>
                   <td className="px-4 py-3 text-muted-foreground">{p.unit || "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {productTypeLabel(p.product_type)}
