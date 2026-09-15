@@ -120,7 +120,10 @@ function BranchOverview() {
     }
     return [...byId.entries()]
       .map(([id, total]) => ({
-        name: id === "walk-in" ? "Walk-in customers" : (customers.find((c) => c.id === id)?.name ?? "Unknown"),
+        name:
+          id === "walk-in"
+            ? "Walk-in customers"
+            : (customers.find((c) => c.id === id)?.name ?? "Unknown"),
         total,
       }))
       .sort((a, b) => b.total - a.total)
@@ -144,19 +147,24 @@ function BranchOverview() {
   const recent = sales.slice(0, 6);
 
   return (
-    <PosShell
-      title="Overview"
-      subtitle={`Sales performance for ${branch?.name ?? "this branch"}`}
-    >
+    <PosShell title="Overview" subtitle={`Sales performance for ${branch?.name ?? "this branch"}`}>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <Tile label="Pending sales" value={String(pending.length)} hint="awaiting payment" />
-        <Tile label="Sales count today" value={String(salesToday.length)} hint="all sales made today" />
+        <Tile
+          label="Sales count today"
+          value={String(salesToday.length)}
+          hint="all sales made today"
+        />
         <Tile
           label="Today's sales"
           value={formatKES(sum(completedToday))}
           hint="completed sales only"
         />
-        <Tile label="Pending today" value={formatKES(sum(pendingToday))} hint="unpaid so far today" />
+        <Tile
+          label="Pending today"
+          value={formatKES(sum(pendingToday))}
+          hint="unpaid so far today"
+        />
         <Tile label="This week's sales" value={formatKES(sum(weekCompleted))} hint="last 7 days" />
         <Tile
           label="This month's sales"
