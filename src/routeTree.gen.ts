@@ -37,6 +37,7 @@ import { Route as AuthenticatedStoreIdRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedPosVoidedRouteImport } from './routes/_authenticated/pos.voided'
 import { Route as AuthenticatedPosSalesRouteImport } from './routes/_authenticated/pos.sales'
 import { Route as AuthenticatedPosPendingRouteImport } from './routes/_authenticated/pos.pending'
+import { Route as AuthenticatedPosOverviewRouteImport } from './routes/_authenticated/pos.overview'
 import { Route as AuthenticatedFulfillmentIdRouteImport } from './routes/_authenticated/fulfillment.$id'
 import { Route as AuthenticatedCrmVisitsRouteImport } from './routes/_authenticated/crm.visits'
 import { Route as AuthenticatedCrmSettingsRouteImport } from './routes/_authenticated/crm.settings'
@@ -191,6 +192,12 @@ const AuthenticatedPosPendingRoute = AuthenticatedPosPendingRouteImport.update({
   path: '/pending',
   getParentRoute: () => AuthenticatedPosRoute,
 } as any)
+const AuthenticatedPosOverviewRoute =
+  AuthenticatedPosOverviewRouteImport.update({
+    id: '/overview',
+    path: '/overview',
+    getParentRoute: () => AuthenticatedPosRoute,
+  } as any)
 const AuthenticatedFulfillmentIdRoute =
   AuthenticatedFulfillmentIdRouteImport.update({
     id: '/fulfillment/$id',
@@ -258,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/crm/visits': typeof AuthenticatedCrmVisitsRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/pos/overview': typeof AuthenticatedPosOverviewRoute
   '/pos/pending': typeof AuthenticatedPosPendingRoute
   '/pos/sales': typeof AuthenticatedPosSalesRoute
   '/pos/voided': typeof AuthenticatedPosVoidedRoute
@@ -293,6 +301,7 @@ export interface FileRoutesByTo {
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/crm/visits': typeof AuthenticatedCrmVisitsRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/pos/overview': typeof AuthenticatedPosOverviewRoute
   '/pos/pending': typeof AuthenticatedPosPendingRoute
   '/pos/sales': typeof AuthenticatedPosSalesRoute
   '/pos/voided': typeof AuthenticatedPosVoidedRoute
@@ -332,6 +341,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/_authenticated/crm/visits': typeof AuthenticatedCrmVisitsRoute
   '/_authenticated/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/_authenticated/pos/overview': typeof AuthenticatedPosOverviewRoute
   '/_authenticated/pos/pending': typeof AuthenticatedPosPendingRoute
   '/_authenticated/pos/sales': typeof AuthenticatedPosSalesRoute
   '/_authenticated/pos/voided': typeof AuthenticatedPosVoidedRoute
@@ -371,6 +381,7 @@ export interface FileRouteTypes {
     | '/crm/settings'
     | '/crm/visits'
     | '/fulfillment/$id'
+    | '/pos/overview'
     | '/pos/pending'
     | '/pos/sales'
     | '/pos/voided'
@@ -406,6 +417,7 @@ export interface FileRouteTypes {
     | '/crm/settings'
     | '/crm/visits'
     | '/fulfillment/$id'
+    | '/pos/overview'
     | '/pos/pending'
     | '/pos/sales'
     | '/pos/voided'
@@ -444,6 +456,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/settings'
     | '/_authenticated/crm/visits'
     | '/_authenticated/fulfillment/$id'
+    | '/_authenticated/pos/overview'
     | '/_authenticated/pos/pending'
     | '/_authenticated/pos/sales'
     | '/_authenticated/pos/voided'
@@ -664,6 +677,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPosPendingRouteImport
       parentRoute: typeof AuthenticatedPosRoute
     }
+    '/_authenticated/pos/overview': {
+      id: '/_authenticated/pos/overview'
+      path: '/overview'
+      fullPath: '/pos/overview'
+      preLoaderRoute: typeof AuthenticatedPosOverviewRouteImport
+      parentRoute: typeof AuthenticatedPosRoute
+    }
     '/_authenticated/fulfillment/$id': {
       id: '/_authenticated/fulfillment/$id'
       path: '/fulfillment/$id'
@@ -749,6 +769,7 @@ const AuthenticatedCrmRouteWithChildren =
   AuthenticatedCrmRoute._addFileChildren(AuthenticatedCrmRouteChildren)
 
 interface AuthenticatedPosRouteChildren {
+  AuthenticatedPosOverviewRoute: typeof AuthenticatedPosOverviewRoute
   AuthenticatedPosPendingRoute: typeof AuthenticatedPosPendingRoute
   AuthenticatedPosSalesRoute: typeof AuthenticatedPosSalesRoute
   AuthenticatedPosVoidedRoute: typeof AuthenticatedPosVoidedRoute
@@ -756,6 +777,7 @@ interface AuthenticatedPosRouteChildren {
 }
 
 const AuthenticatedPosRouteChildren: AuthenticatedPosRouteChildren = {
+  AuthenticatedPosOverviewRoute: AuthenticatedPosOverviewRoute,
   AuthenticatedPosPendingRoute: AuthenticatedPosPendingRoute,
   AuthenticatedPosSalesRoute: AuthenticatedPosSalesRoute,
   AuthenticatedPosVoidedRoute: AuthenticatedPosVoidedRoute,

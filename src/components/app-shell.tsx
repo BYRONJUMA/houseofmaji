@@ -16,6 +16,7 @@ function navFor(roles: string[], isMachines: boolean, isAdmin: boolean) {
   if (roles.length === 0) return [{ to: "/account", label: "My account" }];
   // Outside the Machines branch only the point of sale exists.
   if (!isMachines) {
+    items.push({ to: "/pos/overview", label: "Overview" });
     items.push({ to: "/pos", label: "Point of sale" });
     items.push({ to: "/account", label: "My account" });
     if (isAdmin) items.push({ to: "/branches", label: "Branches" });
@@ -69,7 +70,7 @@ export function AppShell({
   useEffect(() => {
     if (loading || !profile || isMachines || roles.length === 0) return;
     if (!POS_ONLY_PREFIXES.some((p) => pathname.startsWith(p))) {
-      navigate({ to: "/pos", replace: true });
+      navigate({ to: "/pos/overview", replace: true });
     }
   }, [loading, profile, isMachines, roles, pathname, navigate]);
 
@@ -84,7 +85,7 @@ export function AppShell({
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-card/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
-          <Link to={isMachines ? "/" : "/pos"} className="flex items-center gap-2">
+          <Link to={isMachines ? "/" : "/pos/overview"} className="flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
               <Droplets className="h-5 w-5" />
             </span>

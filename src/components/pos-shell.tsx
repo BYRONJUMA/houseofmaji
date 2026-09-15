@@ -6,6 +6,7 @@ import { useCanWriteStore } from "@/hooks/use-store";
 import { useCanWriteBranchPos, useCurrentBranch } from "@/hooks/use-branch";
 
 const TABS: { to: string; label: string }[] = [
+  { to: "/pos/overview", label: "Overview" },
   { to: "/pos", label: "Create sale" },
   { to: "/pos/sales", label: "All sales" },
   { to: "/pos/pending", label: "Pending sales" },
@@ -43,7 +44,7 @@ export function PosShell({
       actions={<div className="flex flex-wrap items-center gap-2">{actions}</div>}
     >
       <nav className="mb-5 flex flex-wrap gap-1 border-b border-border pb-2">
-        {TABS.map((t) => (
+        {TABS.filter((t) => !(isMachines && t.to === "/pos/overview")).map((t) => (
           <Link
             key={t.to}
             to={t.to}
