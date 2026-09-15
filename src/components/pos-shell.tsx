@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/app-shell";
-import { LocationSwitcher } from "@/components/store-shell";
 import { useAuth } from "@/hooks/use-auth";
 import { useCanWriteStore } from "@/hooks/use-store";
 import { useCanWriteBranchPos, useCurrentBranch } from "@/hooks/use-branch";
@@ -41,12 +40,7 @@ export function PosShell({
       title={title}
       subtitle={subtitle}
       showBack
-      actions={
-        <div className="flex flex-wrap items-center gap-2">
-          {isMachines && <LocationSwitcher />}
-          {actions}
-        </div>
-      }
+      actions={<div className="flex flex-wrap items-center gap-2">{actions}</div>}
     >
       <nav className="mb-5 flex flex-wrap gap-1 border-b border-border pb-2">
         {TABS.map((t) => (
@@ -64,7 +58,7 @@ export function PosShell({
 
       <p className="mb-4 text-xs text-muted-foreground">
         Selling for <span className="font-semibold text-foreground">{branch?.name ?? "—"}</span>
-        {isMachines ? " — stock comes off the store location selected above." : ""}
+        {isMachines ? " — stock always comes off in-house stock." : ""}
       </p>
 
       {!canWrite && (
