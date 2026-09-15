@@ -307,7 +307,7 @@ function ServicesPage() {
       title="Services"
       subtitle={
         canCreate
-          ? `${services.length} machines on the service schedule · ${overdue.length} overdue.`
+          ? `${scoped.length} machines on the service schedule · ${overdue.length} overdue.`
           : `Read-only service history for your clients' machines.`
       }
       actions={
@@ -319,6 +319,30 @@ function ServicesPage() {
       }
     >
       <div className="space-y-5">
+        {isEngineerOnly && (
+          <div className="flex items-center gap-1 rounded-lg border border-border bg-secondary/40 p-1 text-xs font-semibold sm:w-fit">
+            {(
+              [
+                { key: "mine", label: "My Services" },
+                { key: "all", label: "All Services" },
+              ] as const
+            ).map((opt) => (
+              <button
+                key={opt.key}
+                type="button"
+                onClick={() => setView(opt.key)}
+                className={cn(
+                  "flex-1 rounded-md px-3 py-1.5 transition-colors sm:flex-none",
+                  view === opt.key
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-secondary",
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
           <StatTile
             label="Machines on schedule"
