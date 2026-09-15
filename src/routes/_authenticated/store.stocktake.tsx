@@ -78,7 +78,10 @@ function StockTakePage() {
     submit.mutate(
       {
         location,
-        rows: mismatches.map((r) => ({ product_id: r.p.id, counted_quantity: r.counted as number })),
+        rows: mismatches.map((r) => ({
+          product_id: r.p.id,
+          counted_quantity: r.counted as number,
+        })),
       },
       {
         onSuccess: (n) => {

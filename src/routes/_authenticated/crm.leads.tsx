@@ -56,10 +56,7 @@ import {
   nameOf,
   type Lead,
 } from "@/hooks/use-crm";
-import {
-  useLeadScoringEvents,
-  useToggleLeadCriterion,
-} from "@/hooks/use-lead-scoring";
+import { useLeadScoringEvents, useToggleLeadCriterion } from "@/hooks/use-lead-scoring";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_authenticated/crm/leads")({
@@ -744,7 +741,8 @@ function LeadDetail({
               <span className="text-muted-foreground">Location:</span> {lead.location || "—"}
             </p>
             <p>
-              <span className="text-muted-foreground">Budget Range:</span> {lead.budget_range || "—"}
+              <span className="text-muted-foreground">Budget Range:</span>{" "}
+              {lead.budget_range || "—"}
             </p>
 
             <p>

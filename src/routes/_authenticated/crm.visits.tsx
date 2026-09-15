@@ -388,9 +388,7 @@ function VisitDetail({ visit, onClose }: { visit: SiteVisit; onClose: () => void
   const [caption, setCaption] = useState("");
   const items: ChecklistItem[] = Array.isArray(visit.checklist) ? visit.checklist : [];
   const canFile =
-    visit.assigned_engineer_id === profile?.id ||
-    hasRole("chief_engineer") ||
-    hasRole("admin");
+    visit.assigned_engineer_id === profile?.id || hasRole("chief_engineer") || hasRole("admin");
   const canDelete =
     visit.created_by === profile?.id ||
     visit.assigned_engineer_id === profile?.id ||

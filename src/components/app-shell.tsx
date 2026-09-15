@@ -8,18 +8,32 @@ import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { NotificationBell } from "@/components/notification-bell";
 import { BackButton } from "@/components/back-button";
+import { BranchSwitcher } from "@/components/branch-switcher";
+import { useCurrentBranch } from "@/hooks/use-branch";
 
-function navFor(roles: string[]) {
+function navFor(roles: string[], isMachines: boolean, isAdmin: boolean) {
   const items: { to: string; label: string }[] = [];
   if (roles.length === 0) return [{ to: "/account", label: "My account" }];
+  // Outside the Machines branch only the point of sale exists.
+  if (!isMachines) {
+    items.push({ to: "/pos", label: "Point of sale" });
+    items.push({ to: "/account", label: "My account" });
+    if (isAdmin) items.push({ to: "/branches", label: "Branches" });
+    return items;
+  }
   items.push({ to: roleHome(roles), label: "Dashboard" });
   items.push({ to: "/commissions", label: "Commissions" });
   items.push({ to: "/services", label: "Services" });
   items.push({ to: "/store", label: "Store" });
+  items.push({ to: "/pos", label: "Point of sale" });
   items.push({ to: "/account", label: "My account" });
   if (isCrmMember(roles)) items.push({ to: "/crm", label: "CRM" });
+  if (isAdmin) items.push({ to: "/branches", label: "Branches" });
   return items;
 }
+
+/** Pages a non-Machines branch may open. */
+const POS_ONLY_PREFIXES = ["/pos", "/account", "/branches", "/auth"];
 
 export function AppShell({
   title,
@@ -34,12 +48,14 @@ export function AppShell({
   children: ReactNode;
   showBack?: boolean;
 }) {
-  const { profile, signOut, roles, loading } = useAuth();
+  const { profile, signOut, roles, loading, hasRole } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (st) => st.location.pathname });
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const items = navFor(roles);
+  const { branch, isMachines } = useCurrentBranch();
+  const isAdmin = hasRole("admin");
+  const items = navFor(roles, isMachines, isAdmin);
 
   // Users with no roles can only use their own profile page.
   useEffect(() => {
@@ -48,6 +64,14 @@ export function AppShell({
       navigate({ to: "/account", replace: true });
     }
   }, [loading, profile, roles, pathname, navigate]);
+
+  // Outside the Machines branch only the point of sale is available.
+  useEffect(() => {
+    if (loading || !profile || isMachines || roles.length === 0) return;
+    if (!POS_ONLY_PREFIXES.some((p) => pathname.startsWith(p))) {
+      navigate({ to: "/pos", replace: true });
+    }
+  }, [loading, profile, isMachines, roles, pathname, navigate]);
 
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
@@ -60,14 +84,18 @@ export function AppShell({
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-card/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
-          <Link to="/" className="flex items-center gap-2">
+          <Link to={isMachines ? "/" : "/pos"} className="flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
               <Droplets className="h-5 w-5" />
             </span>
             <span className="font-display text-base font-bold tracking-tight sm:text-lg">
-              Machines
+              {branch?.name ?? "Machines"}
             </span>
           </Link>
+
+          <div className="hidden md:block">
+            <BranchSwitcher />
+          </div>
 
           <nav className="ml-6 hidden items-center gap-1 md:flex">
             {items.map((i) => (
@@ -110,6 +138,9 @@ export function AppShell({
 
         {open && (
           <div className="border-t border-border bg-card px-4 py-3 md:hidden">
+            <div className="mb-3">
+              <BranchSwitcher />
+            </div>
             <div className="flex flex-col gap-1">
               {items.map((i) => (
                 <Link

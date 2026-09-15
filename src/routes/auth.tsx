@@ -162,7 +162,11 @@ function AuthPage() {
                     required
                   />
                 </div>
-                <PasswordField id="login-password" value={loginPassword} onChange={setLoginPassword} />
+                <PasswordField
+                  id="login-password"
+                  value={loginPassword}
+                  onChange={setLoginPassword}
+                />
                 <Button type="submit" className="w-full" disabled={busy}>
                   {busy ? "Signing in…" : "Log in"}
                 </Button>
@@ -173,7 +177,12 @@ function AuthPage() {
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full name</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
@@ -193,11 +202,13 @@ function AuthPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {["sales_rep", "sales_head", "engineer", "chief_engineer", "admin"].map((r) => (
-                        <SelectItem key={r} value={r}>
-                          {ROLE_LABEL[r]}
-                        </SelectItem>
-                      ))}
+                      {["sales_rep", "sales_head", "engineer", "chief_engineer", "admin"].map(
+                        (r) => (
+                          <SelectItem key={r} value={r}>
+                            {ROLE_LABEL[r]}
+                          </SelectItem>
+                        ),
+                      )}
                       <SelectItem value="none">None / Equipment tracking only</SelectItem>
                     </SelectContent>
                   </Select>

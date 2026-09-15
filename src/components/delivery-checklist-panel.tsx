@@ -47,8 +47,7 @@ export function DeliveryChecklistPanel({
   const { data: checklist, isLoading } = useDeliveryChecklist(fulfillment.id);
   const save = useSaveChecklist(fulfillment.id);
 
-  const canEdit =
-    hasRole("engineer") || hasRole("chief_engineer") || hasRole("admin");
+  const canEdit = hasRole("engineer") || hasRole("chief_engineer") || hasRole("admin");
   const available = ["assembling", "delivery", "installed"].includes(fulfillment.current_stage);
   const capacity =
     fulfillment.capacity_lph != null

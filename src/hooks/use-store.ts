@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { hasAnyRole, type RoleInput } from "@/lib/crm";
+import { useCurrentBranch } from "@/hooks/use-branch";
 
 export type StoreLocation = "in_house" | "warehouse";
 
@@ -149,12 +150,14 @@ export type StockTakeVariance = {
 /* ------------------------------ products ------------------------------ */
 
 export function useStoreProducts() {
+  const { branchId } = useCurrentBranch();
   return useQuery({
-    queryKey: ["store-products"],
+    queryKey: ["store-products", branchId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("store_products")
         .select("*")
+        .eq("branch_id", branchId)
         .order("name", { ascending: true });
       if (error) throw error;
       return (data ?? []) as unknown as StoreProduct[];

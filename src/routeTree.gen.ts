@@ -15,13 +15,16 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedServicesRouteImport } from './routes/_authenticated/services'
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
+import { Route as AuthenticatedPosRouteImport } from './routes/_authenticated/pos'
 import { Route as AuthenticatedEngineerRouteImport } from './routes/_authenticated/engineer'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
 import { Route as AuthenticatedCommissionsRouteImport } from './routes/_authenticated/commissions'
 import { Route as AuthenticatedChiefRouteImport } from './routes/_authenticated/chief'
+import { Route as AuthenticatedBranchesRouteImport } from './routes/_authenticated/branches'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedStoreIndexRouteImport } from './routes/_authenticated/store.index'
+import { Route as AuthenticatedPosIndexRouteImport } from './routes/_authenticated/pos.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedUserIdRouteImport } from './routes/_authenticated/user.$id'
 import { Route as AuthenticatedStoreSuppliersRouteImport } from './routes/_authenticated/store.suppliers'
@@ -31,6 +34,9 @@ import { Route as AuthenticatedStoreRequisitionsRouteImport } from './routes/_au
 import { Route as AuthenticatedStorePurchasesRouteImport } from './routes/_authenticated/store.purchases'
 import { Route as AuthenticatedStoreAccessRouteImport } from './routes/_authenticated/store.access'
 import { Route as AuthenticatedStoreIdRouteImport } from './routes/_authenticated/store.$id'
+import { Route as AuthenticatedPosVoidedRouteImport } from './routes/_authenticated/pos.voided'
+import { Route as AuthenticatedPosSalesRouteImport } from './routes/_authenticated/pos.sales'
+import { Route as AuthenticatedPosPendingRouteImport } from './routes/_authenticated/pos.pending'
 import { Route as AuthenticatedFulfillmentIdRouteImport } from './routes/_authenticated/fulfillment.$id'
 import { Route as AuthenticatedCrmVisitsRouteImport } from './routes/_authenticated/crm.visits'
 import { Route as AuthenticatedCrmSettingsRouteImport } from './routes/_authenticated/crm.settings'
@@ -69,6 +75,11 @@ const AuthenticatedSalesRoute = AuthenticatedSalesRouteImport.update({
   path: '/sales',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPosRoute = AuthenticatedPosRouteImport.update({
+  id: '/pos',
+  path: '/pos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedEngineerRoute = AuthenticatedEngineerRouteImport.update({
   id: '/engineer',
   path: '/engineer',
@@ -90,6 +101,11 @@ const AuthenticatedChiefRoute = AuthenticatedChiefRouteImport.update({
   path: '/chief',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBranchesRoute = AuthenticatedBranchesRouteImport.update({
+  id: '/branches',
+  path: '/branches',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -104,6 +120,11 @@ const AuthenticatedStoreIndexRoute = AuthenticatedStoreIndexRouteImport.update({
   id: '/store/',
   path: '/store/',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPosIndexRoute = AuthenticatedPosIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedPosRoute,
 } as any)
 const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
   id: '/',
@@ -155,6 +176,21 @@ const AuthenticatedStoreIdRoute = AuthenticatedStoreIdRouteImport.update({
   path: '/store/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPosVoidedRoute = AuthenticatedPosVoidedRouteImport.update({
+  id: '/voided',
+  path: '/voided',
+  getParentRoute: () => AuthenticatedPosRoute,
+} as any)
+const AuthenticatedPosSalesRoute = AuthenticatedPosSalesRouteImport.update({
+  id: '/sales',
+  path: '/sales',
+  getParentRoute: () => AuthenticatedPosRoute,
+} as any)
+const AuthenticatedPosPendingRoute = AuthenticatedPosPendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
+  getParentRoute: () => AuthenticatedPosRoute,
+} as any)
 const AuthenticatedFulfillmentIdRoute =
   AuthenticatedFulfillmentIdRouteImport.update({
     id: '/fulfillment/$id',
@@ -205,10 +241,12 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/branches': typeof AuthenticatedBranchesRoute
   '/chief': typeof AuthenticatedChiefRoute
   '/commissions': typeof AuthenticatedCommissionsRoute
   '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/engineer': typeof AuthenticatedEngineerRoute
+  '/pos': typeof AuthenticatedPosRouteWithChildren
   '/sales': typeof AuthenticatedSalesRoute
   '/services': typeof AuthenticatedServicesRoute
   '/team': typeof AuthenticatedTeamRoute
@@ -220,6 +258,9 @@ export interface FileRoutesByFullPath {
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/crm/visits': typeof AuthenticatedCrmVisitsRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/pos/pending': typeof AuthenticatedPosPendingRoute
+  '/pos/sales': typeof AuthenticatedPosSalesRoute
+  '/pos/voided': typeof AuthenticatedPosVoidedRoute
   '/store/$id': typeof AuthenticatedStoreIdRoute
   '/store/access': typeof AuthenticatedStoreAccessRoute
   '/store/purchases': typeof AuthenticatedStorePurchasesRoute
@@ -229,6 +270,7 @@ export interface FileRoutesByFullPath {
   '/store/suppliers': typeof AuthenticatedStoreSuppliersRoute
   '/user/$id': typeof AuthenticatedUserIdRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
+  '/pos/': typeof AuthenticatedPosIndexRoute
   '/store/': typeof AuthenticatedStoreIndexRoute
 }
 export interface FileRoutesByTo {
@@ -236,6 +278,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/branches': typeof AuthenticatedBranchesRoute
   '/chief': typeof AuthenticatedChiefRoute
   '/commissions': typeof AuthenticatedCommissionsRoute
   '/engineer': typeof AuthenticatedEngineerRoute
@@ -250,6 +293,9 @@ export interface FileRoutesByTo {
   '/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/crm/visits': typeof AuthenticatedCrmVisitsRoute
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/pos/pending': typeof AuthenticatedPosPendingRoute
+  '/pos/sales': typeof AuthenticatedPosSalesRoute
+  '/pos/voided': typeof AuthenticatedPosVoidedRoute
   '/store/$id': typeof AuthenticatedStoreIdRoute
   '/store/access': typeof AuthenticatedStoreAccessRoute
   '/store/purchases': typeof AuthenticatedStorePurchasesRoute
@@ -259,6 +305,7 @@ export interface FileRoutesByTo {
   '/store/suppliers': typeof AuthenticatedStoreSuppliersRoute
   '/user/$id': typeof AuthenticatedUserIdRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
+  '/pos': typeof AuthenticatedPosIndexRoute
   '/store': typeof AuthenticatedStoreIndexRoute
 }
 export interface FileRoutesById {
@@ -268,10 +315,12 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/branches': typeof AuthenticatedBranchesRoute
   '/_authenticated/chief': typeof AuthenticatedChiefRoute
   '/_authenticated/commissions': typeof AuthenticatedCommissionsRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/_authenticated/engineer': typeof AuthenticatedEngineerRoute
+  '/_authenticated/pos': typeof AuthenticatedPosRouteWithChildren
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/services': typeof AuthenticatedServicesRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
@@ -283,6 +332,9 @@ export interface FileRoutesById {
   '/_authenticated/crm/settings': typeof AuthenticatedCrmSettingsRoute
   '/_authenticated/crm/visits': typeof AuthenticatedCrmVisitsRoute
   '/_authenticated/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
+  '/_authenticated/pos/pending': typeof AuthenticatedPosPendingRoute
+  '/_authenticated/pos/sales': typeof AuthenticatedPosSalesRoute
+  '/_authenticated/pos/voided': typeof AuthenticatedPosVoidedRoute
   '/_authenticated/store/$id': typeof AuthenticatedStoreIdRoute
   '/_authenticated/store/access': typeof AuthenticatedStoreAccessRoute
   '/_authenticated/store/purchases': typeof AuthenticatedStorePurchasesRoute
@@ -292,6 +344,7 @@ export interface FileRoutesById {
   '/_authenticated/store/suppliers': typeof AuthenticatedStoreSuppliersRoute
   '/_authenticated/user/$id': typeof AuthenticatedUserIdRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
+  '/_authenticated/pos/': typeof AuthenticatedPosIndexRoute
   '/_authenticated/store/': typeof AuthenticatedStoreIndexRoute
 }
 export interface FileRouteTypes {
@@ -301,10 +354,12 @@ export interface FileRouteTypes {
     | '/auth'
     | '/account'
     | '/admin'
+    | '/branches'
     | '/chief'
     | '/commissions'
     | '/crm'
     | '/engineer'
+    | '/pos'
     | '/sales'
     | '/services'
     | '/team'
@@ -316,6 +371,9 @@ export interface FileRouteTypes {
     | '/crm/settings'
     | '/crm/visits'
     | '/fulfillment/$id'
+    | '/pos/pending'
+    | '/pos/sales'
+    | '/pos/voided'
     | '/store/$id'
     | '/store/access'
     | '/store/purchases'
@@ -325,6 +383,7 @@ export interface FileRouteTypes {
     | '/store/suppliers'
     | '/user/$id'
     | '/crm/'
+    | '/pos/'
     | '/store/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -332,6 +391,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/account'
     | '/admin'
+    | '/branches'
     | '/chief'
     | '/commissions'
     | '/engineer'
@@ -346,6 +406,9 @@ export interface FileRouteTypes {
     | '/crm/settings'
     | '/crm/visits'
     | '/fulfillment/$id'
+    | '/pos/pending'
+    | '/pos/sales'
+    | '/pos/voided'
     | '/store/$id'
     | '/store/access'
     | '/store/purchases'
@@ -355,6 +418,7 @@ export interface FileRouteTypes {
     | '/store/suppliers'
     | '/user/$id'
     | '/crm'
+    | '/pos'
     | '/store'
   id:
     | '__root__'
@@ -363,10 +427,12 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/account'
     | '/_authenticated/admin'
+    | '/_authenticated/branches'
     | '/_authenticated/chief'
     | '/_authenticated/commissions'
     | '/_authenticated/crm'
     | '/_authenticated/engineer'
+    | '/_authenticated/pos'
     | '/_authenticated/sales'
     | '/_authenticated/services'
     | '/_authenticated/team'
@@ -378,6 +444,9 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/settings'
     | '/_authenticated/crm/visits'
     | '/_authenticated/fulfillment/$id'
+    | '/_authenticated/pos/pending'
+    | '/_authenticated/pos/sales'
+    | '/_authenticated/pos/voided'
     | '/_authenticated/store/$id'
     | '/_authenticated/store/access'
     | '/_authenticated/store/purchases'
@@ -387,6 +456,7 @@ export interface FileRouteTypes {
     | '/_authenticated/store/suppliers'
     | '/_authenticated/user/$id'
     | '/_authenticated/crm/'
+    | '/_authenticated/pos/'
     | '/_authenticated/store/'
   fileRoutesById: FileRoutesById
 }
@@ -440,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSalesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pos': {
+      id: '/_authenticated/pos'
+      path: '/pos'
+      fullPath: '/pos'
+      preLoaderRoute: typeof AuthenticatedPosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/engineer': {
       id: '/_authenticated/engineer'
       path: '/engineer'
@@ -468,6 +545,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChiefRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/branches': {
+      id: '/_authenticated/branches'
+      path: '/branches'
+      fullPath: '/branches'
+      preLoaderRoute: typeof AuthenticatedBranchesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -488,6 +572,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/store/'
       preLoaderRoute: typeof AuthenticatedStoreIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pos/': {
+      id: '/_authenticated/pos/'
+      path: '/'
+      fullPath: '/pos/'
+      preLoaderRoute: typeof AuthenticatedPosIndexRouteImport
+      parentRoute: typeof AuthenticatedPosRoute
     }
     '/_authenticated/crm/': {
       id: '/_authenticated/crm/'
@@ -551,6 +642,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/store/$id'
       preLoaderRoute: typeof AuthenticatedStoreIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pos/voided': {
+      id: '/_authenticated/pos/voided'
+      path: '/voided'
+      fullPath: '/pos/voided'
+      preLoaderRoute: typeof AuthenticatedPosVoidedRouteImport
+      parentRoute: typeof AuthenticatedPosRoute
+    }
+    '/_authenticated/pos/sales': {
+      id: '/_authenticated/pos/sales'
+      path: '/sales'
+      fullPath: '/pos/sales'
+      preLoaderRoute: typeof AuthenticatedPosSalesRouteImport
+      parentRoute: typeof AuthenticatedPosRoute
+    }
+    '/_authenticated/pos/pending': {
+      id: '/_authenticated/pos/pending'
+      path: '/pending'
+      fullPath: '/pos/pending'
+      preLoaderRoute: typeof AuthenticatedPosPendingRouteImport
+      parentRoute: typeof AuthenticatedPosRoute
     }
     '/_authenticated/fulfillment/$id': {
       id: '/_authenticated/fulfillment/$id'
@@ -636,13 +748,32 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
 const AuthenticatedCrmRouteWithChildren =
   AuthenticatedCrmRoute._addFileChildren(AuthenticatedCrmRouteChildren)
 
+interface AuthenticatedPosRouteChildren {
+  AuthenticatedPosPendingRoute: typeof AuthenticatedPosPendingRoute
+  AuthenticatedPosSalesRoute: typeof AuthenticatedPosSalesRoute
+  AuthenticatedPosVoidedRoute: typeof AuthenticatedPosVoidedRoute
+  AuthenticatedPosIndexRoute: typeof AuthenticatedPosIndexRoute
+}
+
+const AuthenticatedPosRouteChildren: AuthenticatedPosRouteChildren = {
+  AuthenticatedPosPendingRoute: AuthenticatedPosPendingRoute,
+  AuthenticatedPosSalesRoute: AuthenticatedPosSalesRoute,
+  AuthenticatedPosVoidedRoute: AuthenticatedPosVoidedRoute,
+  AuthenticatedPosIndexRoute: AuthenticatedPosIndexRoute,
+}
+
+const AuthenticatedPosRouteWithChildren =
+  AuthenticatedPosRoute._addFileChildren(AuthenticatedPosRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedBranchesRoute: typeof AuthenticatedBranchesRoute
   AuthenticatedChiefRoute: typeof AuthenticatedChiefRoute
   AuthenticatedCommissionsRoute: typeof AuthenticatedCommissionsRoute
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRouteWithChildren
   AuthenticatedEngineerRoute: typeof AuthenticatedEngineerRoute
+  AuthenticatedPosRoute: typeof AuthenticatedPosRouteWithChildren
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
   AuthenticatedServicesRoute: typeof AuthenticatedServicesRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
@@ -661,10 +792,12 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedBranchesRoute: AuthenticatedBranchesRoute,
   AuthenticatedChiefRoute: AuthenticatedChiefRoute,
   AuthenticatedCommissionsRoute: AuthenticatedCommissionsRoute,
   AuthenticatedCrmRoute: AuthenticatedCrmRouteWithChildren,
   AuthenticatedEngineerRoute: AuthenticatedEngineerRoute,
+  AuthenticatedPosRoute: AuthenticatedPosRouteWithChildren,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
   AuthenticatedServicesRoute: AuthenticatedServicesRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,

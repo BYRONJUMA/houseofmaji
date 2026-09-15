@@ -144,20 +144,12 @@ function SuppliersPage() {
         </div>
       )}
 
-      {dialog && (
-        <SupplierDialog supplier={dialog.supplier} onClose={() => setDialog(null)} />
-      )}
+      {dialog && <SupplierDialog supplier={dialog.supplier} onClose={() => setDialog(null)} />}
     </StoreShell>
   );
 }
 
-function SupplierDialog({
-  supplier,
-  onClose,
-}: {
-  supplier: Supplier | null;
-  onClose: () => void;
-}) {
+function SupplierDialog({ supplier, onClose }: { supplier: Supplier | null; onClose: () => void }) {
   const { profile, roles } = useAuth();
   const mutate = useSupplierMutation();
   const [f, setF] = useState({
@@ -225,7 +217,11 @@ function SupplierDialog({
             <Label>Logo (optional)</Label>
             <div className="flex items-center gap-3">
               {logoUrl && (
-                <img src={logoUrl} alt="Supplier logo" className="h-12 w-12 rounded-lg object-cover" />
+                <img
+                  src={logoUrl}
+                  alt="Supplier logo"
+                  className="h-12 w-12 rounded-lg object-cover"
+                />
               )}
               <Input
                 type="file"

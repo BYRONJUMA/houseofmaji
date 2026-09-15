@@ -176,9 +176,7 @@ function ProductDetailPage() {
         )}
       </section>
 
-      {editing && (
-        <StoreProductDialog product={product} onClose={() => setEditing(false)} />
-      )}
+      {editing && <StoreProductDialog product={product} onClose={() => setEditing(false)} />}
       {addLocation && (
         <AddStockDialog
           productId={product.id}

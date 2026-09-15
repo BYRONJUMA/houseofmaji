@@ -82,19 +82,33 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Machines — Fulfillment Tracking" },
       {
         name: "description",
-        content: "Track every water machine from sale to installation: handover, frame ordering, assembly, delivery and commissions.",
+        content:
+          "Track every water machine from sale to installation: handover, frame ordering, assembly, delivery and commissions.",
       },
       { property: "og:title", content: "Machines — Fulfillment Tracking" },
       {
         property: "og:description",
-        content: "Track every water machine from sale to installation: handover, frame ordering, assembly, delivery and commissions.",
+        content:
+          "Track every water machine from sale to installation: handover, frame ordering, assembly, delivery and commissions.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Machines — Fulfillment Tracking" },
-      { name: "twitter:description", content: "Track every water machine from sale to installation: handover, frame ordering, assembly, delivery and commissions." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d52d54cf-1244-4169-99a8-c1e855bcb318/id-preview-622c8cdb--40c23563-795c-4587-9a96-d0b35c4b6a9f.lovable.app-1785304389317.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d52d54cf-1244-4169-99a8-c1e855bcb318/id-preview-622c8cdb--40c23563-795c-4587-9a96-d0b35c4b6a9f.lovable.app-1785304389317.png" },
+      {
+        name: "twitter:description",
+        content:
+          "Track every water machine from sale to installation: handover, frame ordering, assembly, delivery and commissions.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d52d54cf-1244-4169-99a8-c1e855bcb318/id-preview-622c8cdb--40c23563-795c-4587-9a96-d0b35c4b6a9f.lovable.app-1785304389317.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d52d54cf-1244-4169-99a8-c1e855bcb318/id-preview-622c8cdb--40c23563-795c-4587-9a96-d0b35c4b6a9f.lovable.app-1785304389317.png",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

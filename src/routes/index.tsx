@@ -17,7 +17,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Machines — Fulfillment Tracking" },
       {
         property: "og:description",
-        content: "Track every water machine from sale to installation: handover, frame ordering, assembly, delivery and commissions.",
+        content:
+          "Track every water machine from sale to installation: handover, frame ordering, assembly, delivery and commissions.",
       },
     ],
   }),

@@ -121,7 +121,6 @@ function UserDetailPage() {
         />
       </div>
 
-
       <section className="mt-8 space-y-3">
         <h2 className="text-lg font-semibold">Orders</h2>
         {orders.length === 0 ? (

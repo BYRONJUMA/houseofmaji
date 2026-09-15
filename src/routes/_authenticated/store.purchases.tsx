@@ -81,7 +81,9 @@ function PurchaseOrdersPage() {
       { type, id },
       {
         onSuccess: () =>
-          toast.success(type === "approve" ? "Approved — stock received" : "Purchase order rejected"),
+          toast.success(
+            type === "approve" ? "Approved — stock received" : "Purchase order rejected",
+          ),
         onError: (e: Error) => toast.error(e.message),
       },
     );
@@ -137,7 +139,11 @@ function PurchaseOrdersPage() {
                   <td className="px-4 py-3">
                     <StatusPill
                       tone={
-                        o.status === "acquired" ? "good" : o.status === "rejected" ? "bad" : "neutral"
+                        o.status === "acquired"
+                          ? "good"
+                          : o.status === "rejected"
+                            ? "bad"
+                            : "neutral"
                       }
                     >
                       {o.status === "acquired"
@@ -151,7 +157,11 @@ function PurchaseOrdersPage() {
                     <td className="px-4 py-3 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button size="sm" variant="outline" aria-label={`Actions for ${o.lpo_no}`}>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            aria-label={`Actions for ${o.lpo_no}`}
+                          >
                             <MoreVertical className="h-3.5 w-3.5" />
                           </Button>
                         </DropdownMenuTrigger>

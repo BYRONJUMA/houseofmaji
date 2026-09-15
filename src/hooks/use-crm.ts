@@ -128,7 +128,9 @@ export const useInvoices = () =>
 export const useInventory = () =>
   useQuery(list<InventoryItem>("crm-inventory", "inventory", { col: "product_name", asc: true }));
 export const useServices = () =>
-  useQuery(list<ServiceRecord>("crm-services", "services_secure", { col: "next_due_date", asc: true }));
+  useQuery(
+    list<ServiceRecord>("crm-services", "services_secure", { col: "next_due_date", asc: true }),
+  );
 export const useProjects = () =>
   useQuery(list<Project>("crm-projects", "projects", { col: "date" }));
 export const useSchools = () =>

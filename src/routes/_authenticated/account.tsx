@@ -62,11 +62,7 @@ function AccountPage() {
         </section>
 
         {profile && (
-          <EquipmentPanel
-            userId={profile.id}
-            canEdit
-            title="Company equipment assigned to me"
-          />
+          <EquipmentPanel userId={profile.id} canEdit title="Company equipment assigned to me" />
         )}
       </div>
     </AppShell>

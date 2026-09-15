@@ -63,22 +63,42 @@ export const LEAD_STAGE_COLUMN: Record<string, string> = {
 /* --------------------------- lead scoring --------------------------- */
 
 export const LEAD_SCORING_CRITERIA = [
-  { key: "showroom_visited", column: "showroom_visited_at", points: 5, label: "Visited the showroom" },
+  {
+    key: "showroom_visited",
+    column: "showroom_visited_at",
+    points: 5,
+    label: "Visited the showroom",
+  },
   {
     key: "water_test_or_site_visit_paid",
     column: "water_test_or_site_visit_paid_at",
     points: 5,
     label: "Paid for a water test / site assessment",
   },
-  { key: "timeline_stated", column: "timeline_stated_at", points: 3, label: "Stated a purchase timeline" },
+  {
+    key: "timeline_stated",
+    column: "timeline_stated_at",
+    points: 3,
+    label: "Stated a purchase timeline",
+  },
   {
     key: "responded_within_agreed_period",
     column: "responded_within_agreed_period_at",
     points: 3,
     label: "Responded within the agreed period",
   },
-  { key: "budget_confirmed", column: "budget_confirmed_at", points: 2, label: "Confirmed their budget" },
-  { key: "location_confirmed", column: "location_confirmed_at", points: 2, label: "Confirmed their location" },
+  {
+    key: "budget_confirmed",
+    column: "budget_confirmed_at",
+    points: 2,
+    label: "Confirmed their budget",
+  },
+  {
+    key: "location_confirmed",
+    column: "location_confirmed_at",
+    points: 2,
+    label: "Confirmed their location",
+  },
 ] as const;
 
 export type LeadCriterionKey = (typeof LEAD_SCORING_CRITERIA)[number]["key"];
