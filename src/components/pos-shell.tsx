@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/app-shell";
-import { LocationSwitcher } from "@/components/store-shell";
 import { useAuth } from "@/hooks/use-auth";
 import { useCanWriteStore } from "@/hooks/use-store";
 import { useCanWriteBranchPos, useCurrentBranch } from "@/hooks/use-branch";

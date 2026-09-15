@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCurrentBranch } from "@/hooks/use-branch";
-import { useStoreLocation } from "@/hooks/use-store-location";
+
 import { useStoreProducts } from "@/hooks/use-store";
 import {
   POS_PAYMENT_METHODS,
@@ -70,9 +70,9 @@ function lineMath(l: Line) {
 }
 
 function CreateSalePage() {
-  const { branchId, isMachines } = useCurrentBranch();
-  const [storeLocation] = useStoreLocation();
-  const location = isMachines ? storeLocation : "in_house";
+  const { branchId } = useCurrentBranch();
+  // POS always sells from In-House stock, whatever the Store switcher shows.
+  const location = "in_house" as const;
   const canWrite = usePosWriteAccess();
   const { data: products = [] } = useStoreProducts();
   const { data: customers = [] } = usePosCustomers(branchId);
@@ -88,9 +88,7 @@ function CreateSalePage() {
   const [nextKey, setNextKey] = useState(2);
 
   const selectedCustomer = customerId || walkIn?.id || NEW_CUSTOMER;
-  const inStock = products.filter(
-    (p) => Number(location === "in_house" ? p.in_house_qty : p.warehouse_qty) > 0,
-  );
+  const inStock = products.filter((p) => Number(p.in_house_qty) > 0);
 
   const setLine = (key: number, patch: Partial<Line>) =>
     setLines((ls) => ls.map((l) => (l.key === key ? { ...l, ...patch } : l)));
@@ -320,7 +318,7 @@ function CreateSalePage() {
             </Button>
             {inStock.length === 0 && (
               <p className="mt-3 text-xs text-muted-foreground">
-                No products with stock at this location yet — add stock before selling.
+                No products with in-house stock yet — bring stock in before selling.
               </p>
             )}
           </div>
