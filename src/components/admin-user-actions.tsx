@@ -26,10 +26,13 @@ import { useAllUserRoles } from "@/hooks/use-auth";
 const ROLES = ["sales_rep", "engineer", "chief_engineer", "sales_head", "admin"] as const;
 
 export async function saveUserRoles(userId: string, roles: string[]) {
-  const { error } = await supabase.rpc("set_user_roles" as never, {
-    _user_id: userId,
-    _roles: roles,
-  } as never);
+  const { error } = await supabase.rpc(
+    "set_user_roles" as never,
+    {
+      _user_id: userId,
+      _roles: roles,
+    } as never,
+  );
   if (error) throw new Error(error.message);
 }
 

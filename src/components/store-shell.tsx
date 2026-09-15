@@ -59,9 +59,19 @@ export function StockStatusBadge({ qty, threshold }: { qty: number; threshold: n
   return <Badge className={cls}>{STOCK_STATUS_LABEL[status]}</Badge>;
 }
 
-export function StatusPill({ tone, children }: { tone: "good" | "bad" | "neutral"; children: ReactNode }) {
+export function StatusPill({
+  tone,
+  children,
+}: {
+  tone: "good" | "bad" | "neutral";
+  children: ReactNode;
+}) {
   const cls =
-    tone === "good" ? BADGE_GOOD : tone === "bad" ? "bg-destructive/15 text-destructive" : BADGE_NEUTRAL;
+    tone === "good"
+      ? BADGE_GOOD
+      : tone === "bad"
+        ? "bg-destructive/15 text-destructive"
+        : BADGE_NEUTRAL;
   return <Badge className={cls}>{children}</Badge>;
 }
 

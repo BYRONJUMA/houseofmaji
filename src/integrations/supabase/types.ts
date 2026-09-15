@@ -58,6 +58,90 @@ export type Database = {
           },
         ]
       }
+      branch_access: {
+        Row: {
+          branch_id: string
+          granted_at: string
+          granted_by: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          branch_id: string
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          branch_id?: string
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "branch_access_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "branch_access_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "branch_access_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      branches: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          location: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          location?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          location?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "branches_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       commissions: {
         Row: {
           amount: number
@@ -241,6 +325,7 @@ export type Database = {
           agreed_delivery_date: string
           agreed_price: number
           assembly_engineer_id: string | null
+          branch_id: string
           capacity_lph: number | null
           chief_engineer_id: string | null
           client_contact: string | null
@@ -264,6 +349,7 @@ export type Database = {
           agreed_delivery_date: string
           agreed_price: number
           assembly_engineer_id?: string | null
+          branch_id?: string
           capacity_lph?: number | null
           chief_engineer_id?: string | null
           client_contact?: string | null
@@ -287,6 +373,7 @@ export type Database = {
           agreed_delivery_date?: string
           agreed_price?: number
           assembly_engineer_id?: string | null
+          branch_id?: string
           capacity_lph?: number | null
           chief_engineer_id?: string | null
           client_contact?: string | null
@@ -311,6 +398,13 @@ export type Database = {
             columns: ["assembly_engineer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillments_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
             referencedColumns: ["id"]
           },
           {
@@ -509,6 +603,7 @@ export type Database = {
       }
       leads: {
         Row: {
+          branch_id: string
           budget_confirmed_at: string | null
           budget_range: string | null
           created_at: string
@@ -533,6 +628,7 @@ export type Database = {
           water_test_or_site_visit_paid_at: string | null
         }
         Insert: {
+          branch_id?: string
           budget_confirmed_at?: string | null
           budget_range?: string | null
           created_at?: string
@@ -557,6 +653,7 @@ export type Database = {
           water_test_or_site_visit_paid_at?: string | null
         }
         Update: {
+          branch_id?: string
           budget_confirmed_at?: string | null
           budget_range?: string | null
           created_at?: string
@@ -581,6 +678,13 @@ export type Database = {
           water_test_or_site_visit_paid_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "leads_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "leads_rep_id_fkey"
             columns: ["rep_id"]
@@ -798,6 +902,38 @@ export type Database = {
           },
         ]
       }
+      pos_customers: {
+        Row: {
+          branch_id: string
+          created_at: string
+          id: string
+          name: string
+          phone: string | null
+        }
+        Insert: {
+          branch_id?: string
+          created_at?: string
+          id?: string
+          name: string
+          phone?: string | null
+        }
+        Update: {
+          branch_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pos_customers_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_categories: {
         Row: {
           active: boolean
@@ -946,6 +1082,7 @@ export type Database = {
       }
       purchase_orders: {
         Row: {
+          branch_id: string
           created_at: string
           created_by: string | null
           description: string | null
@@ -958,6 +1095,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          branch_id?: string
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -970,6 +1108,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          branch_id?: string
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -982,6 +1121,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "purchase_orders_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "purchase_orders_created_by_fkey"
             columns: ["created_by"]
@@ -1037,9 +1183,150 @@ export type Database = {
           },
         ]
       }
+      sale_items: {
+        Row: {
+          created_at: string
+          discount_percent: number
+          id: string
+          line_total: number
+          product_id: string
+          quantity: number
+          sale_id: string
+          tax_percent: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          discount_percent?: number
+          id?: string
+          line_total?: number
+          product_id: string
+          quantity: number
+          sale_id: string
+          tax_percent?: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          discount_percent?: number
+          id?: string
+          line_total?: number
+          product_id?: string
+          quantity?: number
+          sale_id?: string
+          tax_percent?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "store_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sale_items_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          additional_info: string | null
+          branch_id: string
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          discount_amount: number
+          id: string
+          invoice_no: string
+          location: Database["public"]["Enums"]["store_location"]
+          payment_method: Database["public"]["Enums"]["pos_payment_method"]
+          status: Database["public"]["Enums"]["pos_sale_status"]
+          subtotal: number
+          tax_amount: number
+          total_amount: number
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
+        }
+        Insert: {
+          additional_info?: string | null
+          branch_id?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          discount_amount?: number
+          id?: string
+          invoice_no: string
+          location: Database["public"]["Enums"]["store_location"]
+          payment_method: Database["public"]["Enums"]["pos_payment_method"]
+          status?: Database["public"]["Enums"]["pos_sale_status"]
+          subtotal?: number
+          tax_amount?: number
+          total_amount?: number
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
+        }
+        Update: {
+          additional_info?: string | null
+          branch_id?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          discount_amount?: number
+          id?: string
+          invoice_no?: string
+          location?: Database["public"]["Enums"]["store_location"]
+          payment_method?: Database["public"]["Enums"]["pos_payment_method"]
+          status?: Database["public"]["Enums"]["pos_sale_status"]
+          subtotal?: number
+          tax_amount?: number
+          total_amount?: number
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "pos_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_voided_by_fkey"
+            columns: ["voided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       schools: {
         Row: {
           area: string | null
+          branch_id: string
           county: string | null
           created_at: string
           id: string
@@ -1054,6 +1341,7 @@ export type Database = {
         }
         Insert: {
           area?: string | null
+          branch_id?: string
           county?: string | null
           created_at?: string
           id?: string
@@ -1068,6 +1356,7 @@ export type Database = {
         }
         Update: {
           area?: string | null
+          branch_id?: string
           county?: string | null
           created_at?: string
           id?: string
@@ -1081,6 +1370,13 @@ export type Database = {
           visit_count?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "schools_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "schools_rep_id_fkey"
             columns: ["rep_id"]
@@ -1358,6 +1654,7 @@ export type Database = {
           assigned_at: string | null
           assigned_by: string | null
           assigned_engineer_id: string | null
+          branch_id: string
           client_name: string
           completed: boolean
           completed_at: string | null
@@ -1379,6 +1676,7 @@ export type Database = {
           assigned_at?: string | null
           assigned_by?: string | null
           assigned_engineer_id?: string | null
+          branch_id?: string
           client_name?: string
           completed?: boolean
           completed_at?: string | null
@@ -1400,6 +1698,7 @@ export type Database = {
           assigned_at?: string | null
           assigned_by?: string | null
           assigned_engineer_id?: string | null
+          branch_id?: string
           client_name?: string
           completed?: boolean
           completed_at?: string | null
@@ -1430,6 +1729,13 @@ export type Database = {
             columns: ["assigned_engineer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
             referencedColumns: ["id"]
           },
           {
@@ -1524,6 +1830,7 @@ export type Database = {
           assigned_at: string | null
           assigned_by: string | null
           assigned_engineer_id: string | null
+          branch_id: string
           checklist: Json
           client_name: string
           created_at: string
@@ -1542,6 +1849,7 @@ export type Database = {
           assigned_at?: string | null
           assigned_by?: string | null
           assigned_engineer_id?: string | null
+          branch_id?: string
           checklist?: Json
           client_name: string
           created_at?: string
@@ -1560,6 +1868,7 @@ export type Database = {
           assigned_at?: string | null
           assigned_by?: string | null
           assigned_engineer_id?: string | null
+          branch_id?: string
           checklist?: Json
           client_name?: string
           created_at?: string
@@ -1587,6 +1896,13 @@ export type Database = {
             columns: ["assigned_engineer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "site_visits_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
             referencedColumns: ["id"]
           },
           {
@@ -1740,6 +2056,7 @@ export type Database = {
       }
       store_products: {
         Row: {
+          branch_id: string
           brand: string | null
           buying_price: number | null
           category: string | null
@@ -1758,6 +2075,7 @@ export type Database = {
           warehouse_qty: number
         }
         Insert: {
+          branch_id?: string
           brand?: string | null
           buying_price?: number | null
           category?: string | null
@@ -1776,6 +2094,7 @@ export type Database = {
           warehouse_qty?: number
         }
         Update: {
+          branch_id?: string
           brand?: string | null
           buying_price?: number | null
           category?: string | null
@@ -1794,6 +2113,13 @@ export type Database = {
           warehouse_qty?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "store_products_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "store_products_created_by_fkey"
             columns: ["created_by"]
@@ -1846,6 +2172,7 @@ export type Database = {
         Row: {
           assigned_at: string | null
           assigned_engineer_id: string | null
+          branch_id: string
           created_at: string
           created_by: string | null
           delivery_status: string
@@ -1860,6 +2187,7 @@ export type Database = {
         Insert: {
           assigned_at?: string | null
           assigned_engineer_id?: string | null
+          branch_id?: string
           created_at?: string
           created_by?: string | null
           delivery_status?: string
@@ -1874,6 +2202,7 @@ export type Database = {
         Update: {
           assigned_at?: string | null
           assigned_engineer_id?: string | null
+          branch_id?: string
           created_at?: string
           created_by?: string | null
           delivery_status?: string
@@ -1891,6 +2220,13 @@ export type Database = {
             columns: ["assigned_engineer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_requisitions_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
             referencedColumns: ["id"]
           },
           {
@@ -2291,6 +2627,14 @@ export type Database = {
       }
       can_manage_taxonomy: { Args: { _user_id: string }; Returns: boolean }
       can_see_service_contact: { Args: { _user_id: string }; Returns: boolean }
+      can_use_branch: {
+        Args: { _branch_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_write_branch_pos: {
+        Args: { _branch_id: string; _user_id: string }
+        Returns: boolean
+      }
       can_write_store: { Args: { _user_id: string }; Returns: boolean }
       expire_stale_leads: { Args: never; Returns: number }
       has_any_role: { Args: { _user_id: string }; Returns: boolean }
@@ -2302,8 +2646,27 @@ export type Database = {
         Returns: boolean
       }
       is_crm_manager: { Args: { _user_id: string }; Returns: boolean }
+      is_machines_branch: { Args: { _branch_id: string }; Returns: boolean }
       lead_criterion_points: { Args: { _criterion: string }; Returns: number }
       max_lead_score: { Args: never; Returns: number }
+      pos_create_sale: {
+        Args: {
+          _additional_info?: string
+          _branch_id: string
+          _customer_id?: string
+          _items: Json
+          _location: Database["public"]["Enums"]["store_location"]
+          _new_customer_name?: string
+          _new_customer_phone?: string
+          _payment_method: Database["public"]["Enums"]["pos_payment_method"]
+        }
+        Returns: Json
+      }
+      pos_mark_sale_paid: { Args: { _sale_id: string }; Returns: Json }
+      pos_void_sale: {
+        Args: { _reason: string; _sale_id: string }
+        Returns: Json
+      }
       service_invoice_clear: {
         Args: {
           _invoice_id: string
@@ -2364,6 +2727,8 @@ export type Database = {
         | "sales_head"
       commission_role: "sales" | "assembly" | "installation"
       machine_service_type: "commercial_industrial" | "undersink"
+      pos_payment_method: "cash" | "mpesa" | "credit" | "bank_transfer"
+      pos_sale_status: "completed" | "pending_payment" | "voided"
       service_payment_method: "cash" | "mpesa" | "bank_transfer" | "other"
       store_location: "in_house" | "warehouse"
       store_product_type: "finished_product" | "raw_material" | "service"
@@ -2503,6 +2868,8 @@ export const Constants = {
       ],
       commission_role: ["sales", "assembly", "installation"],
       machine_service_type: ["commercial_industrial", "undersink"],
+      pos_payment_method: ["cash", "mpesa", "credit", "bank_transfer"],
+      pos_sale_status: ["completed", "pending_payment", "voided"],
       service_payment_method: ["cash", "mpesa", "bank_transfer", "other"],
       store_location: ["in_house", "warehouse"],
       store_product_type: ["finished_product", "raw_material", "service"],

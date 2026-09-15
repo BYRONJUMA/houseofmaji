@@ -160,21 +160,20 @@ function buildInsight(leads: Lead[], team: TeamMember[]): Insight {
 
   const working: string[] = [];
   if (won.length)
-    working.push(`${won.length} won lead${won.length === 1 ? "" : "s"} worth ${formatKES(wonValue)}`);
+    working.push(
+      `${won.length} won lead${won.length === 1 ? "" : "s"} worth ${formatKES(wonValue)}`,
+    );
   for (const s of strongSources.slice(0, 2))
     working.push(`High win rate of ${winRate(s).toFixed(0)}% from ${s.key} leads`);
   for (const r of strongReps.slice(0, 2))
     working.push(`${r.name}'s ${winRate(r).toFixed(0)}% win rate across ${r.total} leads`);
   if (strongCats[0])
-    working.push(
-      `${strongCats[0].key} category's ${winRate(strongCats[0]).toFixed(0)}% win rate`,
-    );
+    working.push(`${strongCats[0].key} category's ${winRate(strongCats[0]).toFixed(0)}% win rate`);
   if (last30.length >= 5) working.push(`${last30.length} new leads captured in the last 30 days`);
   if (!working.length) working.push("Pipeline is still too young to show clear strengths");
 
   const concerns: string[] = [];
-  if (closed >= 3 && conv < 50)
-    concerns.push(`Low conversion rate of ${conv.toFixed(0)}% overall`);
+  if (closed >= 3 && conv < 50) concerns.push(`Low conversion rate of ${conv.toFixed(0)}% overall`);
   for (const r of weakReps.slice(0, 2))
     concerns.push(`${r.name}'s 0% win rate across ${r.total} assigned leads`);
   if (last7.length <= 2)
@@ -322,12 +321,14 @@ function AnalyticsPage() {
     [leads],
   );
   const byRep = useMemo(
-    () =>
-      groupBy(leads, (l) => l.rep_id).map((g) => ({ ...g, name: nameOf(team, g.key) })),
+    () => groupBy(leads, (l) => l.rep_id).map((g) => ({ ...g, name: nameOf(team, g.key) })),
     [leads, team],
   );
   const byCategory = useMemo(
-    () => groupBy(leads, (l) => (l.machine_interest?.trim() ? l.machine_interest.trim() : "Unspecified")),
+    () =>
+      groupBy(leads, (l) =>
+        l.machine_interest?.trim() ? l.machine_interest.trim() : "Unspecified",
+      ),
     [leads],
   );
   const byBudget = useMemo(() => groupBy(leads, (l) => budgetTier(l.budget_range)), [leads]);
@@ -481,7 +482,7 @@ function AnalyticsPage() {
             </div>
           </CrmCard>
 
-          <CrmCard title="Weekly trend" >
+          <CrmCard title="Weekly trend">
             {weekly.length === 0 ? (
               <p className="text-sm text-muted-foreground">No leads recorded yet.</p>
             ) : (
@@ -670,9 +671,7 @@ function GroupTable({
               <td className="py-2 pr-3 text-right tabular-nums text-success">{g.won}</td>
               <td className="py-2 pr-3 text-right tabular-nums text-destructive">{g.lost}</td>
               <td className="py-2 pr-3 text-right tabular-nums">{winRate(g).toFixed(0)}%</td>
-              {showValue && (
-                <td className="py-2 text-right tabular-nums">{formatKES(g.value)}</td>
-              )}
+              {showValue && <td className="py-2 text-right tabular-nums">{formatKES(g.value)}</td>}
             </tr>
           ))}
         </tbody>

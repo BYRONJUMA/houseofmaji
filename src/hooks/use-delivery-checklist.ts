@@ -49,7 +49,6 @@ export function useDeliveryChecklist(fulfillmentId: string) {
   return { ...q, data: q.data?.[0] ?? null };
 }
 
-
 export type ChecklistPatch = Partial<
   Omit<
     DeliveryChecklist,
@@ -61,13 +60,7 @@ export type ChecklistPatch = Partial<
 export function useSaveChecklist(fulfillmentId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      checklistId,
-      patch,
-    }: {
-      checklistId: string;
-      patch: ChecklistPatch;
-    }) => {
+    mutationFn: async ({ checklistId, patch }: { checklistId: string; patch: ChecklistPatch }) => {
       const rows = qc.getQueryData<DeliveryChecklist[]>(listKey(fulfillmentId)) ?? [];
       const existing = rows.find((r) => r.id === checklistId);
 

@@ -38,8 +38,7 @@ export function useToggleLeadCriterion() {
       userId?: string | null;
     }) => {
       if (v.on) {
-        const points =
-          LEAD_SCORING_CRITERIA.find((c) => c.key === v.criterion)?.points ?? 0;
+        const points = LEAD_SCORING_CRITERIA.find((c) => c.key === v.criterion)?.points ?? 0;
         const { error } = await supabase.from("lead_scoring_events").insert({
           lead_id: v.leadId,
           criterion: v.criterion,

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Droplets, LogOut, Menu, Wrench } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
+import { useCurrentBranch } from "@/hooks/use-branch";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { ROLE_LABEL } from "@/lib/stages";
@@ -42,12 +43,19 @@ export function CrmShell({
   const [open, setOpen] = useState(false);
 
   const machines = hasMachinesAccess(roles);
+  const { isMachines } = useCurrentBranch();
 
   // Users with no roles can only use their own profile page.
   useEffect(() => {
     if (loading || !profile) return;
     if (roles.length === 0) navigate({ to: "/account", replace: true });
   }, [loading, profile, roles, navigate]);
+
+  // The CRM only exists inside the Machines branch.
+  useEffect(() => {
+    if (loading || !profile || isMachines || roles.length === 0) return;
+    navigate({ to: "/pos", replace: true });
+  }, [loading, profile, isMachines, roles, navigate]);
 
   const nav = [
     ...CRM_NAV,

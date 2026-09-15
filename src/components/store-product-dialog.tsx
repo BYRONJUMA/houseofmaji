@@ -18,6 +18,7 @@ import {
   type StoreProduct,
 } from "@/hooks/use-store";
 import { useProductCategories } from "@/hooks/use-crm-extra";
+import { useCurrentBranch } from "@/hooks/use-branch";
 import { formatKES } from "@/lib/format";
 
 /** Create or edit a store product (name, sku/model, brand, category, unit). */
@@ -31,6 +32,7 @@ export function StoreProductDialog({
   onClose: () => void;
 }) {
   const mutate = useStoreProductMutation();
+  const { branchId } = useCurrentBranch();
   const { data: categories = [] } = useProductCategories();
   const [f, setF] = useState({
     name: product?.name ?? "",
@@ -79,7 +81,10 @@ export function StoreProductDialog({
       tax_category_percent: Number(f.tax_category_percent) || 16,
       product_type: f.product_type,
     };
-    if (!product) values.created_by = createdBy ?? null;
+    if (!product) {
+      values.created_by = createdBy ?? null;
+      values.branch_id = branchId;
+    }
     mutate.mutate(
       product ? { type: "update", id: product.id, values } : { type: "insert", values },
       {

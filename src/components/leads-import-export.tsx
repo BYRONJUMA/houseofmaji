@@ -80,7 +80,11 @@ const LEAD_CRITERION_POINTS: Record<string, number> = Object.fromEntries(
   LEAD_SCORING_CRITERIA.map((c) => [c.key, c.points]),
 );
 
-const norm = (s: string) => s.trim().toLowerCase().replace(/[\s_\-.()/]+/g, "");
+const norm = (s: string) =>
+  s
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_\-.()/]+/g, "");
 
 /** Find the actual header key in a row for a set of normalized aliases. */
 function findHeader(row: Record<string, unknown>, keys: string[]) {
@@ -114,7 +118,9 @@ function matchStage(v: string): string | null {
   if (s.includes("hot")) return "hot";
   if (s.includes("warm")) return "warm";
   if (s.includes("new")) return "new";
-  const found = (LEAD_STAGES as readonly string[]).find((st) => norm(st) === s.replace(/^lead/, ""));
+  const found = (LEAD_STAGES as readonly string[]).find(
+    (st) => norm(st) === s.replace(/^lead/, ""),
+  );
   return found ?? null;
 }
 
@@ -138,7 +144,6 @@ function similarity(a: string, b: string) {
   }
   return 1 - prev[n]! / Math.max(m, n);
 }
-
 
 /** Parse DD/MM/YYYY, MM/DD/YYYY, YYYY-MM-DD and Excel serial dates. */
 function parseDate(v: string): string | null {
@@ -345,7 +350,9 @@ export function LeadsImportExport({
             }
             if (best && best.score >= 0.8) {
               rep_id = best.id;
-              flags.push(`Owner "${ownerName}" matched to "${best.full}" — confirm this is correct`);
+              flags.push(
+                `Owner "${ownerName}" matched to "${best.full}" — confirm this is correct`,
+              );
             } else {
               flags.push(`Owner "${ownerName}" not found — imported as unassigned`);
             }
@@ -366,7 +373,6 @@ export function LeadsImportExport({
           follow_up_due_at = parseDate(dateText);
           if (!follow_up_due_at) flags.push(`Invalid date "${dateText}" — follow-up left blank`);
         }
-
 
         const nowIso = new Date().toISOString();
         const timelineText = pick(r, A.timeline);

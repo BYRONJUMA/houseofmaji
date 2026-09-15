@@ -40,10 +40,7 @@ export async function downloadChecklistPdf(
   data: ChecklistPdfData | null,
   filenameSuffix: "blank" | "filled",
 ) {
-  const [{ jsPDF }, autoTableMod] = await Promise.all([
-    import("jspdf"),
-    import("jspdf-autotable"),
-  ]);
+  const [{ jsPDF }, autoTableMod] = await Promise.all([import("jspdf"), import("jspdf-autotable")]);
   const autoTable = autoTableMod.default;
   const filled = data ?? BLANK;
   const doc = new jsPDF({ unit: "pt", format: "a4" });
@@ -65,10 +62,20 @@ export async function downloadChecklistPdf(
     theme: "grid",
     styles: { fontSize: 9, cellPadding: 4 },
     body: [
-      ["Delivery No.", blank(meta.deliveryNo), "Date Delivered", blank(meta.dateDelivered ? formatDate(meta.dateDelivered) : "")],
+      [
+        "Delivery No.",
+        blank(meta.deliveryNo),
+        "Date Delivered",
+        blank(meta.dateDelivered ? formatDate(meta.dateDelivered) : ""),
+      ],
       ["Client Name", blank(meta.clientName), "Project Site", blank(meta.projectSite)],
       ["Client Contact", blank(meta.clientContact), "Machine Type", blank(meta.machineType)],
-      ["Capacity (LPH)", blank(meta.capacityLph), "Machine Serial No.", blank(meta.machineSerialNo)],
+      [
+        "Capacity (LPH)",
+        blank(meta.capacityLph),
+        "Machine Serial No.",
+        blank(meta.machineSerialNo),
+      ],
       ["Delivered By (Technician)", blank(meta.deliveredBy), "", ""],
     ],
     columnStyles: {
@@ -107,7 +114,10 @@ export async function downloadChecklistPdf(
           {
             content: `${section.number}. ${section.title}`,
             colSpan: head.length,
-            styles: { fillColor: [17, 55, 85] as [number, number, number], halign: "left" as const },
+            styles: {
+              fillColor: [17, 55, 85] as [number, number, number],
+              halign: "left" as const,
+            },
           },
         ],
         head,
@@ -130,7 +140,6 @@ export async function downloadChecklistPdf(
   doc.setFontSize(10);
   doc.text("9. Delivery & Handover Approval", marginX, y);
   doc.setFont("helvetica", "normal");
-
 
   autoTable(doc, {
     startY: y + 8,
