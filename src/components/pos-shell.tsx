@@ -40,9 +40,7 @@ export function PosShell({
       title={title}
       subtitle={subtitle}
       showBack
-      actions={
-        <div className="flex flex-wrap items-center gap-2">{actions}</div>
-      }
+      actions={<div className="flex flex-wrap items-center gap-2">{actions}</div>}
     >
       <nav className="mb-5 flex flex-wrap gap-1 border-b border-border pb-2">
         {TABS.map((t) => (
