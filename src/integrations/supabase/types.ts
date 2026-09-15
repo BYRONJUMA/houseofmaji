@@ -1,2871 +1,2834 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
-  }
+    PostgrestVersion: "14.5";
+  };
   public: {
     Tables: {
       assigned_equipment: {
         Row: {
-          condition: string | null
-          created_at: string
-          date_assigned: string
-          id: string
-          item_description: string | null
-          item_name: string
-          notes: string | null
-          updated_at: string
-          user_id: string
-        }
+          condition: string | null;
+          created_at: string;
+          date_assigned: string;
+          id: string;
+          item_description: string | null;
+          item_name: string;
+          notes: string | null;
+          updated_at: string;
+          user_id: string;
+        };
         Insert: {
-          condition?: string | null
-          created_at?: string
-          date_assigned?: string
-          id?: string
-          item_description?: string | null
-          item_name: string
-          notes?: string | null
-          updated_at?: string
-          user_id: string
-        }
+          condition?: string | null;
+          created_at?: string;
+          date_assigned?: string;
+          id?: string;
+          item_description?: string | null;
+          item_name: string;
+          notes?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
         Update: {
-          condition?: string | null
-          created_at?: string
-          date_assigned?: string
-          id?: string
-          item_description?: string | null
-          item_name?: string
-          notes?: string | null
-          updated_at?: string
-          user_id?: string
-        }
+          condition?: string | null;
+          created_at?: string;
+          date_assigned?: string;
+          id?: string;
+          item_description?: string | null;
+          item_name?: string;
+          notes?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "assigned_equipment_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "assigned_equipment_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       branch_access: {
         Row: {
-          branch_id: string
-          granted_at: string
-          granted_by: string | null
-          id: string
-          user_id: string
-        }
+          branch_id: string;
+          granted_at: string;
+          granted_by: string | null;
+          id: string;
+          user_id: string;
+        };
         Insert: {
-          branch_id: string
-          granted_at?: string
-          granted_by?: string | null
-          id?: string
-          user_id: string
-        }
+          branch_id: string;
+          granted_at?: string;
+          granted_by?: string | null;
+          id?: string;
+          user_id: string;
+        };
         Update: {
-          branch_id?: string
-          granted_at?: string
-          granted_by?: string | null
-          id?: string
-          user_id?: string
-        }
+          branch_id?: string;
+          granted_at?: string;
+          granted_by?: string | null;
+          id?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "branch_access_branch_id_fkey"
-            columns: ["branch_id"]
-            isOneToOne: false
-            referencedRelation: "branches"
-            referencedColumns: ["id"]
+            foreignKeyName: "branch_access_branch_id_fkey";
+            columns: ["branch_id"];
+            isOneToOne: false;
+            referencedRelation: "branches";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "branch_access_granted_by_fkey"
-            columns: ["granted_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "branch_access_granted_by_fkey";
+            columns: ["granted_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "branch_access_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "branch_access_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       branches: {
         Row: {
-          created_at: string
-          created_by: string | null
-          description: string | null
-          id: string
-          location: string | null
-          name: string
-          updated_at: string
-        }
+          created_at: string;
+          created_by: string | null;
+          description: string | null;
+          id: string;
+          location: string | null;
+          name: string;
+          updated_at: string;
+        };
         Insert: {
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          location?: string | null
-          name: string
-          updated_at?: string
-        }
+          created_at?: string;
+          created_by?: string | null;
+          description?: string | null;
+          id?: string;
+          location?: string | null;
+          name: string;
+          updated_at?: string;
+        };
         Update: {
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          location?: string | null
-          name?: string
-          updated_at?: string
-        }
+          created_at?: string;
+          created_by?: string | null;
+          description?: string | null;
+          id?: string;
+          location?: string | null;
+          name?: string;
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "branches_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "branches_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       commissions: {
         Row: {
-          amount: number
-          computed_at: string
-          fulfillment_id: string
-          id: string
-          paid: boolean
-          paid_at: string | null
-          role: Database["public"]["Enums"]["commission_role"]
-          user_id: string
-        }
+          amount: number;
+          computed_at: string;
+          fulfillment_id: string;
+          id: string;
+          paid: boolean;
+          paid_at: string | null;
+          role: Database["public"]["Enums"]["commission_role"];
+          user_id: string;
+        };
         Insert: {
-          amount: number
-          computed_at?: string
-          fulfillment_id: string
-          id?: string
-          paid?: boolean
-          paid_at?: string | null
-          role: Database["public"]["Enums"]["commission_role"]
-          user_id: string
-        }
+          amount: number;
+          computed_at?: string;
+          fulfillment_id: string;
+          id?: string;
+          paid?: boolean;
+          paid_at?: string | null;
+          role: Database["public"]["Enums"]["commission_role"];
+          user_id: string;
+        };
         Update: {
-          amount?: number
-          computed_at?: string
-          fulfillment_id?: string
-          id?: string
-          paid?: boolean
-          paid_at?: string | null
-          role?: Database["public"]["Enums"]["commission_role"]
-          user_id?: string
-        }
+          amount?: number;
+          computed_at?: string;
+          fulfillment_id?: string;
+          id?: string;
+          paid?: boolean;
+          paid_at?: string | null;
+          role?: Database["public"]["Enums"]["commission_role"];
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "commissions_fulfillment_id_fkey"
-            columns: ["fulfillment_id"]
-            isOneToOne: false
-            referencedRelation: "fulfillments"
-            referencedColumns: ["id"]
+            foreignKeyName: "commissions_fulfillment_id_fkey";
+            columns: ["fulfillment_id"];
+            isOneToOne: false;
+            referencedRelation: "fulfillments";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "commissions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "commissions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       delivery_checklists: {
         Row: {
-          capacity_lph: number | null
-          chief_signoff_at: string | null
-          chief_signoff_name: string | null
-          client_signature_data: string | null
-          client_signoff_at: string | null
-          completed_at: string | null
-          created_at: string
-          date_delivered: string | null
-          delivery_no: string
-          engineer_signoff_at: string | null
-          engineer_signoff_name: string | null
-          fulfillment_id: string
-          id: string
-          machine_serial_no: string
-          remarks: string | null
-          sections: Json
-          started_at: string
-          started_by: string | null
-          updated_at: string
-        }
+          capacity_lph: number | null;
+          chief_signoff_at: string | null;
+          chief_signoff_name: string | null;
+          client_signature_data: string | null;
+          client_signoff_at: string | null;
+          completed_at: string | null;
+          created_at: string;
+          date_delivered: string | null;
+          delivery_no: string;
+          engineer_signoff_at: string | null;
+          engineer_signoff_name: string | null;
+          fulfillment_id: string;
+          id: string;
+          machine_serial_no: string;
+          remarks: string | null;
+          sections: Json;
+          started_at: string;
+          started_by: string | null;
+          updated_at: string;
+        };
         Insert: {
-          capacity_lph?: number | null
-          chief_signoff_at?: string | null
-          chief_signoff_name?: string | null
-          client_signature_data?: string | null
-          client_signoff_at?: string | null
-          completed_at?: string | null
-          created_at?: string
-          date_delivered?: string | null
-          delivery_no?: string
-          engineer_signoff_at?: string | null
-          engineer_signoff_name?: string | null
-          fulfillment_id: string
-          id?: string
-          machine_serial_no?: string
-          remarks?: string | null
-          sections?: Json
-          started_at?: string
-          started_by?: string | null
-          updated_at?: string
-        }
+          capacity_lph?: number | null;
+          chief_signoff_at?: string | null;
+          chief_signoff_name?: string | null;
+          client_signature_data?: string | null;
+          client_signoff_at?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          date_delivered?: string | null;
+          delivery_no?: string;
+          engineer_signoff_at?: string | null;
+          engineer_signoff_name?: string | null;
+          fulfillment_id: string;
+          id?: string;
+          machine_serial_no?: string;
+          remarks?: string | null;
+          sections?: Json;
+          started_at?: string;
+          started_by?: string | null;
+          updated_at?: string;
+        };
         Update: {
-          capacity_lph?: number | null
-          chief_signoff_at?: string | null
-          chief_signoff_name?: string | null
-          client_signature_data?: string | null
-          client_signoff_at?: string | null
-          completed_at?: string | null
-          created_at?: string
-          date_delivered?: string | null
-          delivery_no?: string
-          engineer_signoff_at?: string | null
-          engineer_signoff_name?: string | null
-          fulfillment_id?: string
-          id?: string
-          machine_serial_no?: string
-          remarks?: string | null
-          sections?: Json
-          started_at?: string
-          started_by?: string | null
-          updated_at?: string
-        }
+          capacity_lph?: number | null;
+          chief_signoff_at?: string | null;
+          chief_signoff_name?: string | null;
+          client_signature_data?: string | null;
+          client_signoff_at?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          date_delivered?: string | null;
+          delivery_no?: string;
+          engineer_signoff_at?: string | null;
+          engineer_signoff_name?: string | null;
+          fulfillment_id?: string;
+          id?: string;
+          machine_serial_no?: string;
+          remarks?: string | null;
+          sections?: Json;
+          started_at?: string;
+          started_by?: string | null;
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "delivery_checklists_fulfillment_id_fkey"
-            columns: ["fulfillment_id"]
-            isOneToOne: true
-            referencedRelation: "fulfillments"
-            referencedColumns: ["id"]
+            foreignKeyName: "delivery_checklists_fulfillment_id_fkey";
+            columns: ["fulfillment_id"];
+            isOneToOne: true;
+            referencedRelation: "fulfillments";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "delivery_checklists_started_by_fkey"
-            columns: ["started_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "delivery_checklists_started_by_fkey";
+            columns: ["started_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       fulfillment_edits: {
         Row: {
-          actor_id: string | null
-          changed_at: string
-          created_at: string
-          field_label: string
-          fulfillment_id: string
-          id: string
-          new_value: string | null
-          old_value: string | null
-        }
+          actor_id: string | null;
+          changed_at: string;
+          created_at: string;
+          field_label: string;
+          fulfillment_id: string;
+          id: string;
+          new_value: string | null;
+          old_value: string | null;
+        };
         Insert: {
-          actor_id?: string | null
-          changed_at?: string
-          created_at?: string
-          field_label: string
-          fulfillment_id: string
-          id?: string
-          new_value?: string | null
-          old_value?: string | null
-        }
+          actor_id?: string | null;
+          changed_at?: string;
+          created_at?: string;
+          field_label: string;
+          fulfillment_id: string;
+          id?: string;
+          new_value?: string | null;
+          old_value?: string | null;
+        };
         Update: {
-          actor_id?: string | null
-          changed_at?: string
-          created_at?: string
-          field_label?: string
-          fulfillment_id?: string
-          id?: string
-          new_value?: string | null
-          old_value?: string | null
-        }
+          actor_id?: string | null;
+          changed_at?: string;
+          created_at?: string;
+          field_label?: string;
+          fulfillment_id?: string;
+          id?: string;
+          new_value?: string | null;
+          old_value?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "fulfillment_edits_actor_id_fkey"
-            columns: ["actor_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "fulfillment_edits_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "fulfillment_edits_fulfillment_id_fkey"
-            columns: ["fulfillment_id"]
-            isOneToOne: false
-            referencedRelation: "fulfillments"
-            referencedColumns: ["id"]
+            foreignKeyName: "fulfillment_edits_fulfillment_id_fkey";
+            columns: ["fulfillment_id"];
+            isOneToOne: false;
+            referencedRelation: "fulfillments";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       fulfillments: {
         Row: {
-          additional_notes: string | null
-          agreed_delivery_date: string
-          agreed_price: number
-          assembly_engineer_id: string | null
-          branch_id: string
-          capacity_lph: number | null
-          chief_engineer_id: string | null
-          client_contact: string | null
-          client_name: string
-          created_at: string
-          current_stage: string
-          delivered_confirmed_at: string | null
-          delivered_confirmed_by: string | null
-          frame_ordered_at: string | null
-          id: string
-          installation_engineer_id: string | null
-          location: string
-          machine_type: string
-          sales_rep_id: string | null
-          updated_at: string
-          water_analysis_file_url: string | null
-          water_analysis_notes: string | null
-        }
+          additional_notes: string | null;
+          agreed_delivery_date: string;
+          agreed_price: number;
+          assembly_engineer_id: string | null;
+          branch_id: string;
+          capacity_lph: number | null;
+          chief_engineer_id: string | null;
+          client_contact: string | null;
+          client_name: string;
+          created_at: string;
+          current_stage: string;
+          delivered_confirmed_at: string | null;
+          delivered_confirmed_by: string | null;
+          frame_ordered_at: string | null;
+          id: string;
+          installation_engineer_id: string | null;
+          location: string;
+          machine_type: string;
+          sales_rep_id: string | null;
+          updated_at: string;
+          water_analysis_file_url: string | null;
+          water_analysis_notes: string | null;
+        };
         Insert: {
-          additional_notes?: string | null
-          agreed_delivery_date: string
-          agreed_price: number
-          assembly_engineer_id?: string | null
-          branch_id?: string
-          capacity_lph?: number | null
-          chief_engineer_id?: string | null
-          client_contact?: string | null
-          client_name: string
-          created_at?: string
-          current_stage?: string
-          delivered_confirmed_at?: string | null
-          delivered_confirmed_by?: string | null
-          frame_ordered_at?: string | null
-          id?: string
-          installation_engineer_id?: string | null
-          location: string
-          machine_type: string
-          sales_rep_id?: string | null
-          updated_at?: string
-          water_analysis_file_url?: string | null
-          water_analysis_notes?: string | null
-        }
+          additional_notes?: string | null;
+          agreed_delivery_date: string;
+          agreed_price: number;
+          assembly_engineer_id?: string | null;
+          branch_id?: string;
+          capacity_lph?: number | null;
+          chief_engineer_id?: string | null;
+          client_contact?: string | null;
+          client_name: string;
+          created_at?: string;
+          current_stage?: string;
+          delivered_confirmed_at?: string | null;
+          delivered_confirmed_by?: string | null;
+          frame_ordered_at?: string | null;
+          id?: string;
+          installation_engineer_id?: string | null;
+          location: string;
+          machine_type: string;
+          sales_rep_id?: string | null;
+          updated_at?: string;
+          water_analysis_file_url?: string | null;
+          water_analysis_notes?: string | null;
+        };
         Update: {
-          additional_notes?: string | null
-          agreed_delivery_date?: string
-          agreed_price?: number
-          assembly_engineer_id?: string | null
-          branch_id?: string
-          capacity_lph?: number | null
-          chief_engineer_id?: string | null
-          client_contact?: string | null
-          client_name?: string
-          created_at?: string
-          current_stage?: string
-          delivered_confirmed_at?: string | null
-          delivered_confirmed_by?: string | null
-          frame_ordered_at?: string | null
-          id?: string
-          installation_engineer_id?: string | null
-          location?: string
-          machine_type?: string
-          sales_rep_id?: string | null
-          updated_at?: string
-          water_analysis_file_url?: string | null
-          water_analysis_notes?: string | null
-        }
+          additional_notes?: string | null;
+          agreed_delivery_date?: string;
+          agreed_price?: number;
+          assembly_engineer_id?: string | null;
+          branch_id?: string;
+          capacity_lph?: number | null;
+          chief_engineer_id?: string | null;
+          client_contact?: string | null;
+          client_name?: string;
+          created_at?: string;
+          current_stage?: string;
+          delivered_confirmed_at?: string | null;
+          delivered_confirmed_by?: string | null;
+          frame_ordered_at?: string | null;
+          id?: string;
+          installation_engineer_id?: string | null;
+          location?: string;
+          machine_type?: string;
+          sales_rep_id?: string | null;
+          updated_at?: string;
+          water_analysis_file_url?: string | null;
+          water_analysis_notes?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "fulfillments_assembly_engineer_id_fkey"
-            columns: ["assembly_engineer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "fulfillments_assembly_engineer_id_fkey";
+            columns: ["assembly_engineer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "fulfillments_branch_id_fkey"
-            columns: ["branch_id"]
-            isOneToOne: false
-            referencedRelation: "branches"
-            referencedColumns: ["id"]
+            foreignKeyName: "fulfillments_branch_id_fkey";
+            columns: ["branch_id"];
+            isOneToOne: false;
+            referencedRelation: "branches";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "fulfillments_chief_engineer_id_fkey"
-            columns: ["chief_engineer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "fulfillments_chief_engineer_id_fkey";
+            columns: ["chief_engineer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "fulfillments_delivered_confirmed_by_fkey"
-            columns: ["delivered_confirmed_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "fulfillments_delivered_confirmed_by_fkey";
+            columns: ["delivered_confirmed_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "fulfillments_installation_engineer_id_fkey"
-            columns: ["installation_engineer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "fulfillments_installation_engineer_id_fkey";
+            columns: ["installation_engineer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "fulfillments_sales_rep_id_fkey"
-            columns: ["sales_rep_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "fulfillments_sales_rep_id_fkey";
+            columns: ["sales_rep_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       inventory: {
         Row: {
-          buying_price: number | null
-          created_at: string
-          id: string
-          in_stock: number
-          model: string | null
-          product_name: string
-          selling_price: number | null
-          updated_at: string
-        }
+          buying_price: number | null;
+          created_at: string;
+          id: string;
+          in_stock: number;
+          model: string | null;
+          product_name: string;
+          selling_price: number | null;
+          updated_at: string;
+        };
         Insert: {
-          buying_price?: number | null
-          created_at?: string
-          id?: string
-          in_stock?: number
-          model?: string | null
-          product_name?: string
-          selling_price?: number | null
-          updated_at?: string
-        }
+          buying_price?: number | null;
+          created_at?: string;
+          id?: string;
+          in_stock?: number;
+          model?: string | null;
+          product_name?: string;
+          selling_price?: number | null;
+          updated_at?: string;
+        };
         Update: {
-          buying_price?: number | null
-          created_at?: string
-          id?: string
-          in_stock?: number
-          model?: string | null
-          product_name?: string
-          selling_price?: number | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
+          buying_price?: number | null;
+          created_at?: string;
+          id?: string;
+          in_stock?: number;
+          model?: string | null;
+          product_name?: string;
+          selling_price?: number | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       invoices: {
         Row: {
-          amount: number
-          balance: number | null
-          client_name: string
-          created_at: string
-          date: string
-          id: string
-          invoice_no: string
-          machine: string | null
-          rep_id: string | null
-          updated_at: string
-        }
+          amount: number;
+          balance: number | null;
+          client_name: string;
+          created_at: string;
+          date: string;
+          id: string;
+          invoice_no: string;
+          machine: string | null;
+          rep_id: string | null;
+          updated_at: string;
+        };
         Insert: {
-          amount?: number
-          balance?: number | null
-          client_name?: string
-          created_at?: string
-          date?: string
-          id?: string
-          invoice_no?: string
-          machine?: string | null
-          rep_id?: string | null
-          updated_at?: string
-        }
+          amount?: number;
+          balance?: number | null;
+          client_name?: string;
+          created_at?: string;
+          date?: string;
+          id?: string;
+          invoice_no?: string;
+          machine?: string | null;
+          rep_id?: string | null;
+          updated_at?: string;
+        };
         Update: {
-          amount?: number
-          balance?: number | null
-          client_name?: string
-          created_at?: string
-          date?: string
-          id?: string
-          invoice_no?: string
-          machine?: string | null
-          rep_id?: string | null
-          updated_at?: string
-        }
+          amount?: number;
+          balance?: number | null;
+          client_name?: string;
+          created_at?: string;
+          date?: string;
+          id?: string;
+          invoice_no?: string;
+          machine?: string | null;
+          rep_id?: string | null;
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "invoices_rep_id_fkey"
-            columns: ["rep_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "invoices_rep_id_fkey";
+            columns: ["rep_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       lead_activities: {
         Row: {
-          created_at: string
-          id: string
-          lead_id: string
-          outcome_note: string | null
-          reached: boolean
-          rep_id: string | null
-        }
+          created_at: string;
+          id: string;
+          lead_id: string;
+          outcome_note: string | null;
+          reached: boolean;
+          rep_id: string | null;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          lead_id: string
-          outcome_note?: string | null
-          reached?: boolean
-          rep_id?: string | null
-        }
+          created_at?: string;
+          id?: string;
+          lead_id: string;
+          outcome_note?: string | null;
+          reached?: boolean;
+          rep_id?: string | null;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          lead_id?: string
-          outcome_note?: string | null
-          reached?: boolean
-          rep_id?: string | null
-        }
+          created_at?: string;
+          id?: string;
+          lead_id?: string;
+          outcome_note?: string | null;
+          reached?: boolean;
+          rep_id?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "lead_activities_lead_id_fkey"
-            columns: ["lead_id"]
-            isOneToOne: false
-            referencedRelation: "leads"
-            referencedColumns: ["id"]
+            foreignKeyName: "lead_activities_lead_id_fkey";
+            columns: ["lead_id"];
+            isOneToOne: false;
+            referencedRelation: "leads";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "lead_activities_rep_id_fkey"
-            columns: ["rep_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "lead_activities_rep_id_fkey";
+            columns: ["rep_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       lead_scoring_events: {
         Row: {
-          criterion: string
-          id: string
-          lead_id: string
-          points: number
-          recorded_at: string
-          recorded_by: string | null
-        }
+          criterion: string;
+          id: string;
+          lead_id: string;
+          points: number;
+          recorded_at: string;
+          recorded_by: string | null;
+        };
         Insert: {
-          criterion: string
-          id?: string
-          lead_id: string
-          points: number
-          recorded_at?: string
-          recorded_by?: string | null
-        }
+          criterion: string;
+          id?: string;
+          lead_id: string;
+          points: number;
+          recorded_at?: string;
+          recorded_by?: string | null;
+        };
         Update: {
-          criterion?: string
-          id?: string
-          lead_id?: string
-          points?: number
-          recorded_at?: string
-          recorded_by?: string | null
-        }
+          criterion?: string;
+          id?: string;
+          lead_id?: string;
+          points?: number;
+          recorded_at?: string;
+          recorded_by?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "lead_scoring_events_lead_id_fkey"
-            columns: ["lead_id"]
-            isOneToOne: false
-            referencedRelation: "leads"
-            referencedColumns: ["id"]
+            foreignKeyName: "lead_scoring_events_lead_id_fkey";
+            columns: ["lead_id"];
+            isOneToOne: false;
+            referencedRelation: "leads";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "lead_scoring_events_recorded_by_fkey"
-            columns: ["recorded_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "lead_scoring_events_recorded_by_fkey";
+            columns: ["recorded_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       leads: {
         Row: {
-          branch_id: string
-          budget_confirmed_at: string | null
-          budget_range: string | null
-          created_at: string
-          deal_value: number | null
-          follow_up_due_at: string | null
-          id: string
-          location: string | null
-          location_confirmed_at: string | null
-          machine_interest: string | null
-          name: string
-          phone: string
-          rep_id: string | null
-          responded_within_agreed_period_at: string | null
-          showroom_visited_at: string | null
-          source: string | null
-          stage: string
-          stage_manually_set_at: string | null
-          timeline_notes: string | null
-          timeline_stated_at: string | null
-          total_score: number
-          updated_at: string
-          water_test_or_site_visit_paid_at: string | null
-        }
+          branch_id: string;
+          budget_confirmed_at: string | null;
+          budget_range: string | null;
+          created_at: string;
+          deal_value: number | null;
+          follow_up_due_at: string | null;
+          id: string;
+          location: string | null;
+          location_confirmed_at: string | null;
+          machine_interest: string | null;
+          name: string;
+          phone: string;
+          rep_id: string | null;
+          responded_within_agreed_period_at: string | null;
+          showroom_visited_at: string | null;
+          source: string | null;
+          stage: string;
+          stage_manually_set_at: string | null;
+          timeline_notes: string | null;
+          timeline_stated_at: string | null;
+          total_score: number;
+          updated_at: string;
+          water_test_or_site_visit_paid_at: string | null;
+        };
         Insert: {
-          branch_id?: string
-          budget_confirmed_at?: string | null
-          budget_range?: string | null
-          created_at?: string
-          deal_value?: number | null
-          follow_up_due_at?: string | null
-          id?: string
-          location?: string | null
-          location_confirmed_at?: string | null
-          machine_interest?: string | null
-          name?: string
-          phone?: string
-          rep_id?: string | null
-          responded_within_agreed_period_at?: string | null
-          showroom_visited_at?: string | null
-          source?: string | null
-          stage?: string
-          stage_manually_set_at?: string | null
-          timeline_notes?: string | null
-          timeline_stated_at?: string | null
-          total_score?: number
-          updated_at?: string
-          water_test_or_site_visit_paid_at?: string | null
-        }
+          branch_id?: string;
+          budget_confirmed_at?: string | null;
+          budget_range?: string | null;
+          created_at?: string;
+          deal_value?: number | null;
+          follow_up_due_at?: string | null;
+          id?: string;
+          location?: string | null;
+          location_confirmed_at?: string | null;
+          machine_interest?: string | null;
+          name?: string;
+          phone?: string;
+          rep_id?: string | null;
+          responded_within_agreed_period_at?: string | null;
+          showroom_visited_at?: string | null;
+          source?: string | null;
+          stage?: string;
+          stage_manually_set_at?: string | null;
+          timeline_notes?: string | null;
+          timeline_stated_at?: string | null;
+          total_score?: number;
+          updated_at?: string;
+          water_test_or_site_visit_paid_at?: string | null;
+        };
         Update: {
-          branch_id?: string
-          budget_confirmed_at?: string | null
-          budget_range?: string | null
-          created_at?: string
-          deal_value?: number | null
-          follow_up_due_at?: string | null
-          id?: string
-          location?: string | null
-          location_confirmed_at?: string | null
-          machine_interest?: string | null
-          name?: string
-          phone?: string
-          rep_id?: string | null
-          responded_within_agreed_period_at?: string | null
-          showroom_visited_at?: string | null
-          source?: string | null
-          stage?: string
-          stage_manually_set_at?: string | null
-          timeline_notes?: string | null
-          timeline_stated_at?: string | null
-          total_score?: number
-          updated_at?: string
-          water_test_or_site_visit_paid_at?: string | null
-        }
+          branch_id?: string;
+          budget_confirmed_at?: string | null;
+          budget_range?: string | null;
+          created_at?: string;
+          deal_value?: number | null;
+          follow_up_due_at?: string | null;
+          id?: string;
+          location?: string | null;
+          location_confirmed_at?: string | null;
+          machine_interest?: string | null;
+          name?: string;
+          phone?: string;
+          rep_id?: string | null;
+          responded_within_agreed_period_at?: string | null;
+          showroom_visited_at?: string | null;
+          source?: string | null;
+          stage?: string;
+          stage_manually_set_at?: string | null;
+          timeline_notes?: string | null;
+          timeline_stated_at?: string | null;
+          total_score?: number;
+          updated_at?: string;
+          water_test_or_site_visit_paid_at?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "leads_branch_id_fkey"
-            columns: ["branch_id"]
-            isOneToOne: false
-            referencedRelation: "branches"
-            referencedColumns: ["id"]
+            foreignKeyName: "leads_branch_id_fkey";
+            columns: ["branch_id"];
+            isOneToOne: false;
+            referencedRelation: "branches";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "leads_rep_id_fkey"
-            columns: ["rep_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "leads_rep_id_fkey";
+            columns: ["rep_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       machine_capacities: {
         Row: {
-          active: boolean
-          created_at: string
-          id: string
-          label: string
-          updated_at: string
-        }
+          active: boolean;
+          created_at: string;
+          id: string;
+          label: string;
+          updated_at: string;
+        };
         Insert: {
-          active?: boolean
-          created_at?: string
-          id?: string
-          label: string
-          updated_at?: string
-        }
+          active?: boolean;
+          created_at?: string;
+          id?: string;
+          label: string;
+          updated_at?: string;
+        };
         Update: {
-          active?: boolean
-          created_at?: string
-          id?: string
-          label?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
+          active?: boolean;
+          created_at?: string;
+          id?: string;
+          label?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       machine_categories: {
         Row: {
-          active: boolean
-          created_at: string
-          id: string
-          name: string
-          updated_at: string
-        }
+          active: boolean;
+          created_at: string;
+          id: string;
+          name: string;
+          updated_at: string;
+        };
         Insert: {
-          active?: boolean
-          created_at?: string
-          id?: string
-          name: string
-          updated_at?: string
-        }
+          active?: boolean;
+          created_at?: string;
+          id?: string;
+          name: string;
+          updated_at?: string;
+        };
         Update: {
-          active?: boolean
-          created_at?: string
-          id?: string
-          name?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
+          active?: boolean;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       machine_types: {
         Row: {
-          active: boolean
-          category_id: string | null
-          created_at: string
-          id: string
-          name: string
-          updated_at: string
-        }
+          active: boolean;
+          category_id: string | null;
+          created_at: string;
+          id: string;
+          name: string;
+          updated_at: string;
+        };
         Insert: {
-          active?: boolean
-          category_id?: string | null
-          created_at?: string
-          id?: string
-          name: string
-          updated_at?: string
-        }
+          active?: boolean;
+          category_id?: string | null;
+          created_at?: string;
+          id?: string;
+          name: string;
+          updated_at?: string;
+        };
         Update: {
-          active?: boolean
-          category_id?: string | null
-          created_at?: string
-          id?: string
-          name?: string
-          updated_at?: string
-        }
+          active?: boolean;
+          category_id?: string | null;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "machine_types_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "machine_categories"
-            referencedColumns: ["id"]
+            foreignKeyName: "machine_types_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "machine_categories";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       monthly_targets: {
         Row: {
-          created_at: string
-          deals_target: number
-          id: string
-          month: string
-          revenue_target: number
-          set_by: string | null
-          updated_at: string
-        }
+          created_at: string;
+          deals_target: number;
+          id: string;
+          month: string;
+          revenue_target: number;
+          set_by: string | null;
+          updated_at: string;
+        };
         Insert: {
-          created_at?: string
-          deals_target?: number
-          id?: string
-          month: string
-          revenue_target?: number
-          set_by?: string | null
-          updated_at?: string
-        }
+          created_at?: string;
+          deals_target?: number;
+          id?: string;
+          month: string;
+          revenue_target?: number;
+          set_by?: string | null;
+          updated_at?: string;
+        };
         Update: {
-          created_at?: string
-          deals_target?: number
-          id?: string
-          month?: string
-          revenue_target?: number
-          set_by?: string | null
-          updated_at?: string
-        }
+          created_at?: string;
+          deals_target?: number;
+          id?: string;
+          month?: string;
+          revenue_target?: number;
+          set_by?: string | null;
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "monthly_targets_set_by_fkey"
-            columns: ["set_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "monthly_targets_set_by_fkey";
+            columns: ["set_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       notifications: {
         Row: {
-          created_at: string
-          fulfillment_id: string | null
-          id: string
-          message: string
-          read: boolean
-          user_id: string
-        }
+          created_at: string;
+          fulfillment_id: string | null;
+          id: string;
+          message: string;
+          read: boolean;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string
-          fulfillment_id?: string | null
-          id?: string
-          message: string
-          read?: boolean
-          user_id: string
-        }
+          created_at?: string;
+          fulfillment_id?: string | null;
+          id?: string;
+          message: string;
+          read?: boolean;
+          user_id: string;
+        };
         Update: {
-          created_at?: string
-          fulfillment_id?: string | null
-          id?: string
-          message?: string
-          read?: boolean
-          user_id?: string
-        }
+          created_at?: string;
+          fulfillment_id?: string | null;
+          id?: string;
+          message?: string;
+          read?: boolean;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "notifications_fulfillment_id_fkey"
-            columns: ["fulfillment_id"]
-            isOneToOne: false
-            referencedRelation: "fulfillments"
-            referencedColumns: ["id"]
+            foreignKeyName: "notifications_fulfillment_id_fkey";
+            columns: ["fulfillment_id"];
+            isOneToOne: false;
+            referencedRelation: "fulfillments";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "notifications_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       payments: {
         Row: {
-          amount: number
-          created_at: string
-          fulfillment_id: string
-          id: string
-          notes: string | null
-          paid_at: string
-          recorded_by: string | null
-        }
+          amount: number;
+          created_at: string;
+          fulfillment_id: string;
+          id: string;
+          notes: string | null;
+          paid_at: string;
+          recorded_by: string | null;
+        };
         Insert: {
-          amount: number
-          created_at?: string
-          fulfillment_id: string
-          id?: string
-          notes?: string | null
-          paid_at?: string
-          recorded_by?: string | null
-        }
+          amount: number;
+          created_at?: string;
+          fulfillment_id: string;
+          id?: string;
+          notes?: string | null;
+          paid_at?: string;
+          recorded_by?: string | null;
+        };
         Update: {
-          amount?: number
-          created_at?: string
-          fulfillment_id?: string
-          id?: string
-          notes?: string | null
-          paid_at?: string
-          recorded_by?: string | null
-        }
+          amount?: number;
+          created_at?: string;
+          fulfillment_id?: string;
+          id?: string;
+          notes?: string | null;
+          paid_at?: string;
+          recorded_by?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "payments_fulfillment_id_fkey"
-            columns: ["fulfillment_id"]
-            isOneToOne: false
-            referencedRelation: "fulfillments"
-            referencedColumns: ["id"]
+            foreignKeyName: "payments_fulfillment_id_fkey";
+            columns: ["fulfillment_id"];
+            isOneToOne: false;
+            referencedRelation: "fulfillments";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "payments_recorded_by_fkey"
-            columns: ["recorded_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "payments_recorded_by_fkey";
+            columns: ["recorded_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       pos_customers: {
         Row: {
-          branch_id: string
-          created_at: string
-          id: string
-          name: string
-          phone: string | null
-        }
+          branch_id: string;
+          created_at: string;
+          id: string;
+          name: string;
+          phone: string | null;
+        };
         Insert: {
-          branch_id?: string
-          created_at?: string
-          id?: string
-          name: string
-          phone?: string | null
-        }
+          branch_id?: string;
+          created_at?: string;
+          id?: string;
+          name: string;
+          phone?: string | null;
+        };
         Update: {
-          branch_id?: string
-          created_at?: string
-          id?: string
-          name?: string
-          phone?: string | null
-        }
+          branch_id?: string;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          phone?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "pos_customers_branch_id_fkey"
-            columns: ["branch_id"]
-            isOneToOne: false
-            referencedRelation: "branches"
-            referencedColumns: ["id"]
+            foreignKeyName: "pos_customers_branch_id_fkey";
+            columns: ["branch_id"];
+            isOneToOne: false;
+            referencedRelation: "branches";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       product_categories: {
         Row: {
-          active: boolean
-          created_at: string
-          id: string
-          name: string
-          updated_at: string
-        }
+          active: boolean;
+          created_at: string;
+          id: string;
+          name: string;
+          updated_at: string;
+        };
         Insert: {
-          active?: boolean
-          created_at?: string
-          id?: string
-          name: string
-          updated_at?: string
-        }
+          active?: boolean;
+          created_at?: string;
+          id?: string;
+          name: string;
+          updated_at?: string;
+        };
         Update: {
-          active?: boolean
-          created_at?: string
-          id?: string
-          name?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
+          active?: boolean;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
-          created_at: string
-          full_name: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"] | null
-        }
+          created_at: string;
+          full_name: string;
+          id: string;
+          role: Database["public"]["Enums"]["app_role"] | null;
+        };
         Insert: {
-          created_at?: string
-          full_name?: string
-          id: string
-          role?: Database["public"]["Enums"]["app_role"] | null
-        }
+          created_at?: string;
+          full_name?: string;
+          id: string;
+          role?: Database["public"]["Enums"]["app_role"] | null;
+        };
         Update: {
-          created_at?: string
-          full_name?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"] | null
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          full_name?: string;
+          id?: string;
+          role?: Database["public"]["Enums"]["app_role"] | null;
+        };
+        Relationships: [];
+      };
       projects: {
         Row: {
-          balance: number | null
-          client_name: string | null
-          created_at: string
-          created_by: string | null
-          date: string
-          id: string
-          location: string | null
-          machine_description: string | null
-          status: string
-          total: number
-          updated_at: string
-        }
+          balance: number | null;
+          client_name: string | null;
+          created_at: string;
+          created_by: string | null;
+          date: string;
+          id: string;
+          location: string | null;
+          machine_description: string | null;
+          status: string;
+          total: number;
+          updated_at: string;
+        };
         Insert: {
-          balance?: number | null
-          client_name?: string | null
-          created_at?: string
-          created_by?: string | null
-          date?: string
-          id?: string
-          location?: string | null
-          machine_description?: string | null
-          status?: string
-          total?: number
-          updated_at?: string
-        }
+          balance?: number | null;
+          client_name?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          date?: string;
+          id?: string;
+          location?: string | null;
+          machine_description?: string | null;
+          status?: string;
+          total?: number;
+          updated_at?: string;
+        };
         Update: {
-          balance?: number | null
-          client_name?: string | null
-          created_at?: string
-          created_by?: string | null
-          date?: string
-          id?: string
-          location?: string | null
-          machine_description?: string | null
-          status?: string
-          total?: number
-          updated_at?: string
-        }
+          balance?: number | null;
+          client_name?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          date?: string;
+          id?: string;
+          location?: string | null;
+          machine_description?: string | null;
+          status?: string;
+          total?: number;
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "projects_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "projects_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       purchase_order_items: {
         Row: {
-          created_at: string
-          discount_percent: number
-          id: string
-          line_total: number | null
-          product_id: string
-          purchase_order_id: string
-          quantity: number
-          tax_percent: number
-          unit_price: number
-        }
+          created_at: string;
+          discount_percent: number;
+          id: string;
+          line_total: number | null;
+          product_id: string;
+          purchase_order_id: string;
+          quantity: number;
+          tax_percent: number;
+          unit_price: number;
+        };
         Insert: {
-          created_at?: string
-          discount_percent?: number
-          id?: string
-          line_total?: number | null
-          product_id: string
-          purchase_order_id: string
-          quantity: number
-          tax_percent?: number
-          unit_price?: number
-        }
+          created_at?: string;
+          discount_percent?: number;
+          id?: string;
+          line_total?: number | null;
+          product_id: string;
+          purchase_order_id: string;
+          quantity: number;
+          tax_percent?: number;
+          unit_price?: number;
+        };
         Update: {
-          created_at?: string
-          discount_percent?: number
-          id?: string
-          line_total?: number | null
-          product_id?: string
-          purchase_order_id?: string
-          quantity?: number
-          tax_percent?: number
-          unit_price?: number
-        }
+          created_at?: string;
+          discount_percent?: number;
+          id?: string;
+          line_total?: number | null;
+          product_id?: string;
+          purchase_order_id?: string;
+          quantity?: number;
+          tax_percent?: number;
+          unit_price?: number;
+        };
         Relationships: [
           {
-            foreignKeyName: "purchase_order_items_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "store_products"
-            referencedColumns: ["id"]
+            foreignKeyName: "purchase_order_items_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "store_products";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "purchase_order_items_purchase_order_id_fkey"
-            columns: ["purchase_order_id"]
-            isOneToOne: false
-            referencedRelation: "purchase_orders"
-            referencedColumns: ["id"]
+            foreignKeyName: "purchase_order_items_purchase_order_id_fkey";
+            columns: ["purchase_order_id"];
+            isOneToOne: false;
+            referencedRelation: "purchase_orders";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       purchase_orders: {
         Row: {
-          branch_id: string
-          created_at: string
-          created_by: string | null
-          description: string | null
-          destination_location: Database["public"]["Enums"]["store_location"]
-          id: string
-          lpo_no: string
-          status: string
-          supplier_id: string | null
-          supplier_invoice_no: string | null
-          updated_at: string
-        }
+          branch_id: string;
+          created_at: string;
+          created_by: string | null;
+          description: string | null;
+          destination_location: Database["public"]["Enums"]["store_location"];
+          id: string;
+          lpo_no: string;
+          status: string;
+          supplier_id: string | null;
+          supplier_invoice_no: string | null;
+          updated_at: string;
+        };
         Insert: {
-          branch_id?: string
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          destination_location: Database["public"]["Enums"]["store_location"]
-          id?: string
-          lpo_no: string
-          status?: string
-          supplier_id?: string | null
-          supplier_invoice_no?: string | null
-          updated_at?: string
-        }
+          branch_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          description?: string | null;
+          destination_location: Database["public"]["Enums"]["store_location"];
+          id?: string;
+          lpo_no: string;
+          status?: string;
+          supplier_id?: string | null;
+          supplier_invoice_no?: string | null;
+          updated_at?: string;
+        };
         Update: {
-          branch_id?: string
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          destination_location?: Database["public"]["Enums"]["store_location"]
-          id?: string
-          lpo_no?: string
-          status?: string
-          supplier_id?: string | null
-          supplier_invoice_no?: string | null
-          updated_at?: string
-        }
+          branch_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          description?: string | null;
+          destination_location?: Database["public"]["Enums"]["store_location"];
+          id?: string;
+          lpo_no?: string;
+          status?: string;
+          supplier_id?: string | null;
+          supplier_invoice_no?: string | null;
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "purchase_orders_branch_id_fkey"
-            columns: ["branch_id"]
-            isOneToOne: false
-            referencedRelation: "branches"
-            referencedColumns: ["id"]
+            foreignKeyName: "purchase_orders_branch_id_fkey";
+            columns: ["branch_id"];
+            isOneToOne: false;
+            referencedRelation: "branches";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "purchase_orders_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "purchase_orders_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "purchase_orders_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "suppliers"
-            referencedColumns: ["id"]
+            foreignKeyName: "purchase_orders_supplier_id_fkey";
+            columns: ["supplier_id"];
+            isOneToOne: false;
+            referencedRelation: "suppliers";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       recordings: {
         Row: {
-          audio_file_url: string
-          created_at: string
-          deal_id: string | null
-          id: string
-          uploaded_by: string | null
-        }
+          audio_file_url: string;
+          created_at: string;
+          deal_id: string | null;
+          id: string;
+          uploaded_by: string | null;
+        };
         Insert: {
-          audio_file_url: string
-          created_at?: string
-          deal_id?: string | null
-          id?: string
-          uploaded_by?: string | null
-        }
+          audio_file_url: string;
+          created_at?: string;
+          deal_id?: string | null;
+          id?: string;
+          uploaded_by?: string | null;
+        };
         Update: {
-          audio_file_url?: string
-          created_at?: string
-          deal_id?: string | null
-          id?: string
-          uploaded_by?: string | null
-        }
+          audio_file_url?: string;
+          created_at?: string;
+          deal_id?: string | null;
+          id?: string;
+          uploaded_by?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "recordings_deal_id_fkey"
-            columns: ["deal_id"]
-            isOneToOne: false
-            referencedRelation: "leads"
-            referencedColumns: ["id"]
+            foreignKeyName: "recordings_deal_id_fkey";
+            columns: ["deal_id"];
+            isOneToOne: false;
+            referencedRelation: "leads";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "recordings_uploaded_by_fkey"
-            columns: ["uploaded_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "recordings_uploaded_by_fkey";
+            columns: ["uploaded_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       sale_items: {
         Row: {
-          created_at: string
-          discount_percent: number
-          id: string
-          line_total: number
-          product_id: string
-          quantity: number
-          sale_id: string
-          tax_percent: number
-          unit_price: number
-        }
+          created_at: string;
+          discount_percent: number;
+          id: string;
+          line_total: number;
+          product_id: string;
+          quantity: number;
+          sale_id: string;
+          tax_percent: number;
+          unit_price: number;
+        };
         Insert: {
-          created_at?: string
-          discount_percent?: number
-          id?: string
-          line_total?: number
-          product_id: string
-          quantity: number
-          sale_id: string
-          tax_percent?: number
-          unit_price?: number
-        }
+          created_at?: string;
+          discount_percent?: number;
+          id?: string;
+          line_total?: number;
+          product_id: string;
+          quantity: number;
+          sale_id: string;
+          tax_percent?: number;
+          unit_price?: number;
+        };
         Update: {
-          created_at?: string
-          discount_percent?: number
-          id?: string
-          line_total?: number
-          product_id?: string
-          quantity?: number
-          sale_id?: string
-          tax_percent?: number
-          unit_price?: number
-        }
+          created_at?: string;
+          discount_percent?: number;
+          id?: string;
+          line_total?: number;
+          product_id?: string;
+          quantity?: number;
+          sale_id?: string;
+          tax_percent?: number;
+          unit_price?: number;
+        };
         Relationships: [
           {
-            foreignKeyName: "sale_items_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "store_products"
-            referencedColumns: ["id"]
+            foreignKeyName: "sale_items_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "store_products";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "sale_items_sale_id_fkey"
-            columns: ["sale_id"]
-            isOneToOne: false
-            referencedRelation: "sales"
-            referencedColumns: ["id"]
+            foreignKeyName: "sale_items_sale_id_fkey";
+            columns: ["sale_id"];
+            isOneToOne: false;
+            referencedRelation: "sales";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       sales: {
         Row: {
-          additional_info: string | null
-          branch_id: string
-          created_at: string
-          created_by: string | null
-          customer_id: string | null
-          discount_amount: number
-          id: string
-          invoice_no: string
-          location: Database["public"]["Enums"]["store_location"]
-          payment_method: Database["public"]["Enums"]["pos_payment_method"]
-          status: Database["public"]["Enums"]["pos_sale_status"]
-          subtotal: number
-          tax_amount: number
-          total_amount: number
-          void_reason: string | null
-          voided_at: string | null
-          voided_by: string | null
-        }
+          additional_info: string | null;
+          branch_id: string;
+          created_at: string;
+          created_by: string | null;
+          customer_id: string | null;
+          discount_amount: number;
+          id: string;
+          invoice_no: string;
+          location: Database["public"]["Enums"]["store_location"];
+          payment_method: Database["public"]["Enums"]["pos_payment_method"];
+          status: Database["public"]["Enums"]["pos_sale_status"];
+          subtotal: number;
+          tax_amount: number;
+          total_amount: number;
+          void_reason: string | null;
+          voided_at: string | null;
+          voided_by: string | null;
+        };
         Insert: {
-          additional_info?: string | null
-          branch_id?: string
-          created_at?: string
-          created_by?: string | null
-          customer_id?: string | null
-          discount_amount?: number
-          id?: string
-          invoice_no: string
-          location: Database["public"]["Enums"]["store_location"]
-          payment_method: Database["public"]["Enums"]["pos_payment_method"]
-          status?: Database["public"]["Enums"]["pos_sale_status"]
-          subtotal?: number
-          tax_amount?: number
-          total_amount?: number
-          void_reason?: string | null
-          voided_at?: string | null
-          voided_by?: string | null
-        }
+          additional_info?: string | null;
+          branch_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          customer_id?: string | null;
+          discount_amount?: number;
+          id?: string;
+          invoice_no: string;
+          location: Database["public"]["Enums"]["store_location"];
+          payment_method: Database["public"]["Enums"]["pos_payment_method"];
+          status?: Database["public"]["Enums"]["pos_sale_status"];
+          subtotal?: number;
+          tax_amount?: number;
+          total_amount?: number;
+          void_reason?: string | null;
+          voided_at?: string | null;
+          voided_by?: string | null;
+        };
         Update: {
-          additional_info?: string | null
-          branch_id?: string
-          created_at?: string
-          created_by?: string | null
-          customer_id?: string | null
-          discount_amount?: number
-          id?: string
-          invoice_no?: string
-          location?: Database["public"]["Enums"]["store_location"]
-          payment_method?: Database["public"]["Enums"]["pos_payment_method"]
-          status?: Database["public"]["Enums"]["pos_sale_status"]
-          subtotal?: number
-          tax_amount?: number
-          total_amount?: number
-          void_reason?: string | null
-          voided_at?: string | null
-          voided_by?: string | null
-        }
+          additional_info?: string | null;
+          branch_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          customer_id?: string | null;
+          discount_amount?: number;
+          id?: string;
+          invoice_no?: string;
+          location?: Database["public"]["Enums"]["store_location"];
+          payment_method?: Database["public"]["Enums"]["pos_payment_method"];
+          status?: Database["public"]["Enums"]["pos_sale_status"];
+          subtotal?: number;
+          tax_amount?: number;
+          total_amount?: number;
+          void_reason?: string | null;
+          voided_at?: string | null;
+          voided_by?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "sales_branch_id_fkey"
-            columns: ["branch_id"]
-            isOneToOne: false
-            referencedRelation: "branches"
-            referencedColumns: ["id"]
+            foreignKeyName: "sales_branch_id_fkey";
+            columns: ["branch_id"];
+            isOneToOne: false;
+            referencedRelation: "branches";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "sales_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "sales_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "sales_customer_id_fkey"
-            columns: ["customer_id"]
-            isOneToOne: false
-            referencedRelation: "pos_customers"
-            referencedColumns: ["id"]
+            foreignKeyName: "sales_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "pos_customers";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "sales_voided_by_fkey"
-            columns: ["voided_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "sales_voided_by_fkey";
+            columns: ["voided_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       schools: {
         Row: {
-          area: string | null
-          branch_id: string
-          county: string | null
-          created_at: string
-          id: string
-          last_contact_date: string | null
-          next_follow_up_date: string | null
-          rep_id: string | null
-          school_name: string
-          status: string
-          tier: string | null
-          updated_at: string
-          visit_count: number
-        }
+          area: string | null;
+          branch_id: string;
+          county: string | null;
+          created_at: string;
+          id: string;
+          last_contact_date: string | null;
+          next_follow_up_date: string | null;
+          rep_id: string | null;
+          school_name: string;
+          status: string;
+          tier: string | null;
+          updated_at: string;
+          visit_count: number;
+        };
         Insert: {
-          area?: string | null
-          branch_id?: string
-          county?: string | null
-          created_at?: string
-          id?: string
-          last_contact_date?: string | null
-          next_follow_up_date?: string | null
-          rep_id?: string | null
-          school_name?: string
-          status?: string
-          tier?: string | null
-          updated_at?: string
-          visit_count?: number
-        }
+          area?: string | null;
+          branch_id?: string;
+          county?: string | null;
+          created_at?: string;
+          id?: string;
+          last_contact_date?: string | null;
+          next_follow_up_date?: string | null;
+          rep_id?: string | null;
+          school_name?: string;
+          status?: string;
+          tier?: string | null;
+          updated_at?: string;
+          visit_count?: number;
+        };
         Update: {
-          area?: string | null
-          branch_id?: string
-          county?: string | null
-          created_at?: string
-          id?: string
-          last_contact_date?: string | null
-          next_follow_up_date?: string | null
-          rep_id?: string | null
-          school_name?: string
-          status?: string
-          tier?: string | null
-          updated_at?: string
-          visit_count?: number
-        }
+          area?: string | null;
+          branch_id?: string;
+          county?: string | null;
+          created_at?: string;
+          id?: string;
+          last_contact_date?: string | null;
+          next_follow_up_date?: string | null;
+          rep_id?: string | null;
+          school_name?: string;
+          status?: string;
+          tier?: string | null;
+          updated_at?: string;
+          visit_count?: number;
+        };
         Relationships: [
           {
-            foreignKeyName: "schools_branch_id_fkey"
-            columns: ["branch_id"]
-            isOneToOne: false
-            referencedRelation: "branches"
-            referencedColumns: ["id"]
+            foreignKeyName: "schools_branch_id_fkey";
+            columns: ["branch_id"];
+            isOneToOne: false;
+            referencedRelation: "branches";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "schools_rep_id_fkey"
-            columns: ["rep_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "schools_rep_id_fkey";
+            columns: ["rep_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       service_commissions: {
         Row: {
-          amount_kes: number
-          computed_at: string
-          id: string
-          paid: boolean
-          paid_at: string | null
-          service_id: string
-          user_id: string
-        }
+          amount_kes: number;
+          computed_at: string;
+          id: string;
+          paid: boolean;
+          paid_at: string | null;
+          service_id: string;
+          user_id: string;
+        };
         Insert: {
-          amount_kes: number
-          computed_at?: string
-          id?: string
-          paid?: boolean
-          paid_at?: string | null
-          service_id: string
-          user_id: string
-        }
+          amount_kes: number;
+          computed_at?: string;
+          id?: string;
+          paid?: boolean;
+          paid_at?: string | null;
+          service_id: string;
+          user_id: string;
+        };
         Update: {
-          amount_kes?: number
-          computed_at?: string
-          id?: string
-          paid?: boolean
-          paid_at?: string | null
-          service_id?: string
-          user_id?: string
-        }
+          amount_kes?: number;
+          computed_at?: string;
+          id?: string;
+          paid?: boolean;
+          paid_at?: string | null;
+          service_id?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "service_commissions_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "services"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_commissions_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "services";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "service_commissions_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "services_secure"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_commissions_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "services_secure";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "service_commissions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_commissions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       service_diagnoses: {
         Row: {
-          created_at: string
-          diagnosis_notes: string
-          engineer_id: string | null
-          id: string
-          service_id: string
-        }
+          created_at: string;
+          diagnosis_notes: string;
+          engineer_id: string | null;
+          id: string;
+          service_id: string;
+        };
         Insert: {
-          created_at?: string
-          diagnosis_notes: string
-          engineer_id?: string | null
-          id?: string
-          service_id: string
-        }
+          created_at?: string;
+          diagnosis_notes: string;
+          engineer_id?: string | null;
+          id?: string;
+          service_id: string;
+        };
         Update: {
-          created_at?: string
-          diagnosis_notes?: string
-          engineer_id?: string | null
-          id?: string
-          service_id?: string
-        }
+          created_at?: string;
+          diagnosis_notes?: string;
+          engineer_id?: string | null;
+          id?: string;
+          service_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "service_diagnoses_engineer_id_fkey"
-            columns: ["engineer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_diagnoses_engineer_id_fkey";
+            columns: ["engineer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "service_diagnoses_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "services"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_diagnoses_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "services";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "service_diagnoses_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "services_secure"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_diagnoses_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "services_secure";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       service_diagnosis_items: {
         Row: {
-          created_at: string
-          diagnosis_id: string
-          id: string
-          product_id: string
-          quantity: number
-          unit_price: number
-        }
+          created_at: string;
+          diagnosis_id: string;
+          id: string;
+          product_id: string;
+          quantity: number;
+          unit_price: number;
+        };
         Insert: {
-          created_at?: string
-          diagnosis_id: string
-          id?: string
-          product_id: string
-          quantity: number
-          unit_price?: number
-        }
+          created_at?: string;
+          diagnosis_id: string;
+          id?: string;
+          product_id: string;
+          quantity: number;
+          unit_price?: number;
+        };
         Update: {
-          created_at?: string
-          diagnosis_id?: string
-          id?: string
-          product_id?: string
-          quantity?: number
-          unit_price?: number
-        }
+          created_at?: string;
+          diagnosis_id?: string;
+          id?: string;
+          product_id?: string;
+          quantity?: number;
+          unit_price?: number;
+        };
         Relationships: [
           {
-            foreignKeyName: "service_diagnosis_items_diagnosis_id_fkey"
-            columns: ["diagnosis_id"]
-            isOneToOne: false
-            referencedRelation: "service_diagnoses"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_diagnosis_items_diagnosis_id_fkey";
+            columns: ["diagnosis_id"];
+            isOneToOne: false;
+            referencedRelation: "service_diagnoses";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "service_diagnosis_items_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "store_products"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_diagnosis_items_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "store_products";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       service_invoices: {
         Row: {
-          cleared_at: string | null
-          cleared_by: string | null
-          created_at: string
-          diagnosis_id: string
-          id: string
-          invoice_no: string
-          payment_method:
-            | Database["public"]["Enums"]["service_payment_method"]
-            | null
-          service_id: string
-          status: string
-          subtotal: number
-        }
+          cleared_at: string | null;
+          cleared_by: string | null;
+          created_at: string;
+          diagnosis_id: string;
+          id: string;
+          invoice_no: string;
+          payment_method: Database["public"]["Enums"]["service_payment_method"] | null;
+          service_id: string;
+          status: string;
+          subtotal: number;
+        };
         Insert: {
-          cleared_at?: string | null
-          cleared_by?: string | null
-          created_at?: string
-          diagnosis_id: string
-          id?: string
-          invoice_no: string
-          payment_method?:
-            | Database["public"]["Enums"]["service_payment_method"]
-            | null
-          service_id: string
-          status?: string
-          subtotal?: number
-        }
+          cleared_at?: string | null;
+          cleared_by?: string | null;
+          created_at?: string;
+          diagnosis_id: string;
+          id?: string;
+          invoice_no: string;
+          payment_method?: Database["public"]["Enums"]["service_payment_method"] | null;
+          service_id: string;
+          status?: string;
+          subtotal?: number;
+        };
         Update: {
-          cleared_at?: string | null
-          cleared_by?: string | null
-          created_at?: string
-          diagnosis_id?: string
-          id?: string
-          invoice_no?: string
-          payment_method?:
-            | Database["public"]["Enums"]["service_payment_method"]
-            | null
-          service_id?: string
-          status?: string
-          subtotal?: number
-        }
+          cleared_at?: string | null;
+          cleared_by?: string | null;
+          created_at?: string;
+          diagnosis_id?: string;
+          id?: string;
+          invoice_no?: string;
+          payment_method?: Database["public"]["Enums"]["service_payment_method"] | null;
+          service_id?: string;
+          status?: string;
+          subtotal?: number;
+        };
         Relationships: [
           {
-            foreignKeyName: "service_invoices_cleared_by_fkey"
-            columns: ["cleared_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_invoices_cleared_by_fkey";
+            columns: ["cleared_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "service_invoices_diagnosis_id_fkey"
-            columns: ["diagnosis_id"]
-            isOneToOne: false
-            referencedRelation: "service_diagnoses"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_invoices_diagnosis_id_fkey";
+            columns: ["diagnosis_id"];
+            isOneToOne: false;
+            referencedRelation: "service_diagnoses";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "service_invoices_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "services"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_invoices_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "services";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "service_invoices_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "services_secure"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_invoices_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "services_secure";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       service_visit_log: {
         Row: {
-          completed_at: string
-          completed_by: string | null
-          created_at: string
-          id: string
-          next_due_date_set_to: string | null
-          service_id: string
-        }
+          completed_at: string;
+          completed_by: string | null;
+          created_at: string;
+          id: string;
+          next_due_date_set_to: string | null;
+          service_id: string;
+        };
         Insert: {
-          completed_at?: string
-          completed_by?: string | null
-          created_at?: string
-          id?: string
-          next_due_date_set_to?: string | null
-          service_id: string
-        }
+          completed_at?: string;
+          completed_by?: string | null;
+          created_at?: string;
+          id?: string;
+          next_due_date_set_to?: string | null;
+          service_id: string;
+        };
         Update: {
-          completed_at?: string
-          completed_by?: string | null
-          created_at?: string
-          id?: string
-          next_due_date_set_to?: string | null
-          service_id?: string
-        }
+          completed_at?: string;
+          completed_by?: string | null;
+          created_at?: string;
+          id?: string;
+          next_due_date_set_to?: string | null;
+          service_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "service_visit_log_completed_by_fkey"
-            columns: ["completed_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_visit_log_completed_by_fkey";
+            columns: ["completed_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "service_visit_log_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "services"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_visit_log_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "services";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "service_visit_log_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "services_secure"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_visit_log_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "services_secure";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       services: {
         Row: {
-          assigned_at: string | null
-          assigned_by: string | null
-          assigned_engineer_id: string | null
-          branch_id: string
-          client_name: string
-          completed: boolean
-          completed_at: string | null
-          contact: string | null
-          created_at: string
-          fulfillment_id: string | null
-          id: string
-          last_service_date: string | null
-          machine_service_type:
-            | Database["public"]["Enums"]["machine_service_type"]
-            | null
-          machine_type: string | null
-          next_due_date: string | null
-          recorded_by: string | null
-          updated_at: string
-          visit_count: number
-        }
+          assigned_at: string | null;
+          assigned_by: string | null;
+          assigned_engineer_id: string | null;
+          branch_id: string;
+          client_name: string;
+          completed: boolean;
+          completed_at: string | null;
+          contact: string | null;
+          created_at: string;
+          fulfillment_id: string | null;
+          id: string;
+          last_service_date: string | null;
+          machine_service_type: Database["public"]["Enums"]["machine_service_type"] | null;
+          machine_type: string | null;
+          next_due_date: string | null;
+          recorded_by: string | null;
+          updated_at: string;
+          visit_count: number;
+        };
         Insert: {
-          assigned_at?: string | null
-          assigned_by?: string | null
-          assigned_engineer_id?: string | null
-          branch_id?: string
-          client_name?: string
-          completed?: boolean
-          completed_at?: string | null
-          contact?: string | null
-          created_at?: string
-          fulfillment_id?: string | null
-          id?: string
-          last_service_date?: string | null
-          machine_service_type?:
-            | Database["public"]["Enums"]["machine_service_type"]
-            | null
-          machine_type?: string | null
-          next_due_date?: string | null
-          recorded_by?: string | null
-          updated_at?: string
-          visit_count?: number
-        }
+          assigned_at?: string | null;
+          assigned_by?: string | null;
+          assigned_engineer_id?: string | null;
+          branch_id?: string;
+          client_name?: string;
+          completed?: boolean;
+          completed_at?: string | null;
+          contact?: string | null;
+          created_at?: string;
+          fulfillment_id?: string | null;
+          id?: string;
+          last_service_date?: string | null;
+          machine_service_type?: Database["public"]["Enums"]["machine_service_type"] | null;
+          machine_type?: string | null;
+          next_due_date?: string | null;
+          recorded_by?: string | null;
+          updated_at?: string;
+          visit_count?: number;
+        };
         Update: {
-          assigned_at?: string | null
-          assigned_by?: string | null
-          assigned_engineer_id?: string | null
-          branch_id?: string
-          client_name?: string
-          completed?: boolean
-          completed_at?: string | null
-          contact?: string | null
-          created_at?: string
-          fulfillment_id?: string | null
-          id?: string
-          last_service_date?: string | null
-          machine_service_type?:
-            | Database["public"]["Enums"]["machine_service_type"]
-            | null
-          machine_type?: string | null
-          next_due_date?: string | null
-          recorded_by?: string | null
-          updated_at?: string
-          visit_count?: number
-        }
+          assigned_at?: string | null;
+          assigned_by?: string | null;
+          assigned_engineer_id?: string | null;
+          branch_id?: string;
+          client_name?: string;
+          completed?: boolean;
+          completed_at?: string | null;
+          contact?: string | null;
+          created_at?: string;
+          fulfillment_id?: string | null;
+          id?: string;
+          last_service_date?: string | null;
+          machine_service_type?: Database["public"]["Enums"]["machine_service_type"] | null;
+          machine_type?: string | null;
+          next_due_date?: string | null;
+          recorded_by?: string | null;
+          updated_at?: string;
+          visit_count?: number;
+        };
         Relationships: [
           {
-            foreignKeyName: "services_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "services_assigned_by_fkey";
+            columns: ["assigned_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "services_assigned_engineer_id_fkey"
-            columns: ["assigned_engineer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "services_assigned_engineer_id_fkey";
+            columns: ["assigned_engineer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "services_branch_id_fkey"
-            columns: ["branch_id"]
-            isOneToOne: false
-            referencedRelation: "branches"
-            referencedColumns: ["id"]
+            foreignKeyName: "services_branch_id_fkey";
+            columns: ["branch_id"];
+            isOneToOne: false;
+            referencedRelation: "branches";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "services_fulfillment_id_fkey"
-            columns: ["fulfillment_id"]
-            isOneToOne: false
-            referencedRelation: "fulfillments"
-            referencedColumns: ["id"]
+            foreignKeyName: "services_fulfillment_id_fkey";
+            columns: ["fulfillment_id"];
+            isOneToOne: false;
+            referencedRelation: "fulfillments";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "services_recorded_by_fkey"
-            columns: ["recorded_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "services_recorded_by_fkey";
+            columns: ["recorded_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       settings: {
         Row: {
-          key: string
-          updated_at: string
-          updated_by: string | null
-          value: string | null
-        }
+          key: string;
+          updated_at: string;
+          updated_by: string | null;
+          value: string | null;
+        };
         Insert: {
-          key: string
-          updated_at?: string
-          updated_by?: string | null
-          value?: string | null
-        }
+          key: string;
+          updated_at?: string;
+          updated_by?: string | null;
+          value?: string | null;
+        };
         Update: {
-          key?: string
-          updated_at?: string
-          updated_by?: string | null
-          value?: string | null
-        }
+          key?: string;
+          updated_at?: string;
+          updated_by?: string | null;
+          value?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "settings_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "settings_updated_by_fkey";
+            columns: ["updated_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       site_visit_photos: {
         Row: {
-          caption: string | null
-          id: string
-          photo_url: string
-          site_visit_id: string
-          uploaded_at: string
-          uploaded_by: string | null
-        }
+          caption: string | null;
+          id: string;
+          photo_url: string;
+          site_visit_id: string;
+          uploaded_at: string;
+          uploaded_by: string | null;
+        };
         Insert: {
-          caption?: string | null
-          id?: string
-          photo_url: string
-          site_visit_id: string
-          uploaded_at?: string
-          uploaded_by?: string | null
-        }
+          caption?: string | null;
+          id?: string;
+          photo_url: string;
+          site_visit_id: string;
+          uploaded_at?: string;
+          uploaded_by?: string | null;
+        };
         Update: {
-          caption?: string | null
-          id?: string
-          photo_url?: string
-          site_visit_id?: string
-          uploaded_at?: string
-          uploaded_by?: string | null
-        }
+          caption?: string | null;
+          id?: string;
+          photo_url?: string;
+          site_visit_id?: string;
+          uploaded_at?: string;
+          uploaded_by?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "site_visit_photos_site_visit_id_fkey"
-            columns: ["site_visit_id"]
-            isOneToOne: false
-            referencedRelation: "site_visits"
-            referencedColumns: ["id"]
+            foreignKeyName: "site_visit_photos_site_visit_id_fkey";
+            columns: ["site_visit_id"];
+            isOneToOne: false;
+            referencedRelation: "site_visits";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "site_visit_photos_uploaded_by_fkey"
-            columns: ["uploaded_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "site_visit_photos_uploaded_by_fkey";
+            columns: ["uploaded_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       site_visits: {
         Row: {
-          assigned_at: string | null
-          assigned_by: string | null
-          assigned_engineer_id: string | null
-          branch_id: string
-          checklist: Json
-          client_name: string
-          created_at: string
-          created_by: string | null
-          deal_id: string | null
-          engineer_id: string | null
-          id: string
-          location: string | null
-          notes: string | null
-          status: string
-          updated_at: string
-          visit_date: string
-          visit_type: string
-        }
+          assigned_at: string | null;
+          assigned_by: string | null;
+          assigned_engineer_id: string | null;
+          branch_id: string;
+          checklist: Json;
+          client_name: string;
+          created_at: string;
+          created_by: string | null;
+          deal_id: string | null;
+          engineer_id: string | null;
+          id: string;
+          location: string | null;
+          notes: string | null;
+          status: string;
+          updated_at: string;
+          visit_date: string;
+          visit_type: string;
+        };
         Insert: {
-          assigned_at?: string | null
-          assigned_by?: string | null
-          assigned_engineer_id?: string | null
-          branch_id?: string
-          checklist?: Json
-          client_name: string
-          created_at?: string
-          created_by?: string | null
-          deal_id?: string | null
-          engineer_id?: string | null
-          id?: string
-          location?: string | null
-          notes?: string | null
-          status?: string
-          updated_at?: string
-          visit_date?: string
-          visit_type?: string
-        }
+          assigned_at?: string | null;
+          assigned_by?: string | null;
+          assigned_engineer_id?: string | null;
+          branch_id?: string;
+          checklist?: Json;
+          client_name: string;
+          created_at?: string;
+          created_by?: string | null;
+          deal_id?: string | null;
+          engineer_id?: string | null;
+          id?: string;
+          location?: string | null;
+          notes?: string | null;
+          status?: string;
+          updated_at?: string;
+          visit_date?: string;
+          visit_type?: string;
+        };
         Update: {
-          assigned_at?: string | null
-          assigned_by?: string | null
-          assigned_engineer_id?: string | null
-          branch_id?: string
-          checklist?: Json
-          client_name?: string
-          created_at?: string
-          created_by?: string | null
-          deal_id?: string | null
-          engineer_id?: string | null
-          id?: string
-          location?: string | null
-          notes?: string | null
-          status?: string
-          updated_at?: string
-          visit_date?: string
-          visit_type?: string
-        }
+          assigned_at?: string | null;
+          assigned_by?: string | null;
+          assigned_engineer_id?: string | null;
+          branch_id?: string;
+          checklist?: Json;
+          client_name?: string;
+          created_at?: string;
+          created_by?: string | null;
+          deal_id?: string | null;
+          engineer_id?: string | null;
+          id?: string;
+          location?: string | null;
+          notes?: string | null;
+          status?: string;
+          updated_at?: string;
+          visit_date?: string;
+          visit_type?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "site_visits_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "site_visits_assigned_by_fkey";
+            columns: ["assigned_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "site_visits_assigned_engineer_id_fkey"
-            columns: ["assigned_engineer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "site_visits_assigned_engineer_id_fkey";
+            columns: ["assigned_engineer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "site_visits_branch_id_fkey"
-            columns: ["branch_id"]
-            isOneToOne: false
-            referencedRelation: "branches"
-            referencedColumns: ["id"]
+            foreignKeyName: "site_visits_branch_id_fkey";
+            columns: ["branch_id"];
+            isOneToOne: false;
+            referencedRelation: "branches";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "site_visits_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "site_visits_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "site_visits_deal_id_fkey"
-            columns: ["deal_id"]
-            isOneToOne: false
-            referencedRelation: "leads"
-            referencedColumns: ["id"]
+            foreignKeyName: "site_visits_deal_id_fkey";
+            columns: ["deal_id"];
+            isOneToOne: false;
+            referencedRelation: "leads";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "site_visits_engineer_id_fkey"
-            columns: ["engineer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "site_visits_engineer_id_fkey";
+            columns: ["engineer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       stage_events: {
         Row: {
-          actor_id: string | null
-          entered_at: string
-          exited_at: string | null
-          fulfillment_id: string
-          id: string
-          notes: string | null
-          stage: string
-        }
+          actor_id: string | null;
+          entered_at: string;
+          exited_at: string | null;
+          fulfillment_id: string;
+          id: string;
+          notes: string | null;
+          stage: string;
+        };
         Insert: {
-          actor_id?: string | null
-          entered_at?: string
-          exited_at?: string | null
-          fulfillment_id: string
-          id?: string
-          notes?: string | null
-          stage: string
-        }
+          actor_id?: string | null;
+          entered_at?: string;
+          exited_at?: string | null;
+          fulfillment_id: string;
+          id?: string;
+          notes?: string | null;
+          stage: string;
+        };
         Update: {
-          actor_id?: string | null
-          entered_at?: string
-          exited_at?: string | null
-          fulfillment_id?: string
-          id?: string
-          notes?: string | null
-          stage?: string
-        }
+          actor_id?: string | null;
+          entered_at?: string;
+          exited_at?: string | null;
+          fulfillment_id?: string;
+          id?: string;
+          notes?: string | null;
+          stage?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "stage_events_actor_id_fkey"
-            columns: ["actor_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "stage_events_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "stage_events_fulfillment_id_fkey"
-            columns: ["fulfillment_id"]
-            isOneToOne: false
-            referencedRelation: "fulfillments"
-            referencedColumns: ["id"]
+            foreignKeyName: "stage_events_fulfillment_id_fkey";
+            columns: ["fulfillment_id"];
+            isOneToOne: false;
+            referencedRelation: "fulfillments";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       stock_take_variances: {
         Row: {
-          counted_at: string
-          counted_by: string | null
-          counted_quantity: number
-          id: string
-          location: Database["public"]["Enums"]["store_location"]
-          product_id: string
-          system_quantity: number
-          variance: number
-        }
+          counted_at: string;
+          counted_by: string | null;
+          counted_quantity: number;
+          id: string;
+          location: Database["public"]["Enums"]["store_location"];
+          product_id: string;
+          system_quantity: number;
+          variance: number;
+        };
         Insert: {
-          counted_at?: string
-          counted_by?: string | null
-          counted_quantity: number
-          id?: string
-          location: Database["public"]["Enums"]["store_location"]
-          product_id: string
-          system_quantity: number
-          variance: number
-        }
+          counted_at?: string;
+          counted_by?: string | null;
+          counted_quantity: number;
+          id?: string;
+          location: Database["public"]["Enums"]["store_location"];
+          product_id: string;
+          system_quantity: number;
+          variance: number;
+        };
         Update: {
-          counted_at?: string
-          counted_by?: string | null
-          counted_quantity?: number
-          id?: string
-          location?: Database["public"]["Enums"]["store_location"]
-          product_id?: string
-          system_quantity?: number
-          variance?: number
-        }
+          counted_at?: string;
+          counted_by?: string | null;
+          counted_quantity?: number;
+          id?: string;
+          location?: Database["public"]["Enums"]["store_location"];
+          product_id?: string;
+          system_quantity?: number;
+          variance?: number;
+        };
         Relationships: [
           {
-            foreignKeyName: "stock_take_variances_counted_by_fkey"
-            columns: ["counted_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "stock_take_variances_counted_by_fkey";
+            columns: ["counted_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "stock_take_variances_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "store_products"
-            referencedColumns: ["id"]
+            foreignKeyName: "stock_take_variances_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "store_products";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       store_access: {
         Row: {
-          granted_at: string
-          granted_by: string | null
-          user_id: string
-        }
+          granted_at: string;
+          granted_by: string | null;
+          user_id: string;
+        };
         Insert: {
-          granted_at?: string
-          granted_by?: string | null
-          user_id: string
-        }
+          granted_at?: string;
+          granted_by?: string | null;
+          user_id: string;
+        };
         Update: {
-          granted_at?: string
-          granted_by?: string | null
-          user_id?: string
-        }
+          granted_at?: string;
+          granted_by?: string | null;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "store_access_granted_by_fkey"
-            columns: ["granted_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_access_granted_by_fkey";
+            columns: ["granted_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "store_access_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_access_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       store_products: {
         Row: {
-          branch_id: string
-          brand: string | null
-          buying_price: number | null
-          category: string | null
-          created_at: string
-          created_by: string | null
-          id: string
-          in_house_qty: number
-          name: string
-          product_code: string | null
-          product_type: Database["public"]["Enums"]["store_product_type"]
-          selling_price: number | null
-          sku: string | null
-          tax_category_percent: number
-          unit: string | null
-          updated_at: string
-          warehouse_qty: number
-        }
+          branch_id: string;
+          brand: string | null;
+          buying_price: number | null;
+          category: string | null;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          in_house_qty: number;
+          name: string;
+          product_code: string | null;
+          product_type: Database["public"]["Enums"]["store_product_type"];
+          selling_price: number | null;
+          sku: string | null;
+          tax_category_percent: number;
+          unit: string | null;
+          updated_at: string;
+          warehouse_qty: number;
+        };
         Insert: {
-          branch_id?: string
-          brand?: string | null
-          buying_price?: number | null
-          category?: string | null
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          in_house_qty?: number
-          name: string
-          product_code?: string | null
-          product_type?: Database["public"]["Enums"]["store_product_type"]
-          selling_price?: number | null
-          sku?: string | null
-          tax_category_percent?: number
-          unit?: string | null
-          updated_at?: string
-          warehouse_qty?: number
-        }
+          branch_id?: string;
+          brand?: string | null;
+          buying_price?: number | null;
+          category?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          in_house_qty?: number;
+          name: string;
+          product_code?: string | null;
+          product_type?: Database["public"]["Enums"]["store_product_type"];
+          selling_price?: number | null;
+          sku?: string | null;
+          tax_category_percent?: number;
+          unit?: string | null;
+          updated_at?: string;
+          warehouse_qty?: number;
+        };
         Update: {
-          branch_id?: string
-          brand?: string | null
-          buying_price?: number | null
-          category?: string | null
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          in_house_qty?: number
-          name?: string
-          product_code?: string | null
-          product_type?: Database["public"]["Enums"]["store_product_type"]
-          selling_price?: number | null
-          sku?: string | null
-          tax_category_percent?: number
-          unit?: string | null
-          updated_at?: string
-          warehouse_qty?: number
-        }
+          branch_id?: string;
+          brand?: string | null;
+          buying_price?: number | null;
+          category?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          in_house_qty?: number;
+          name?: string;
+          product_code?: string | null;
+          product_type?: Database["public"]["Enums"]["store_product_type"];
+          selling_price?: number | null;
+          sku?: string | null;
+          tax_category_percent?: number;
+          unit?: string | null;
+          updated_at?: string;
+          warehouse_qty?: number;
+        };
         Relationships: [
           {
-            foreignKeyName: "store_products_branch_id_fkey"
-            columns: ["branch_id"]
-            isOneToOne: false
-            referencedRelation: "branches"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_products_branch_id_fkey";
+            columns: ["branch_id"];
+            isOneToOne: false;
+            referencedRelation: "branches";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "store_products_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_products_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       store_requisition_items: {
         Row: {
-          created_at: string
-          id: string
-          product_id: string
-          quantity: number
-          requisition_id: string
-        }
+          created_at: string;
+          id: string;
+          product_id: string;
+          quantity: number;
+          requisition_id: string;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          product_id: string
-          quantity: number
-          requisition_id: string
-        }
+          created_at?: string;
+          id?: string;
+          product_id: string;
+          quantity: number;
+          requisition_id: string;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          product_id?: string
-          quantity?: number
-          requisition_id?: string
-        }
+          created_at?: string;
+          id?: string;
+          product_id?: string;
+          quantity?: number;
+          requisition_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "store_requisition_items_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "store_products"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_requisition_items_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "store_products";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "store_requisition_items_requisition_id_fkey"
-            columns: ["requisition_id"]
-            isOneToOne: false
-            referencedRelation: "store_requisitions"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_requisition_items_requisition_id_fkey";
+            columns: ["requisition_id"];
+            isOneToOne: false;
+            referencedRelation: "store_requisitions";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       store_requisitions: {
         Row: {
-          assigned_at: string | null
-          assigned_engineer_id: string | null
-          branch_id: string
-          created_at: string
-          created_by: string | null
-          delivery_status: string
-          description: string | null
-          destination_location: Database["public"]["Enums"]["store_location"]
-          id: string
-          requisition_no: string
-          source_location: Database["public"]["Enums"]["store_location"]
-          status: string
-          updated_at: string
-        }
+          assigned_at: string | null;
+          assigned_engineer_id: string | null;
+          branch_id: string;
+          created_at: string;
+          created_by: string | null;
+          delivery_status: string;
+          description: string | null;
+          destination_location: Database["public"]["Enums"]["store_location"];
+          id: string;
+          requisition_no: string;
+          source_location: Database["public"]["Enums"]["store_location"];
+          status: string;
+          updated_at: string;
+        };
         Insert: {
-          assigned_at?: string | null
-          assigned_engineer_id?: string | null
-          branch_id?: string
-          created_at?: string
-          created_by?: string | null
-          delivery_status?: string
-          description?: string | null
-          destination_location: Database["public"]["Enums"]["store_location"]
-          id?: string
-          requisition_no: string
-          source_location: Database["public"]["Enums"]["store_location"]
-          status?: string
-          updated_at?: string
-        }
+          assigned_at?: string | null;
+          assigned_engineer_id?: string | null;
+          branch_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          delivery_status?: string;
+          description?: string | null;
+          destination_location: Database["public"]["Enums"]["store_location"];
+          id?: string;
+          requisition_no: string;
+          source_location: Database["public"]["Enums"]["store_location"];
+          status?: string;
+          updated_at?: string;
+        };
         Update: {
-          assigned_at?: string | null
-          assigned_engineer_id?: string | null
-          branch_id?: string
-          created_at?: string
-          created_by?: string | null
-          delivery_status?: string
-          description?: string | null
-          destination_location?: Database["public"]["Enums"]["store_location"]
-          id?: string
-          requisition_no?: string
-          source_location?: Database["public"]["Enums"]["store_location"]
-          status?: string
-          updated_at?: string
-        }
+          assigned_at?: string | null;
+          assigned_engineer_id?: string | null;
+          branch_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          delivery_status?: string;
+          description?: string | null;
+          destination_location?: Database["public"]["Enums"]["store_location"];
+          id?: string;
+          requisition_no?: string;
+          source_location?: Database["public"]["Enums"]["store_location"];
+          status?: string;
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "store_requisitions_assigned_engineer_id_fkey"
-            columns: ["assigned_engineer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_requisitions_assigned_engineer_id_fkey";
+            columns: ["assigned_engineer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "store_requisitions_branch_id_fkey"
-            columns: ["branch_id"]
-            isOneToOne: false
-            referencedRelation: "branches"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_requisitions_branch_id_fkey";
+            columns: ["branch_id"];
+            isOneToOne: false;
+            referencedRelation: "branches";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "store_requisitions_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_requisitions_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       store_stock_entries: {
         Row: {
-          entered_at: string
-          entered_by: string | null
-          id: string
-          location: Database["public"]["Enums"]["store_location"]
-          notes: string | null
-          product_id: string
-          purchase_order_id: string | null
-          quantity: number
-          requisition_id: string | null
-          supplier_id: string | null
-          total_amount: number | null
-          unit_price: number | null
-        }
+          entered_at: string;
+          entered_by: string | null;
+          id: string;
+          location: Database["public"]["Enums"]["store_location"];
+          notes: string | null;
+          product_id: string;
+          purchase_order_id: string | null;
+          quantity: number;
+          requisition_id: string | null;
+          supplier_id: string | null;
+          total_amount: number | null;
+          unit_price: number | null;
+        };
         Insert: {
-          entered_at?: string
-          entered_by?: string | null
-          id?: string
-          location: Database["public"]["Enums"]["store_location"]
-          notes?: string | null
-          product_id: string
-          purchase_order_id?: string | null
-          quantity: number
-          requisition_id?: string | null
-          supplier_id?: string | null
-          total_amount?: number | null
-          unit_price?: number | null
-        }
+          entered_at?: string;
+          entered_by?: string | null;
+          id?: string;
+          location: Database["public"]["Enums"]["store_location"];
+          notes?: string | null;
+          product_id: string;
+          purchase_order_id?: string | null;
+          quantity: number;
+          requisition_id?: string | null;
+          supplier_id?: string | null;
+          total_amount?: number | null;
+          unit_price?: number | null;
+        };
         Update: {
-          entered_at?: string
-          entered_by?: string | null
-          id?: string
-          location?: Database["public"]["Enums"]["store_location"]
-          notes?: string | null
-          product_id?: string
-          purchase_order_id?: string | null
-          quantity?: number
-          requisition_id?: string | null
-          supplier_id?: string | null
-          total_amount?: number | null
-          unit_price?: number | null
-        }
+          entered_at?: string;
+          entered_by?: string | null;
+          id?: string;
+          location?: Database["public"]["Enums"]["store_location"];
+          notes?: string | null;
+          product_id?: string;
+          purchase_order_id?: string | null;
+          quantity?: number;
+          requisition_id?: string | null;
+          supplier_id?: string | null;
+          total_amount?: number | null;
+          unit_price?: number | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "store_stock_entries_entered_by_fkey"
-            columns: ["entered_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_stock_entries_entered_by_fkey";
+            columns: ["entered_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "store_stock_entries_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "store_products"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_stock_entries_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "store_products";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "store_stock_entries_purchase_order_id_fkey"
-            columns: ["purchase_order_id"]
-            isOneToOne: false
-            referencedRelation: "purchase_orders"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_stock_entries_purchase_order_id_fkey";
+            columns: ["purchase_order_id"];
+            isOneToOne: false;
+            referencedRelation: "purchase_orders";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "store_stock_entries_requisition_id_fkey"
-            columns: ["requisition_id"]
-            isOneToOne: false
-            referencedRelation: "store_requisitions"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_stock_entries_requisition_id_fkey";
+            columns: ["requisition_id"];
+            isOneToOne: false;
+            referencedRelation: "store_requisitions";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "store_stock_entries_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "suppliers"
-            referencedColumns: ["id"]
+            foreignKeyName: "store_stock_entries_supplier_id_fkey";
+            columns: ["supplier_id"];
+            isOneToOne: false;
+            referencedRelation: "suppliers";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       suppliers: {
         Row: {
-          created_at: string
-          created_by: string | null
-          email: string | null
-          id: string
-          logo_url: string | null
-          name: string
-          phone: string | null
-          updated_at: string
-        }
+          created_at: string;
+          created_by: string | null;
+          email: string | null;
+          id: string;
+          logo_url: string | null;
+          name: string;
+          phone: string | null;
+          updated_at: string;
+        };
         Insert: {
-          created_at?: string
-          created_by?: string | null
-          email?: string | null
-          id?: string
-          logo_url?: string | null
-          name: string
-          phone?: string | null
-          updated_at?: string
-        }
+          created_at?: string;
+          created_by?: string | null;
+          email?: string | null;
+          id?: string;
+          logo_url?: string | null;
+          name: string;
+          phone?: string | null;
+          updated_at?: string;
+        };
         Update: {
-          created_at?: string
-          created_by?: string | null
-          email?: string | null
-          id?: string
-          logo_url?: string | null
-          name?: string
-          phone?: string | null
-          updated_at?: string
-        }
+          created_at?: string;
+          created_by?: string | null;
+          email?: string | null;
+          id?: string;
+          logo_url?: string | null;
+          name?: string;
+          phone?: string | null;
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "suppliers_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "suppliers_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       transcripts: {
         Row: {
-          applied_at: string | null
-          coaching_notes: string | null
-          created_at: string
-          id: string
-          recording_id: string
-          score: number | null
-          transcript_text: string | null
-        }
+          applied_at: string | null;
+          coaching_notes: string | null;
+          created_at: string;
+          id: string;
+          recording_id: string;
+          score: number | null;
+          transcript_text: string | null;
+        };
         Insert: {
-          applied_at?: string | null
-          coaching_notes?: string | null
-          created_at?: string
-          id?: string
-          recording_id: string
-          score?: number | null
-          transcript_text?: string | null
-        }
+          applied_at?: string | null;
+          coaching_notes?: string | null;
+          created_at?: string;
+          id?: string;
+          recording_id: string;
+          score?: number | null;
+          transcript_text?: string | null;
+        };
         Update: {
-          applied_at?: string | null
-          coaching_notes?: string | null
-          created_at?: string
-          id?: string
-          recording_id?: string
-          score?: number | null
-          transcript_text?: string | null
-        }
+          applied_at?: string | null;
+          coaching_notes?: string | null;
+          created_at?: string;
+          id?: string;
+          recording_id?: string;
+          score?: number | null;
+          transcript_text?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "transcripts_recording_id_fkey"
-            columns: ["recording_id"]
-            isOneToOne: false
-            referencedRelation: "recordings"
-            referencedColumns: ["id"]
+            foreignKeyName: "transcripts_recording_id_fkey";
+            columns: ["recording_id"];
+            isOneToOne: false;
+            referencedRelation: "recordings";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       user_roles: {
         Row: {
-          granted_at: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
+          granted_at: string;
+          id: string;
+          role: Database["public"]["Enums"]["app_role"];
+          user_id: string;
+        };
         Insert: {
-          granted_at?: string
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
+          granted_at?: string;
+          id?: string;
+          role: Database["public"]["Enums"]["app_role"];
+          user_id: string;
+        };
         Update: {
-          granted_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
+          granted_at?: string;
+          id?: string;
+          role?: Database["public"]["Enums"]["app_role"];
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "user_roles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "user_roles_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       whatsapp_recipients: {
         Row: {
-          active: boolean
-          created_at: string
-          id: string
-          name: string
-          phone: string
-          region: string | null
-          updated_at: string
-        }
+          active: boolean;
+          created_at: string;
+          id: string;
+          name: string;
+          phone: string;
+          region: string | null;
+          updated_at: string;
+        };
         Insert: {
-          active?: boolean
-          created_at?: string
-          id?: string
-          name: string
-          phone: string
-          region?: string | null
-          updated_at?: string
-        }
+          active?: boolean;
+          created_at?: string;
+          id?: string;
+          name: string;
+          phone: string;
+          region?: string | null;
+          updated_at?: string;
+        };
         Update: {
-          active?: boolean
-          created_at?: string
-          id?: string
-          name?: string
-          phone?: string
-          region?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
+          active?: boolean;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          phone?: string;
+          region?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       whatsapp_sequence_steps: {
         Row: {
-          created_at: string
-          delay_hours: number
-          id: string
-          position: number
-          sequence_id: string
-          template_text: string
-          updated_at: string
-        }
+          created_at: string;
+          delay_hours: number;
+          id: string;
+          position: number;
+          sequence_id: string;
+          template_text: string;
+          updated_at: string;
+        };
         Insert: {
-          created_at?: string
-          delay_hours?: number
-          id?: string
-          position?: number
-          sequence_id: string
-          template_text: string
-          updated_at?: string
-        }
+          created_at?: string;
+          delay_hours?: number;
+          id?: string;
+          position?: number;
+          sequence_id: string;
+          template_text: string;
+          updated_at?: string;
+        };
         Update: {
-          created_at?: string
-          delay_hours?: number
-          id?: string
-          position?: number
-          sequence_id?: string
-          template_text?: string
-          updated_at?: string
-        }
+          created_at?: string;
+          delay_hours?: number;
+          id?: string;
+          position?: number;
+          sequence_id?: string;
+          template_text?: string;
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "whatsapp_sequence_steps_sequence_id_fkey"
-            columns: ["sequence_id"]
-            isOneToOne: false
-            referencedRelation: "whatsapp_sequences"
-            referencedColumns: ["id"]
+            foreignKeyName: "whatsapp_sequence_steps_sequence_id_fkey";
+            columns: ["sequence_id"];
+            isOneToOne: false;
+            referencedRelation: "whatsapp_sequences";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       whatsapp_sequences: {
         Row: {
-          active: boolean
-          created_at: string
-          description: string | null
-          id: string
-          name: string
-          updated_at: string
-        }
+          active: boolean;
+          created_at: string;
+          description: string | null;
+          id: string;
+          name: string;
+          updated_at: string;
+        };
         Insert: {
-          active?: boolean
-          created_at?: string
-          description?: string | null
-          id?: string
-          name: string
-          updated_at?: string
-        }
+          active?: boolean;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          name: string;
+          updated_at?: string;
+        };
         Update: {
-          active?: boolean
-          created_at?: string
-          description?: string | null
-          id?: string
-          name?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-    }
+          active?: boolean;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+    };
     Views: {
       services_secure: {
         Row: {
-          assigned_at: string | null
-          assigned_by: string | null
-          assigned_engineer_id: string | null
-          client_name: string | null
-          completed: boolean | null
-          completed_at: string | null
-          contact: string | null
-          created_at: string | null
-          fulfillment_id: string | null
-          id: string | null
-          last_service_date: string | null
-          machine_service_type:
-            | Database["public"]["Enums"]["machine_service_type"]
-            | null
-          machine_type: string | null
-          next_due_date: string | null
-          recorded_by: string | null
-          updated_at: string | null
-          visit_count: number | null
-        }
+          assigned_at: string | null;
+          assigned_by: string | null;
+          assigned_engineer_id: string | null;
+          client_name: string | null;
+          completed: boolean | null;
+          completed_at: string | null;
+          contact: string | null;
+          created_at: string | null;
+          fulfillment_id: string | null;
+          id: string | null;
+          last_service_date: string | null;
+          machine_service_type: Database["public"]["Enums"]["machine_service_type"] | null;
+          machine_type: string | null;
+          next_due_date: string | null;
+          recorded_by: string | null;
+          updated_at: string | null;
+          visit_count: number | null;
+        };
         Insert: {
-          assigned_at?: string | null
-          assigned_by?: string | null
-          assigned_engineer_id?: string | null
-          client_name?: string | null
-          completed?: boolean | null
-          completed_at?: string | null
-          contact?: never
-          created_at?: string | null
-          fulfillment_id?: string | null
-          id?: string | null
-          last_service_date?: string | null
-          machine_service_type?:
-            | Database["public"]["Enums"]["machine_service_type"]
-            | null
-          machine_type?: string | null
-          next_due_date?: string | null
-          recorded_by?: string | null
-          updated_at?: string | null
-          visit_count?: number | null
-        }
+          assigned_at?: string | null;
+          assigned_by?: string | null;
+          assigned_engineer_id?: string | null;
+          client_name?: string | null;
+          completed?: boolean | null;
+          completed_at?: string | null;
+          contact?: never;
+          created_at?: string | null;
+          fulfillment_id?: string | null;
+          id?: string | null;
+          last_service_date?: string | null;
+          machine_service_type?: Database["public"]["Enums"]["machine_service_type"] | null;
+          machine_type?: string | null;
+          next_due_date?: string | null;
+          recorded_by?: string | null;
+          updated_at?: string | null;
+          visit_count?: number | null;
+        };
         Update: {
-          assigned_at?: string | null
-          assigned_by?: string | null
-          assigned_engineer_id?: string | null
-          client_name?: string | null
-          completed?: boolean | null
-          completed_at?: string | null
-          contact?: never
-          created_at?: string | null
-          fulfillment_id?: string | null
-          id?: string | null
-          last_service_date?: string | null
-          machine_service_type?:
-            | Database["public"]["Enums"]["machine_service_type"]
-            | null
-          machine_type?: string | null
-          next_due_date?: string | null
-          recorded_by?: string | null
-          updated_at?: string | null
-          visit_count?: number | null
-        }
+          assigned_at?: string | null;
+          assigned_by?: string | null;
+          assigned_engineer_id?: string | null;
+          client_name?: string | null;
+          completed?: boolean | null;
+          completed_at?: string | null;
+          contact?: never;
+          created_at?: string | null;
+          fulfillment_id?: string | null;
+          id?: string | null;
+          last_service_date?: string | null;
+          machine_service_type?: Database["public"]["Enums"]["machine_service_type"] | null;
+          machine_type?: string | null;
+          next_due_date?: string | null;
+          recorded_by?: string | null;
+          updated_at?: string | null;
+          visit_count?: number | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "services_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "services_assigned_by_fkey";
+            columns: ["assigned_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "services_assigned_engineer_id_fkey"
-            columns: ["assigned_engineer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "services_assigned_engineer_id_fkey";
+            columns: ["assigned_engineer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "services_fulfillment_id_fkey"
-            columns: ["fulfillment_id"]
-            isOneToOne: false
-            referencedRelation: "fulfillments"
-            referencedColumns: ["id"]
+            foreignKeyName: "services_fulfillment_id_fkey";
+            columns: ["fulfillment_id"];
+            isOneToOne: false;
+            referencedRelation: "fulfillments";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "services_recorded_by_fkey"
-            columns: ["recorded_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "services_recorded_by_fkey";
+            columns: ["recorded_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
-    }
+        ];
+      };
+    };
     Functions: {
       can_edit_fulfillment_details: {
-        Args: { _sales_rep_id: string; _uid: string }
-        Returns: boolean
-      }
-      can_manage_taxonomy: { Args: { _user_id: string }; Returns: boolean }
-      can_see_service_contact: { Args: { _user_id: string }; Returns: boolean }
+        Args: { _sales_rep_id: string; _uid: string };
+        Returns: boolean;
+      };
+      can_manage_taxonomy: { Args: { _user_id: string }; Returns: boolean };
+      can_see_service_contact: { Args: { _user_id: string }; Returns: boolean };
       can_use_branch: {
-        Args: { _branch_id: string; _user_id: string }
-        Returns: boolean
-      }
+        Args: { _branch_id: string; _user_id: string };
+        Returns: boolean;
+      };
       can_write_branch_pos: {
-        Args: { _branch_id: string; _user_id: string }
-        Returns: boolean
-      }
-      can_write_store: { Args: { _user_id: string }; Returns: boolean }
-      expire_stale_leads: { Args: never; Returns: number }
-      has_any_role: { Args: { _user_id: string }; Returns: boolean }
+        Args: { _branch_id: string; _user_id: string };
+        Returns: boolean;
+      };
+      can_write_store: { Args: { _user_id: string }; Returns: boolean };
+      expire_stale_leads: { Args: never; Returns: number };
+      has_any_role: { Args: { _user_id: string }; Returns: boolean };
       has_role: {
         Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      is_crm_manager: { Args: { _user_id: string }; Returns: boolean }
-      is_machines_branch: { Args: { _branch_id: string }; Returns: boolean }
-      lead_criterion_points: { Args: { _criterion: string }; Returns: number }
-      max_lead_score: { Args: never; Returns: number }
+          _role: Database["public"]["Enums"]["app_role"];
+          _user_id: string;
+        };
+        Returns: boolean;
+      };
+      is_crm_manager: { Args: { _user_id: string }; Returns: boolean };
+      is_machines_branch: { Args: { _branch_id: string }; Returns: boolean };
+      lead_criterion_points: { Args: { _criterion: string }; Returns: number };
+      max_lead_score: { Args: never; Returns: number };
       pos_create_sale: {
         Args: {
-          _additional_info?: string
-          _branch_id: string
-          _customer_id?: string
-          _items: Json
-          _location: Database["public"]["Enums"]["store_location"]
-          _new_customer_name?: string
-          _new_customer_phone?: string
-          _payment_method: Database["public"]["Enums"]["pos_payment_method"]
-        }
-        Returns: Json
-      }
-      pos_mark_sale_paid: { Args: { _sale_id: string }; Returns: Json }
+          _additional_info?: string;
+          _branch_id: string;
+          _customer_id?: string;
+          _items: Json;
+          _location: Database["public"]["Enums"]["store_location"];
+          _new_customer_name?: string;
+          _new_customer_phone?: string;
+          _payment_method: Database["public"]["Enums"]["pos_payment_method"];
+        };
+        Returns: Json;
+      };
+      pos_mark_sale_paid: { Args: { _sale_id: string }; Returns: Json };
       pos_void_sale: {
-        Args: { _reason: string; _sale_id: string }
-        Returns: Json
-      }
+        Args: { _reason: string; _sale_id: string };
+        Returns: Json;
+      };
       service_invoice_clear: {
         Args: {
-          _invoice_id: string
-          _payment_method: Database["public"]["Enums"]["service_payment_method"]
-        }
-        Returns: Json
-      }
+          _invoice_id: string;
+          _payment_method: Database["public"]["Enums"]["service_payment_method"];
+        };
+        Returns: Json;
+      };
       service_mark_complete: {
-        Args: { _expected_next_due_date?: string; _service_id: string }
-        Returns: Json
-      }
+        Args: { _expected_next_due_date?: string; _service_id: string };
+        Returns: Json;
+      };
       service_submit_diagnosis: {
-        Args: { _items: Json; _notes: string; _service_id: string }
-        Returns: Json
-      }
+        Args: { _items: Json; _notes: string; _service_id: string };
+        Returns: Json;
+      };
       set_user_roles: {
         Args: {
-          _roles: Database["public"]["Enums"]["app_role"][]
-          _user_id: string
-        }
-        Returns: undefined
-      }
+          _roles: Database["public"]["Enums"]["app_role"][];
+          _user_id: string;
+        };
+        Returns: undefined;
+      };
       setting_number: {
-        Args: { _default: number; _key: string }
-        Returns: number
-      }
-      store_purchase_approve: { Args: { _id: string }; Returns: undefined }
+        Args: { _default: number; _key: string };
+        Returns: number;
+      };
+      store_purchase_approve: { Args: { _id: string }; Returns: undefined };
       store_requisition_assign: {
-        Args: { _engineer_id: string; _id: string }
-        Returns: undefined
-      }
-      store_requisition_collected: { Args: { _id: string }; Returns: undefined }
-      store_requisition_confirm: { Args: { _id: string }; Returns: undefined }
-      store_requisition_deliver: { Args: { _id: string }; Returns: undefined }
+        Args: { _engineer_id: string; _id: string };
+        Returns: undefined;
+      };
+      store_requisition_collected: { Args: { _id: string }; Returns: undefined };
+      store_requisition_confirm: { Args: { _id: string }; Returns: undefined };
+      store_requisition_deliver: { Args: { _id: string }; Returns: undefined };
       store_set_quantity: {
         Args: {
-          _location: Database["public"]["Enums"]["store_location"]
-          _new_qty: number
-          _notes?: string
-          _product_id: string
-        }
-        Returns: undefined
-      }
+          _location: Database["public"]["Enums"]["store_location"];
+          _new_qty: number;
+          _notes?: string;
+          _product_id: string;
+        };
+        Returns: undefined;
+      };
       store_stock_take_submit: {
         Args: {
-          _location: Database["public"]["Enums"]["store_location"]
-          _rows: Json
-        }
-        Returns: number
-      }
-    }
+          _location: Database["public"]["Enums"]["store_location"];
+          _rows: Json;
+        };
+        Returns: number;
+      };
+    };
     Enums: {
-      app_role:
-        | "sales_rep"
-        | "chief_engineer"
-        | "engineer"
-        | "admin"
-        | "sales_head"
-      commission_role: "sales" | "assembly" | "installation"
-      machine_service_type: "commercial_industrial" | "undersink"
-      pos_payment_method: "cash" | "mpesa" | "credit" | "bank_transfer"
-      pos_sale_status: "completed" | "pending_payment" | "voided"
-      service_payment_method: "cash" | "mpesa" | "bank_transfer" | "other"
-      store_location: "in_house" | "warehouse"
-      store_product_type: "finished_product" | "raw_material" | "service"
-    }
+      app_role: "sales_rep" | "chief_engineer" | "engineer" | "admin" | "sales_head";
+      commission_role: "sales" | "assembly" | "installation";
+      machine_service_type: "commercial_industrial" | "undersink";
+      pos_payment_method: "cash" | "mpesa" | "credit" | "bank_transfer";
+      pos_sale_status: "completed" | "pending_payment" | "voided";
+      service_payment_method: "cash" | "mpesa" | "bank_transfer" | "other";
+      store_location: "in_house" | "warehouse";
+      store_product_type: "finished_product" | "raw_material" | "service";
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never) = never,
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never) = never,
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+    : never;
 
 export const Constants = {
   public: {
     Enums: {
-      app_role: [
-        "sales_rep",
-        "chief_engineer",
-        "engineer",
-        "admin",
-        "sales_head",
-      ],
+      app_role: ["sales_rep", "chief_engineer", "engineer", "admin", "sales_head"],
       commission_role: ["sales", "assembly", "installation"],
       machine_service_type: ["commercial_industrial", "undersink"],
       pos_payment_method: ["cash", "mpesa", "credit", "bank_transfer"],
@@ -2875,4 +2838,4 @@ export const Constants = {
       store_product_type: ["finished_product", "raw_material", "service"],
     },
   },
-} as const
+} as const;
