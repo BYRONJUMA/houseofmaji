@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Droplets, LogOut, Menu, Wrench } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
+import { useCurrentBranch } from "@/hooks/use-branch";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { ROLE_LABEL } from "@/lib/stages";
