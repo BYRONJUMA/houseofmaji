@@ -60,7 +60,7 @@ export function PosShell({
 
       <p className="mb-4 text-xs text-muted-foreground">
         Selling for <span className="font-semibold text-foreground">{branch?.name ?? "—"}</span>
-        {isMachines ? " — stock comes off the store location selected above." : ""}
+        {isMachines ? " — stock always comes off in-house stock." : ""}
       </p>
 
       {!canWrite && (
