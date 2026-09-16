@@ -73,8 +73,10 @@ function RequisitionsPage() {
   const { data: team = [] } = useTeam();
   const roleMap = useAllUserRoles();
   const action = useRequisitionAction();
+  const remove = useDeleteRequisition();
   const [creating, setCreating] = useState(false);
   const [assigning, setAssigning] = useState<Requisition | null>(null);
+  const [deleting, setDeleting] = useState<Requisition | null>(null);
 
   const engineers = team.filter((t) =>
     personHasRole(roleMap, t, "engineer", "chief_engineer", "admin"),
