@@ -275,6 +275,45 @@ function RequisitionsPage() {
           </DialogContent>
         </Dialog>
       )}
+
+      {deleting && (
+        <Dialog open onOpenChange={(o) => !o && setDeleting(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Delete {deleting.requisition_no}?</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              {deleting.status === "completed"
+                ? `This will permanently delete this requisition AND reverse the stock transfer — ${qtyOf(deleting.id)} units will move back from ${locationLabel(deleting.destination_location)} to ${locationLabel(deleting.source_location)}. Are you sure?`
+                : "This will permanently delete this requisition — are you sure?"}
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setDeleting(null)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                disabled={remove.isPending}
+                onClick={() =>
+                  remove.mutate(deleting.id, {
+                    onSuccess: (res) => {
+                      toast.success(
+                        res?.reversed
+                          ? "Requisition deleted and stock transfer reversed"
+                          : "Requisition deleted",
+                      );
+                      setDeleting(null);
+                    },
+                    onError: (e: Error) => toast.error(e.message),
+                  })
+                }
+              >
+                Delete requisition
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </StoreShell>
   );
 }
