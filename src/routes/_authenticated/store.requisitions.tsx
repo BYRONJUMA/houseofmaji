@@ -104,7 +104,8 @@ function RequisitionsPage() {
       },
     );
 
-  const showActions = canWrite || rows.some((r) => r.assigned_engineer_id === profile?.id);
+  const showActions =
+    canWrite || isChief || rows.some((r) => r.assigned_engineer_id === profile?.id);
 
   const statusTone = (s: Requisition["status"]) =>
     s === "completed" ? "good" : s === "rejected" ? "bad" : "neutral";
