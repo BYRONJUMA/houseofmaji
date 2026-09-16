@@ -31,6 +31,7 @@ import {
   REQUISITION_STATUS_LABEL,
   useCanWriteStore,
   useCreateRequisition,
+  useDeleteRequisition,
   useRequisitionAction,
   useRequisitionItems,
   useRequisitions,
