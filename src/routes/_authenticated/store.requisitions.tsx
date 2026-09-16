@@ -207,15 +207,23 @@ function RequisitionsPage() {
                               Confirm received
                             </DropdownMenuItem>
                           )}
-                          {(r.status === "completed" ||
-                            r.status === "rejected" ||
-                            (r.status === "pending" && !isChief) ||
-                            (r.status === "pending_confirmation" && !isChief) ||
-                            (r.status === "assigned_for_collection" &&
-                              r.assigned_engineer_id !== profile?.id &&
-                              !roles.includes("admin"))) && (
-                            <DropdownMenuItem disabled>No actions</DropdownMenuItem>
+                          {isChief && (
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => setDeleting(r)}
+                            >
+                              <Trash2 className="h-4 w-4" /> Delete requisition
+                            </DropdownMenuItem>
                           )}
+                          {!isChief &&
+                            (r.status === "completed" ||
+                              r.status === "rejected" ||
+                              r.status === "pending" ||
+                              r.status === "pending_confirmation" ||
+                              (r.status === "assigned_for_collection" &&
+                                r.assigned_engineer_id !== profile?.id)) && (
+                              <DropdownMenuItem disabled>No actions</DropdownMenuItem>
+                            )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
