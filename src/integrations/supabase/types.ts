@@ -2700,6 +2700,7 @@ export type Database = {
       }
       store_requisition_collected: { Args: { _id: string }; Returns: undefined }
       store_requisition_confirm: { Args: { _id: string }; Returns: undefined }
+      store_requisition_delete: { Args: { _id: string }; Returns: Json }
       store_requisition_deliver: { Args: { _id: string }; Returns: undefined }
       store_set_quantity: {
         Args: {
