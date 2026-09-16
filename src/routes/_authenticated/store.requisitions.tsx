@@ -31,6 +31,7 @@ import {
   REQUISITION_STATUS_LABEL,
   useCanWriteStore,
   useCreateRequisition,
+  useDeleteRequisition,
   useRequisitionAction,
   useRequisitionItems,
   useRequisitions,
@@ -72,8 +73,10 @@ function RequisitionsPage() {
   const { data: team = [] } = useTeam();
   const roleMap = useAllUserRoles();
   const action = useRequisitionAction();
+  const remove = useDeleteRequisition();
   const [creating, setCreating] = useState(false);
   const [assigning, setAssigning] = useState<Requisition | null>(null);
+  const [deleting, setDeleting] = useState<Requisition | null>(null);
 
   const engineers = team.filter((t) =>
     personHasRole(roleMap, t, "engineer", "chief_engineer", "admin"),
@@ -101,7 +104,8 @@ function RequisitionsPage() {
       },
     );
 
-  const showActions = canWrite || rows.some((r) => r.assigned_engineer_id === profile?.id);
+  const showActions =
+    canWrite || isChief || rows.some((r) => r.assigned_engineer_id === profile?.id);
 
   const statusTone = (s: Requisition["status"]) =>
     s === "completed" ? "good" : s === "rejected" ? "bad" : "neutral";
@@ -204,15 +208,23 @@ function RequisitionsPage() {
                               Confirm received
                             </DropdownMenuItem>
                           )}
-                          {(r.status === "completed" ||
-                            r.status === "rejected" ||
-                            (r.status === "pending" && !isChief) ||
-                            (r.status === "pending_confirmation" && !isChief) ||
-                            (r.status === "assigned_for_collection" &&
-                              r.assigned_engineer_id !== profile?.id &&
-                              !roles.includes("admin"))) && (
-                            <DropdownMenuItem disabled>No actions</DropdownMenuItem>
+                          {isChief && (
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => setDeleting(r)}
+                            >
+                              <Trash2 className="h-4 w-4" /> Delete requisition
+                            </DropdownMenuItem>
                           )}
+                          {!isChief &&
+                            (r.status === "completed" ||
+                              r.status === "rejected" ||
+                              r.status === "pending" ||
+                              r.status === "pending_confirmation" ||
+                              (r.status === "assigned_for_collection" &&
+                                r.assigned_engineer_id !== profile?.id)) && (
+                              <DropdownMenuItem disabled>No actions</DropdownMenuItem>
+                            )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
@@ -259,6 +271,45 @@ function RequisitionsPage() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {deleting && (
+        <Dialog open onOpenChange={(o) => !o && setDeleting(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Delete {deleting.requisition_no}?</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              {deleting.status === "completed"
+                ? `This will permanently delete this requisition AND reverse the stock transfer — ${qtyOf(deleting.id)} units will move back from ${locationLabel(deleting.destination_location)} to ${locationLabel(deleting.source_location)}. Are you sure?`
+                : "This will permanently delete this requisition — are you sure?"}
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setDeleting(null)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                disabled={remove.isPending}
+                onClick={() =>
+                  remove.mutate(deleting.id, {
+                    onSuccess: (res) => {
+                      toast.success(
+                        res?.reversed
+                          ? "Requisition deleted and stock transfer reversed"
+                          : "Requisition deleted",
+                      );
+                      setDeleting(null);
+                    },
+                    onError: (e: Error) => toast.error(e.message),
+                  })
+                }
+              >
+                Delete requisition
+              </Button>
             </div>
           </DialogContent>
         </Dialog>

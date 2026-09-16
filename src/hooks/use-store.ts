@@ -440,6 +440,22 @@ export function useRequisitionAction() {
   });
 }
 
+export function useDeleteRequisition() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data, error } = await supabase.rpc("store_requisition_delete", { _id: id });
+      if (error) throw new Error(error.message);
+      return data as unknown as { reversed: boolean; requisition_no: string };
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["store-requisitions"] });
+      void qc.invalidateQueries({ queryKey: ["store-requisition-items"] });
+      invalidateStore(qc);
+    },
+  });
+}
+
 /* ------------------------------ purchase orders ------------------------------ */
 
 export function usePurchaseOrders() {
