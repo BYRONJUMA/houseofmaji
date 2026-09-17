@@ -166,13 +166,15 @@ export function useStoreProducts() {
 }
 
 export function useStoreProduct(id: string) {
+  const { branchId } = useCurrentBranch();
   return useQuery({
-    queryKey: ["store-product", id],
+    queryKey: ["store-product", branchId, id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("store_products")
         .select("*")
         .eq("id", id)
+        .eq("branch_id", branchId)
         .maybeSingle();
       if (error) throw error;
       return (data ?? null) as unknown as StoreProduct | null;
@@ -181,17 +183,22 @@ export function useStoreProduct(id: string) {
 }
 
 export function useStoreEntries(productId?: string) {
+  const { branchId } = useCurrentBranch();
   return useQuery({
-    queryKey: ["store-entries", productId ?? "all"],
+    queryKey: ["store-entries", branchId, productId ?? "all"],
     queryFn: async () => {
+      // Inner join keeps a branch's stock history entirely its own.
       let q = supabase
         .from("store_stock_entries")
-        .select("*")
+        .select("*, store_products!inner(branch_id)")
+        .eq("store_products.branch_id", branchId)
         .order("entered_at", { ascending: false });
       if (productId) q = q.eq("product_id", productId);
       const { data, error } = await q.limit(300);
       if (error) throw error;
-      return (data ?? []) as unknown as StoreStockEntry[];
+      return ((data ?? []) as unknown as (StoreStockEntry & { store_products?: unknown })[]).map(
+        ({ store_products: _joined, ...row }) => row as StoreStockEntry,
+      );
     },
   });
 }
