@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { MoreVertical, PackagePlus, Boxes } from "lucide-react";
 import { EmptyState } from "@/components/app-shell";
+import { useCurrentBranch } from "@/hooks/use-branch";
 import { StoreShell, StockStatusBadge } from "@/components/store-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -284,6 +285,7 @@ function CreateStockDialog({
   onClose: () => void;
 }) {
   const { profile, roles } = useAuth();
+  const { branchId } = useCurrentBranch();
   const createProduct = useStoreProductMutation();
   const setQty = useSetQuantity();
   const [f, setF] = useState({ name: "", brand: "", category: "", unit: "", quantity: "" });
@@ -307,6 +309,7 @@ function CreateStockDialog({
           brand: f.brand.trim() || null,
           category: f.category.trim() || null,
           unit: f.unit.trim() || null,
+          branch_id: branchId,
           created_by: profile?.id ?? null,
         },
       });
@@ -315,6 +318,7 @@ function CreateStockDialog({
         .from("store_products")
         .select("id")
         .eq("name", f.name.trim())
+        .eq("branch_id", branchId)
         .order("created_at", { ascending: false })
         .limit(1);
       const id = (data?.[0] as { id: string } | undefined)?.id;
