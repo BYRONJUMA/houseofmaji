@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { MoreVertical, PackagePlus, Boxes } from "lucide-react";
 import { EmptyState } from "@/components/app-shell";
+import { useCurrentBranch } from "@/hooks/use-branch";
 import { StoreShell, StockStatusBadge } from "@/components/store-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
