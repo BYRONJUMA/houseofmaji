@@ -284,6 +284,7 @@ function CreateStockDialog({
   onClose: () => void;
 }) {
   const { profile, roles } = useAuth();
+  const { branchId } = useCurrentBranch();
   const createProduct = useStoreProductMutation();
   const setQty = useSetQuantity();
   const [f, setF] = useState({ name: "", brand: "", category: "", unit: "", quantity: "" });
