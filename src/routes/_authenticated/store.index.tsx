@@ -111,13 +111,12 @@ function StoreProductsPage() {
                 <th className="px-4 py-3">SKU / Model</th>
                 <th className="px-4 py-3">Brand</th>
                 <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3">Unit</th>
+                <th className="px-4 py-3 text-right">Unit</th>
                 <th className="px-4 py-3">Type</th>
                 <th className="px-4 py-3 text-right">Buying</th>
                 <th className="px-4 py-3 text-right">Selling</th>
                 <th className="px-4 py-3 text-right">In-House Qty</th>
                 <th className="px-4 py-3 text-right">Warehouse Qty</th>
-                <th className="px-4 py-3 text-right">Quantity</th>
                 {canWrite && <th className="px-4 py-3 text-right">Manage</th>}
               </tr>
             </thead>
@@ -144,7 +143,10 @@ function StoreProductsPage() {
                       ) : null}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">{p.unit || "—"}</td>
+                  <td className="px-4 py-3 text-right tabular-nums">
+                    {num(p.in_house_qty) + num(p.warehouse_qty)}
+                    {p.unit ? <span className="text-muted-foreground"> {p.unit}</span> : ""}
+                  </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {productTypeLabel(p.product_type)}
                   </td>
@@ -159,10 +161,6 @@ function StoreProductsPage() {
                   </td>
                   <td className="px-4 py-3 text-right font-semibold tabular-nums">
                     {num(p.warehouse_qty)}
-                  </td>
-                  <td className="px-4 py-3 text-right font-semibold tabular-nums">
-                    {num(p.in_house_qty) + num(p.warehouse_qty)}
-                    {p.unit ? <span className="text-muted-foreground"> {p.unit}</span> : ""}
                   </td>
                   {canWrite && (
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
