@@ -334,7 +334,9 @@ function CreatePurchaseDialog({ onClose }: { onClose: () => void }) {
                   <SelectItem value="warehouse">Warehouse</SelectItem>
                 </SelectContent>
               </Select>
-              {destinationError && <p className="text-xs text-destructive">Please select a store</p>}
+              {destinationError && (
+                <p className="text-xs text-destructive">Please select a store</p>
+              )}
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">

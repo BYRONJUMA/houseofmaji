@@ -78,8 +78,7 @@ function QuotationsPage() {
 
   const lines = (id: string) => items.filter((i) => i.quotation_id === id);
   const qtyOf = (id: string) => lines(id).reduce((s, i) => s + num(i.quantity), 0);
-  const customerName = (id: string | null) =>
-    customers.find((c) => c.id === id)?.name ?? "—";
+  const customerName = (id: string | null) => customers.find((c) => c.id === id)?.name ?? "—";
 
   const convert = (q: Quotation) => {
     const ls = lines(q.id);
@@ -208,10 +207,7 @@ function QuotationsPage() {
                           >
                             Convert to sale
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => remove(q)}
-                          >
+                          <DropdownMenuItem className="text-destructive" onClick={() => remove(q)}>
                             Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -330,9 +326,7 @@ function QuotationDialog({
   const visibleLeads = useMemo(() => {
     const term = leadSearch.trim().toLowerCase();
     const list = term
-      ? leads.filter(
-          (l) => l.name.toLowerCase().includes(term) || (l.phone ?? "").includes(term),
-        )
+      ? leads.filter((l) => l.name.toLowerCase().includes(term) || (l.phone ?? "").includes(term))
       : leads;
     return list.slice(0, 50);
   }, [leads, leadSearch]);
