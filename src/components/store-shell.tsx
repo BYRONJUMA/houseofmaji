@@ -24,9 +24,9 @@ const TABS: { to: string; label: string }[] = [
   { to: "/store", label: "Products" },
   { to: "/store/stock", label: "Stock details" },
   { to: "/store/requisitions", label: "Requisitions" },
-  { to: "/store/purchases", label: "Purchase orders" },
   { to: "/store/suppliers", label: "Suppliers" },
   { to: "/store/stocktake", label: "Daily stock take" },
+  { to: "/store/purchases", label: "Procurement" },
 ];
 
 /** Location switcher used across every Store page. */

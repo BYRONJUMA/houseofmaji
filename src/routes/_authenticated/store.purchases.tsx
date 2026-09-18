@@ -90,7 +90,7 @@ function PurchaseOrdersPage() {
 
   return (
     <StoreShell
-      title="Purchase orders"
+      title="Procurement"
       subtitle={`Orders being received into the ${locationLabel(location)} store`}
       actions={
         canWrite && (
@@ -222,12 +222,12 @@ function lineTotal(l: Line) {
 }
 
 function CreatePurchaseDialog({ onClose }: { onClose: () => void }) {
-  const [location] = useStoreLocation();
   const { data: products = [] } = useStoreProducts();
   const { data: suppliers = [] } = useSuppliers();
   const create = useCreatePurchaseOrder();
   const [supplierId, setSupplierId] = useState("");
-  const [destination, setDestination] = useState<StoreLocation>(location);
+  const [destination, setDestination] = useState<StoreLocation | "">("");
+  const [destinationError, setDestinationError] = useState(false);
   const [invoiceNo, setInvoiceNo] = useState("");
   const [description, setDescription] = useState("");
   const [lines, setLines] = useState<Line[]>([{ ...emptyLine }]);
@@ -253,6 +253,11 @@ function CreatePurchaseDialog({ onClose }: { onClose: () => void }) {
   }, [lines]);
 
   const submit = () => {
+    if (!destination) {
+      setDestinationError(true);
+      toast.error("Please select a store");
+      return;
+    }
     const items = lines
       .filter((l) => l.product_id && Number(l.quantity) > 0)
       .map((l) => ({
@@ -308,16 +313,30 @@ function CreatePurchaseDialog({ onClose }: { onClose: () => void }) {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>Destination store</Label>
-              <Select value={destination} onValueChange={(v) => setDestination(v as StoreLocation)}>
-                <SelectTrigger>
-                  <SelectValue />
+              <Label>
+                Destination store <span className="text-destructive">*</span>
+              </Label>
+              <Select
+                value={destination}
+                onValueChange={(v) => {
+                  setDestination(v as StoreLocation);
+                  setDestinationError(false);
+                }}
+              >
+                <SelectTrigger
+                  aria-invalid={destinationError}
+                  className={destinationError ? "border-destructive" : undefined}
+                >
+                  <SelectValue placeholder="Select a store" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="in_house">In-House</SelectItem>
                   <SelectItem value="warehouse">Warehouse</SelectItem>
                 </SelectContent>
               </Select>
+              {destinationError && (
+                <p className="text-xs text-destructive">Please select a store</p>
+              )}
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">

@@ -36,6 +36,7 @@ import { Route as AuthenticatedStoreAccessRouteImport } from './routes/_authenti
 import { Route as AuthenticatedStoreIdRouteImport } from './routes/_authenticated/store.$id'
 import { Route as AuthenticatedPosVoidedRouteImport } from './routes/_authenticated/pos.voided'
 import { Route as AuthenticatedPosSalesRouteImport } from './routes/_authenticated/pos.sales'
+import { Route as AuthenticatedPosQuotationsRouteImport } from './routes/_authenticated/pos.quotations'
 import { Route as AuthenticatedPosPendingRouteImport } from './routes/_authenticated/pos.pending'
 import { Route as AuthenticatedPosOverviewRouteImport } from './routes/_authenticated/pos.overview'
 import { Route as AuthenticatedFulfillmentIdRouteImport } from './routes/_authenticated/fulfillment.$id'
@@ -187,6 +188,12 @@ const AuthenticatedPosSalesRoute = AuthenticatedPosSalesRouteImport.update({
   path: '/sales',
   getParentRoute: () => AuthenticatedPosRoute,
 } as any)
+const AuthenticatedPosQuotationsRoute =
+  AuthenticatedPosQuotationsRouteImport.update({
+    id: '/quotations',
+    path: '/quotations',
+    getParentRoute: () => AuthenticatedPosRoute,
+  } as any)
 const AuthenticatedPosPendingRoute = AuthenticatedPosPendingRouteImport.update({
   id: '/pending',
   path: '/pending',
@@ -267,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
   '/pos/overview': typeof AuthenticatedPosOverviewRoute
   '/pos/pending': typeof AuthenticatedPosPendingRoute
+  '/pos/quotations': typeof AuthenticatedPosQuotationsRoute
   '/pos/sales': typeof AuthenticatedPosSalesRoute
   '/pos/voided': typeof AuthenticatedPosVoidedRoute
   '/store/$id': typeof AuthenticatedStoreIdRoute
@@ -303,6 +311,7 @@ export interface FileRoutesByTo {
   '/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
   '/pos/overview': typeof AuthenticatedPosOverviewRoute
   '/pos/pending': typeof AuthenticatedPosPendingRoute
+  '/pos/quotations': typeof AuthenticatedPosQuotationsRoute
   '/pos/sales': typeof AuthenticatedPosSalesRoute
   '/pos/voided': typeof AuthenticatedPosVoidedRoute
   '/store/$id': typeof AuthenticatedStoreIdRoute
@@ -343,6 +352,7 @@ export interface FileRoutesById {
   '/_authenticated/fulfillment/$id': typeof AuthenticatedFulfillmentIdRoute
   '/_authenticated/pos/overview': typeof AuthenticatedPosOverviewRoute
   '/_authenticated/pos/pending': typeof AuthenticatedPosPendingRoute
+  '/_authenticated/pos/quotations': typeof AuthenticatedPosQuotationsRoute
   '/_authenticated/pos/sales': typeof AuthenticatedPosSalesRoute
   '/_authenticated/pos/voided': typeof AuthenticatedPosVoidedRoute
   '/_authenticated/store/$id': typeof AuthenticatedStoreIdRoute
@@ -383,6 +393,7 @@ export interface FileRouteTypes {
     | '/fulfillment/$id'
     | '/pos/overview'
     | '/pos/pending'
+    | '/pos/quotations'
     | '/pos/sales'
     | '/pos/voided'
     | '/store/$id'
@@ -419,6 +430,7 @@ export interface FileRouteTypes {
     | '/fulfillment/$id'
     | '/pos/overview'
     | '/pos/pending'
+    | '/pos/quotations'
     | '/pos/sales'
     | '/pos/voided'
     | '/store/$id'
@@ -458,6 +470,7 @@ export interface FileRouteTypes {
     | '/_authenticated/fulfillment/$id'
     | '/_authenticated/pos/overview'
     | '/_authenticated/pos/pending'
+    | '/_authenticated/pos/quotations'
     | '/_authenticated/pos/sales'
     | '/_authenticated/pos/voided'
     | '/_authenticated/store/$id'
@@ -670,6 +683,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPosSalesRouteImport
       parentRoute: typeof AuthenticatedPosRoute
     }
+    '/_authenticated/pos/quotations': {
+      id: '/_authenticated/pos/quotations'
+      path: '/quotations'
+      fullPath: '/pos/quotations'
+      preLoaderRoute: typeof AuthenticatedPosQuotationsRouteImport
+      parentRoute: typeof AuthenticatedPosRoute
+    }
     '/_authenticated/pos/pending': {
       id: '/_authenticated/pos/pending'
       path: '/pending'
@@ -771,6 +791,7 @@ const AuthenticatedCrmRouteWithChildren =
 interface AuthenticatedPosRouteChildren {
   AuthenticatedPosOverviewRoute: typeof AuthenticatedPosOverviewRoute
   AuthenticatedPosPendingRoute: typeof AuthenticatedPosPendingRoute
+  AuthenticatedPosQuotationsRoute: typeof AuthenticatedPosQuotationsRoute
   AuthenticatedPosSalesRoute: typeof AuthenticatedPosSalesRoute
   AuthenticatedPosVoidedRoute: typeof AuthenticatedPosVoidedRoute
   AuthenticatedPosIndexRoute: typeof AuthenticatedPosIndexRoute
@@ -779,6 +800,7 @@ interface AuthenticatedPosRouteChildren {
 const AuthenticatedPosRouteChildren: AuthenticatedPosRouteChildren = {
   AuthenticatedPosOverviewRoute: AuthenticatedPosOverviewRoute,
   AuthenticatedPosPendingRoute: AuthenticatedPosPendingRoute,
+  AuthenticatedPosQuotationsRoute: AuthenticatedPosQuotationsRoute,
   AuthenticatedPosSalesRoute: AuthenticatedPosSalesRoute,
   AuthenticatedPosVoidedRoute: AuthenticatedPosVoidedRoute,
   AuthenticatedPosIndexRoute: AuthenticatedPosIndexRoute,

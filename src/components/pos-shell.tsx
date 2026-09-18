@@ -11,6 +11,7 @@ const TABS: { to: string; label: string }[] = [
   { to: "/pos/sales", label: "All sales" },
   { to: "/pos/pending", label: "Pending sales" },
   { to: "/pos/voided", label: "Invalidated sales" },
+  { to: "/pos/quotations", label: "Quotations" },
 ];
 
 /** True when the signed-in person may create, void or settle sales here. */
