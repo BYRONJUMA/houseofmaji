@@ -227,7 +227,8 @@ function CreatePurchaseDialog({ onClose }: { onClose: () => void }) {
   const { data: suppliers = [] } = useSuppliers();
   const create = useCreatePurchaseOrder();
   const [supplierId, setSupplierId] = useState("");
-  const [destination, setDestination] = useState<StoreLocation>(location);
+  const [destination, setDestination] = useState<StoreLocation | "">("");
+  const [destinationError, setDestinationError] = useState(false);
   const [invoiceNo, setInvoiceNo] = useState("");
   const [description, setDescription] = useState("");
   const [lines, setLines] = useState<Line[]>([{ ...emptyLine }]);
@@ -253,6 +254,11 @@ function CreatePurchaseDialog({ onClose }: { onClose: () => void }) {
   }, [lines]);
 
   const submit = () => {
+    if (!destination) {
+      setDestinationError(true);
+      toast.error("Please select a store");
+      return;
+    }
     const items = lines
       .filter((l) => l.product_id && Number(l.quantity) > 0)
       .map((l) => ({
