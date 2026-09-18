@@ -111,7 +111,7 @@ function StoreProductsPage() {
                 <th className="px-4 py-3">SKU / Model</th>
                 <th className="px-4 py-3">Brand</th>
                 <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3 text-right">Unit</th>
+                <th className="px-4 py-3 text-right">Qty</th>
                 <th className="px-4 py-3">Type</th>
                 <th className="px-4 py-3 text-right">Buying</th>
                 <th className="px-4 py-3 text-right">Selling</th>
@@ -145,7 +145,6 @@ function StoreProductsPage() {
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
                     {num(p.in_house_qty) + num(p.warehouse_qty)}
-                    {p.unit ? <span className="text-muted-foreground"> {p.unit}</span> : ""}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {productTypeLabel(p.product_type)}
