@@ -145,7 +145,6 @@ function StoreProductsPage() {
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
                     {num(p.in_house_qty) + num(p.warehouse_qty)}
-                    {p.unit ? <span className="text-muted-foreground"> {p.unit}</span> : ""}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {productTypeLabel(p.product_type)}
