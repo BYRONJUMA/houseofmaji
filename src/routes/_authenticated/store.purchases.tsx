@@ -90,7 +90,7 @@ function PurchaseOrdersPage() {
 
   return (
     <StoreShell
-      title="Purchase orders"
+      title="Procurement"
       subtitle={`Orders being received into the ${locationLabel(location)} store`}
       actions={
         canWrite && (
@@ -222,7 +222,6 @@ function lineTotal(l: Line) {
 }
 
 function CreatePurchaseDialog({ onClose }: { onClose: () => void }) {
-  const [location] = useStoreLocation();
   const { data: products = [] } = useStoreProducts();
   const { data: suppliers = [] } = useSuppliers();
   const create = useCreatePurchaseOrder();
@@ -314,16 +313,28 @@ function CreatePurchaseDialog({ onClose }: { onClose: () => void }) {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>Destination store</Label>
-              <Select value={destination} onValueChange={(v) => setDestination(v as StoreLocation)}>
-                <SelectTrigger>
-                  <SelectValue />
+              <Label>
+                Destination store <span className="text-destructive">*</span>
+              </Label>
+              <Select
+                value={destination}
+                onValueChange={(v) => {
+                  setDestination(v as StoreLocation);
+                  setDestinationError(false);
+                }}
+              >
+                <SelectTrigger
+                  aria-invalid={destinationError}
+                  className={destinationError ? "border-destructive" : undefined}
+                >
+                  <SelectValue placeholder="Select a store" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="in_house">In-House</SelectItem>
                   <SelectItem value="warehouse">Warehouse</SelectItem>
                 </SelectContent>
               </Select>
+              {destinationError && <p className="text-xs text-destructive">Please select a store</p>}
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
