@@ -117,6 +117,7 @@ function StoreProductsPage() {
                 <th className="px-4 py-3 text-right">Selling</th>
                 <th className="px-4 py-3 text-right">In-House Qty</th>
                 <th className="px-4 py-3 text-right">Warehouse Qty</th>
+                <th className="px-4 py-3 text-right">Quantity</th>
                 {canWrite && <th className="px-4 py-3 text-right">Manage</th>}
               </tr>
             </thead>
@@ -158,6 +159,10 @@ function StoreProductsPage() {
                   </td>
                   <td className="px-4 py-3 text-right font-semibold tabular-nums">
                     {num(p.warehouse_qty)}
+                  </td>
+                  <td className="px-4 py-3 text-right font-semibold tabular-nums">
+                    {num(p.in_house_qty) + num(p.warehouse_qty)}
+                    {p.unit ? <span className="text-muted-foreground"> {p.unit}</span> : ""}
                   </td>
                   {canWrite && (
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
